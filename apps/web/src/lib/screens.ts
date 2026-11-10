@@ -10,6 +10,7 @@ import {
   Users,
   ScanSearch,
   BriefcaseBusiness,
+  UserSearch,
   type LucideIcon,
 } from "lucide-react";
 
@@ -71,6 +72,12 @@ export const SCREENS: Screen[] = [
     icon: Sparkles,
   },
   {
+    href: "/lead-finder",
+    title: "Lead Finder",
+    subtitle: "Area → owners, LinkedIn & contacts",
+    icon: UserSearch,
+  },
+  {
     href: "/job-leads",
     title: "Job Leads",
     subtitle: "Companies hiring now · LinkedIn & job boards",
@@ -128,13 +135,13 @@ export function findScreen(href: string): Screen {
     return SCREENS[0]!; // Pitch Studio
   }
   if (href === "/pipeline" || href === "/saved-leads" || href === "/opportunities") {
-    return SCREENS[2]!; // All Leads
+    return SCREENS[3]!; // All Leads
   }
   if (href === "/meetings-setup" || href === "/calendar") {
-    return SCREENS[3]!; // Meetings
+    return SCREENS[4]!; // Meetings
   }
   if (href === "/analytics" || href.startsWith("/analytics/")) {
-    return SCREENS[4]!; // Analytics
+    return SCREENS[5]!; // Analytics
   }
   if (href === "/portfolio") {
     return BOTTOM_SCREENS[0]!; // Settings

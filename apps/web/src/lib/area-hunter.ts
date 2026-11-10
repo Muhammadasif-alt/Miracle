@@ -328,7 +328,7 @@ async function fromGoogle(niche: string, lat: number, lon: number, radiusM: numb
   return { list, checked: true, note: null };
 }
 
-export async function runAreaHunt(input: { area?: string; country?: string; niche?: string; radiusKm?: number }): Promise<AreaHuntResult> {
+export async function runAreaHunt(input: { area?: string; country?: string; niche?: string; radiusKm?: number; center?: { lat: number; lon: number } }): Promise<AreaHuntResult> {
   const area = input.area?.trim() ?? "";
   const country = input.country?.trim() || "United States";
   const niche = input.niche?.trim() ?? "";
@@ -336,7 +336,8 @@ export async function runAreaHunt(input: { area?: string; country?: string; nich
   if (!area) throw new AreaHuntError("Enter a city, area or ZIP code.");
   if (!niche) throw new AreaHuntError("Enter the kind of business, e.g. landscaper.");
 
-  const center = await geocode(area, country);
+  // A place picked from the suggestions already has exact coordinates — no need to geocode the text.
+  const center = input.center && Number.isFinite(input.center.lat) && Number.isFinite(input.center.lon) ? { ...input.center, label: area } : await geocode(area, country);
   const radiusM = radiusKm * 1000;
   const [osm, google] = await Promise.all([fromOsm(niche, center.lat, center.lon, radiusM), fromGoogle(niche, center.lat, center.lon, radiusM)]);
 
