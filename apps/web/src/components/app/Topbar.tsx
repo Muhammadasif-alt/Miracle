@@ -58,8 +58,8 @@ export function Topbar({ onOpenMenu }: { onOpenMenu: () => void }) {
 
   return (
     <header className="sticky top-0 z-20 flex h-14 items-center justify-between border-b border-white/[0.06] bg-[#07070c]/70 px-4 backdrop-blur-xl sm:px-5">
-      {/* Left: Mobile Menu + Miracle / Page Title */}
-      <div className="flex items-center gap-2.5">
+      {/* Left: mobile menu + page title (the logo lives in the sidebar only) */}
+      <div className="flex min-w-0 items-center gap-2.5">
         <button
           type="button"
           onClick={onOpenMenu}
@@ -69,17 +69,13 @@ export function Topbar({ onOpenMenu }: { onOpenMenu: () => void }) {
           <Menu className="size-4" />
         </button>
 
-        <div className="flex items-center gap-2 text-xs">
-          <span className="font-semibold text-white">Miracle</span>
-          <span className="text-[#555555]">/</span>
-          <span className="text-[#A1A1AA] font-medium">{screen.title}</span>
-        </div>
+        <h1 className="truncate text-sm font-semibold text-white">{screen.title}</h1>
       </div>
 
       {/* Right: Operational Status + Safety Mode Badge + Emergency Stop + Settings Icon + User Menu */}
-      <div className="flex items-center gap-3">
+      <div className="flex shrink-0 items-center gap-2 sm:gap-3">
         {/* Safety Mode Badge */}
-        <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-[11px] font-medium bg-[#13131d] border-[#29293d]">
+        <div className="flex items-center gap-1.5 whitespace-nowrap px-2.5 py-1 rounded-full border text-[11px] font-medium bg-[#13131d] border-[#29293d]">
           <span
             className={`size-2 rounded-full ${
               isPaused
@@ -89,7 +85,7 @@ export function Topbar({ onOpenMenu }: { onOpenMenu: () => void }) {
                 : "bg-[#38BDF8]"
             }`}
           />
-          <span className="font-mono text-white text-[10px] uppercase tracking-wider">
+          <span className="hidden font-mono text-white text-[10px] uppercase tracking-wider sm:inline">
             {isPaused ? "Outreach Paused" : operatingMode === "TESTING" ? "Testing Mode (Dry-Run)" : "Live Outreach"}
           </span>
         </div>
@@ -100,7 +96,7 @@ export function Topbar({ onOpenMenu }: { onOpenMenu: () => void }) {
           onClick={handleToggleEmergencyStop}
           disabled={updating}
           title={isPaused ? "Resume Outreach (Switches to Safe Testing Mode)" : "Emergency Stop: Pause All Outreach"}
-          className={`flex items-center gap-1.5 px-2 py-1 rounded-[6px] text-[11px] font-semibold transition ${
+          className={`flex items-center gap-1.5 whitespace-nowrap px-2 py-1 rounded-[6px] text-[11px] font-semibold transition ${
             isPaused
               ? "bg-[#10B981]/10 text-[#10B981] hover:bg-[#10B981]/20 border border-[#10B981]/30"
               : "bg-[#EF4444]/10 text-[#EF4444] hover:bg-[#EF4444]/20 border border-[#EF4444]/30"

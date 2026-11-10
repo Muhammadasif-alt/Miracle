@@ -3,6 +3,8 @@ import type { NextConfig } from "next";
 const apiUrl = process.env.API_URL ?? "http://localhost:4000";
 
 const nextConfig: NextConfig = {
+  // Dev-only Next.js badge: keep it off the sidebar's user card (errors still pop up when they happen).
+  devIndicators: { position: "bottom-right" },
   // Browser calls same-origin /api/*; Next forwards them to the NestJS API. No secrets reach the browser.
   async rewrites() {
     return [

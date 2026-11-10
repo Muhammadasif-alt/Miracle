@@ -1,11 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { redirect } from "next/navigation";
 import { ArrowRight } from "lucide-react";
 import { Logo } from "@/components/brand/Logo";
 import { MemberAvatar, ROLE_STYLE, RoleChip } from "@/components/auth/MemberCard";
 import { safeNext } from "@/lib/me";
-import { getMe } from "@/lib/session";
 import { TEAM } from "@/lib/team";
 
 export const metadata: Metadata = { title: "Sign in — Miracle" };
@@ -13,7 +11,6 @@ export const metadata: Metadata = { title: "Sign in — Miracle" };
 /** Step 1 of sign-in: pick who you are. Each card opens that member's own sign-in page. */
 export default async function LoginPage({ searchParams }: PageProps<"/login">) {
   const next = safeNext((await searchParams).next);
-  if (await getMe()) redirect(next);
   const query = next === "/lead-hunter" ? "" : `?next=${encodeURIComponent(next)}`;
 
   return (

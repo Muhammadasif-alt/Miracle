@@ -1,12 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { Logo } from "@/components/brand/Logo";
 import { LoginForm } from "@/components/auth/LoginForm";
 import { MemberAvatar, ROLE_STYLE, RoleChip } from "@/components/auth/MemberCard";
 import { safeNext } from "@/lib/me";
-import { getMe } from "@/lib/session";
 import { findMember } from "@/lib/team";
 
 export async function generateMetadata({ params }: PageProps<"/login/[member]">): Promise<Metadata> {
@@ -19,7 +18,6 @@ export default async function MemberLoginPage({ params, searchParams }: PageProp
   const member = findMember((await params).member);
   if (!member) notFound();
   const next = safeNext((await searchParams).next);
-  if (await getMe()) redirect(next);
   const back = next === "/lead-hunter" ? "/login" : `/login?next=${encodeURIComponent(next)}`;
 
   return (
