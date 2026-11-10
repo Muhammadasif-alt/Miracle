@@ -696,10 +696,10 @@ export function SettingsManager() {
       {/* ======================================================== */}
       {/* 1. COMPACT SETTINGS HEADER                               */}
       {/* ======================================================== */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#212132] pb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-(--n-212132) pb-4">
         <div>
           <h1 className="text-xl font-bold tracking-tight text-white">Settings</h1>
-          <p className="text-xs text-[#888888] mt-0.5">
+          <p className="text-xs text-(--n-888888) mt-0.5">
             Manage your verified sender identity, integrations, Behance proof, and automation preferences.
           </p>
         </div>
@@ -708,7 +708,7 @@ export function SettingsManager() {
           type="button"
           onClick={handleSaveAll}
           disabled={loading}
-          className="rounded-[6px] bg-[#10B981] px-4 py-1.5 text-xs font-semibold text-white hover:bg-[#059669] inline-flex items-center gap-1.5 transition disabled:opacity-50 shadow-sm"
+          className="rounded-[6px] bg-(--accent) px-4 py-1.5 text-xs font-semibold text-(--on-accent) hover:bg-(--accent-strong) inline-flex items-center gap-1.5 transition disabled:opacity-50 shadow-sm"
         >
           <Save className="size-3.5" />
           <span>{loading ? "Saving..." : "Save Settings"}</span>
@@ -716,9 +716,9 @@ export function SettingsManager() {
       </div>
 
       {savedNotice && (
-        <div className="p-3 rounded-[8px] bg-[#10B981]/10 border border-[#10B981]/25 text-xs text-[#10B981] flex items-center justify-between">
+        <div className="p-3 rounded-[8px] bg-(--accent)/10 border border-(--accent)/25 text-xs text-(--accent) flex items-center justify-between">
           <span>{savedNotice}</span>
-          <button onClick={() => setSavedNotice(null)} className="text-[#888888] hover:text-white">
+          <button onClick={() => setSavedNotice(null)} className="text-(--n-888888) hover:text-white">
             <X className="size-3.5" />
           </button>
         </div>
@@ -727,7 +727,7 @@ export function SettingsManager() {
       {/* ======================================================== */}
       {/* 2. RESPONSIVE COMPACT TABS                               */}
       {/* ======================================================== */}
-      <div className="flex flex-wrap items-center gap-1.5 bg-[#13131d] p-1 rounded-lg border border-[#212132] text-xs">
+      <div className="flex flex-wrap items-center gap-1.5 bg-(--n-13131d) p-1 rounded-lg border border-(--n-212132) text-xs">
         {tabs.map((t) => {
           const Icon = t.icon;
           const isActive = activeTab === t.id;
@@ -738,11 +738,11 @@ export function SettingsManager() {
               onClick={() => setActiveTab(t.id)}
               className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-[6px] font-medium transition ${
                 isActive
-                  ? "bg-[#212132] text-white shadow-sm font-semibold"
-                  : "text-[#888888] hover:text-[#CCCCCC]"
+                  ? "bg-(--n-212132) text-white shadow-sm font-semibold"
+                  : "text-(--n-888888) hover:text-(--n-cccccc)"
               }`}
             >
-              <Icon className={`size-3.5 ${isActive ? "text-[#10B981]" : "text-[#777777]"}`} />
+              <Icon className={`size-3.5 ${isActive ? "text-(--accent)" : "text-(--n-777777)"}`} />
               <span>{t.label}</span>
             </button>
           );
@@ -753,17 +753,17 @@ export function SettingsManager() {
       {/* 3. TAB 1: BUSINESS & SENDER PROFILE                     */}
       {/* ======================================================== */}
       {activeTab === "profile" && (
-        <section className="rounded-[10px] border border-[#1f1f2e] bg-[#11111a] p-5 space-y-4">
-          <div className="border-b border-[#1d1d2c] pb-3">
+        <section className="rounded-[10px] border border-(--n-1f1f2e) bg-(--n-11111a) p-5 space-y-4">
+          <div className="border-b border-(--n-1d1d2c) pb-3">
             <h2 className="text-sm font-semibold text-white">Sender & Business Identity</h2>
-            <p className="text-xs text-[#888888] mt-0.5">
+            <p className="text-xs text-(--n-888888) mt-0.5">
               Used in every generated email and Gemini prompt. Miracle will never invent or alter your real name.
             </p>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="text-[11px] font-semibold text-[#888888] block mb-1">
+              <label className="text-[11px] font-semibold text-(--n-888888) block mb-1">
                 Your Sender Name * (Actual Name)
               </label>
               <input
@@ -772,15 +772,15 @@ export function SettingsManager() {
                 value={senderName}
                 onChange={(e) => handleSenderNameChange(e.target.value)}
                 placeholder="e.g. Zohaib"
-                className="input bg-[#171723] border-[#252538] text-xs text-white h-9"
+                className="input bg-(--n-171723) border-(--n-252538) text-xs text-white h-9"
               />
-              <span className="text-[10px] text-[#666666] mt-0.5 block">
+              <span className="text-[10px] text-(--n-666666) mt-0.5 block">
                 Never replaces with fictional roles like &quot;Creative Studio Lead&quot;.
               </span>
             </div>
 
             <div>
-              <label className="text-[11px] font-semibold text-[#888888] block mb-1">
+              <label className="text-[11px] font-semibold text-(--n-888888) block mb-1">
                 Business / Studio Name
               </label>
               <input
@@ -788,14 +788,14 @@ export function SettingsManager() {
                 value={businessName}
                 onChange={(e) => setBusinessName(e.target.value)}
                 placeholder="e.g. Miracle Creative Studio"
-                className="input bg-[#171723] border-[#252538] text-xs text-white h-9"
+                className="input bg-(--n-171723) border-(--n-252538) text-xs text-white h-9"
               />
             </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="text-[11px] font-semibold text-[#888888] block mb-1">
+              <label className="text-[11px] font-semibold text-(--n-888888) block mb-1">
                 Business Email Address
               </label>
               <input
@@ -803,18 +803,18 @@ export function SettingsManager() {
                 value={businessEmail}
                 onChange={(e) => setBusinessEmail(e.target.value)}
                 placeholder="zohaibaidesigner@gmail.com"
-                className="input bg-[#171723] border-[#252538] text-xs text-white h-9"
+                className="input bg-(--n-171723) border-(--n-252538) text-xs text-white h-9"
               />
             </div>
 
             <div>
-              <label className="text-[11px] font-semibold text-[#888888] block mb-1">
+              <label className="text-[11px] font-semibold text-(--n-888888) block mb-1">
                 Timezone
               </label>
               <select
                 value={timezone}
                 onChange={(e) => setTimezone(e.target.value)}
-                className="input bg-[#171723] border-[#252538] text-xs text-white h-9"
+                className="input bg-(--n-171723) border-(--n-252538) text-xs text-white h-9"
               >
                 <option value="America/New_York">Eastern Time (America/New_York)</option>
                 <option value="America/Chicago">Central Time (America/Chicago)</option>
@@ -828,7 +828,7 @@ export function SettingsManager() {
           </div>
 
           <div>
-            <label className="text-[11px] font-semibold text-[#888888] block mb-1">
+            <label className="text-[11px] font-semibold text-(--n-888888) block mb-1">
               Services Offered
             </label>
             <input
@@ -836,16 +836,16 @@ export function SettingsManager() {
               value={servicesOffered}
               onChange={(e) => setServicesOffered(e.target.value)}
               placeholder="e.g. Graphic Design, Brand Identity & High-Converting Video Editing"
-              className="input bg-[#171723] border-[#252538] text-xs text-white h-9"
+              className="input bg-(--n-171723) border-(--n-252538) text-xs text-white h-9"
             />
           </div>
 
           <div>
             <div className="flex items-center justify-between mb-1">
-              <label className="text-[11px] font-semibold text-[#888888]">
+              <label className="text-[11px] font-semibold text-(--n-888888)">
                 Email Signature (Automatically Appended to All Pitches)
               </label>
-              <span className="text-[10px] text-[#10B981] font-mono">
+              <span className="text-[10px] text-(--accent) font-mono">
                 Live Signature
               </span>
             </div>
@@ -853,7 +853,7 @@ export function SettingsManager() {
               rows={3}
               value={emailSignature}
               onChange={(e) => setEmailSignature(e.target.value)}
-              className="input bg-[#171723] border-[#252538] text-xs font-mono text-white p-3 leading-relaxed"
+              className="input bg-(--n-171723) border-(--n-252538) text-xs font-mono text-white p-3 leading-relaxed"
             />
           </div>
         </section>
@@ -863,17 +863,17 @@ export function SettingsManager() {
       {/* 4. TAB 2: EMAIL ACCOUNTS & DELIVERABILITY                */}
       {/* ======================================================== */}
       {activeTab === "email" && (
-        <section className="rounded-[10px] border border-[#1f1f2e] bg-[#11111a] p-5 space-y-4">
-          <div className="border-b border-[#1d1d2c] pb-3">
+        <section className="rounded-[10px] border border-(--n-1f1f2e) bg-(--n-11111a) p-5 space-y-4">
+          <div className="border-b border-(--n-1d1d2c) pb-3">
             <h2 className="text-sm font-semibold text-white">Email Connection & SMTP</h2>
-            <p className="text-xs text-[#888888] mt-0.5">
+            <p className="text-xs text-(--n-888888) mt-0.5">
               Send cold emails directly through your authenticated Gmail or custom SMTP account.
             </p>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="text-[11px] font-semibold text-[#888888] block mb-1">
+              <label className="text-[11px] font-semibold text-(--n-888888) block mb-1">
                 Connected Email Address
               </label>
               <input
@@ -881,31 +881,31 @@ export function SettingsManager() {
                 value={connectedEmail}
                 onChange={(e) => setConnectedEmail(e.target.value)}
                 placeholder="zohaibaidesigner@gmail.com"
-                className="input bg-[#171723] border-[#252538] text-xs text-white h-9"
+                className="input bg-(--n-171723) border-(--n-252538) text-xs text-white h-9"
               />
             </div>
 
             <div>
-              <label className="text-[11px] font-semibold text-[#888888] block mb-1">
+              <label className="text-[11px] font-semibold text-(--n-888888) block mb-1">
                 Gmail App Password (16 Characters)
               </label>
               <PasswordInput
                 value={appPassword}
                 onChange={(e) => setAppPassword(e.target.value)}
                 placeholder="xxxx xxxx xxxx xxxx"
-                className="input bg-[#171723] border-[#252538] text-xs text-white h-9 font-mono"
+                className="input bg-(--n-171723) border-(--n-252538) text-xs text-white h-9 font-mono"
               />
             </div>
           </div>
 
           <div>
-            <label className="text-[11px] font-semibold text-[#888888] block mb-1">
+            <label className="text-[11px] font-semibold text-(--n-888888) block mb-1">
               Daily Outbound Limit
             </label>
             <select
               value={dailySendLimit}
               onChange={(e) => setDailySendLimit(Number(e.target.value))}
-              className="input bg-[#171723] border-[#252538] text-xs text-white h-9 w-full sm:w-64"
+              className="input bg-(--n-171723) border-(--n-252538) text-xs text-white h-9 w-full sm:w-64"
             >
               <option value="25">25 emails / day (Warm-up safety)</option>
               <option value="50">50 emails / day (Standard)</option>
@@ -914,8 +914,8 @@ export function SettingsManager() {
           </div>
 
           {/* Test Email Row */}
-          <div className="pt-3 border-t border-[#1d1d2c] space-y-2">
-            <span className="text-[11px] font-semibold text-[#888888] block">
+          <div className="pt-3 border-t border-(--n-1d1d2c) space-y-2">
+            <span className="text-[11px] font-semibold text-(--n-888888) block">
               Deliverability Health Check
             </span>
             <div className="flex flex-col sm:flex-row items-center gap-2">
@@ -924,20 +924,20 @@ export function SettingsManager() {
                 value={testRecipient}
                 onChange={(e) => setTestRecipient(e.target.value)}
                 placeholder="test@domain.com"
-                className="input bg-[#171723] border-[#252538] text-xs text-white h-9 flex-1"
+                className="input bg-(--n-171723) border-(--n-252538) text-xs text-white h-9 flex-1"
               />
               <button
                 type="button"
                 onClick={handleTestSendEmail}
                 disabled={isSendingTestEmail}
-                className="rounded-[6px] bg-[#1d1d2c] border border-[#2c2c42] px-4 h-9 text-xs font-medium text-white hover:bg-[#252525] inline-flex items-center gap-1.5 transition disabled:opacity-50 shrink-0"
+                className="rounded-[6px] bg-(--n-1d1d2c) border border-(--n-2c2c42) px-4 h-9 text-xs font-medium text-white hover:bg-(--n-252525) inline-flex items-center gap-1.5 transition disabled:opacity-50 shrink-0"
               >
-                <Send className="size-3 text-[#10B981]" />
+                <Send className="size-3 text-(--accent)" />
                 <span>{isSendingTestEmail ? "Sending..." : "Send Test Email"}</span>
               </button>
             </div>
             {testEmailStatus && (
-              <p className="text-xs text-[#10B981] mt-1">{testEmailStatus}</p>
+              <p className="text-xs text-(--accent) mt-1">{testEmailStatus}</p>
             )}
           </div>
         </section>
@@ -947,21 +947,21 @@ export function SettingsManager() {
       {/* 5. TAB 3: GOOGLE CALENDAR & MEET                         */}
       {/* ======================================================== */}
       {activeTab === "calendar" && (
-        <section className="rounded-[10px] border border-[#1f1f2e] bg-[#11111a] p-5 space-y-4">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#1d1d2c] pb-3">
+        <section className="rounded-[10px] border border-(--n-1f1f2e) bg-(--n-11111a) p-5 space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-(--n-1d1d2c) pb-3">
             <div>
               <h2 className="text-sm font-semibold text-white flex items-center gap-2">
-                <Calendar className="size-4 text-[#10B981]" />
+                <Calendar className="size-4 text-(--accent)" />
                 Google Calendar & Meet Sync
               </h2>
-              <p className="text-xs text-[#888888] mt-0.5">
+              <p className="text-xs text-(--n-888888) mt-0.5">
                 Real two-way sync with Google Calendar API and Google Meet link generation.
               </p>
             </div>
 
             <div className="flex items-center gap-2">
               {calendarStatus === "CONNECTED" ? (
-                <span className="inline-flex items-center gap-1 rounded-full bg-[#10B981]/15 px-2.5 py-0.5 text-xs font-semibold text-[#10B981] border border-[#10B981]/30">
+                <span className="inline-flex items-center gap-1 rounded-full bg-(--accent)/15 px-2.5 py-0.5 text-xs font-semibold text-(--accent) border border-(--accent)/30">
                   <CheckCircle2 className="size-3" />
                   Connected & Verified
                 </span>
@@ -976,7 +976,7 @@ export function SettingsManager() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="text-[11px] font-semibold text-[#888888] block mb-1">
+              <label className="text-[11px] font-semibold text-(--n-888888) block mb-1">
                 Connected Google Account
               </label>
               <input
@@ -984,12 +984,12 @@ export function SettingsManager() {
                 value={calendarEmail || "zohaibaidesigner@gmail.com"}
                 onChange={(e) => setCalendarEmail(e.target.value)}
                 placeholder="Google email..."
-                className="input bg-[#171723] border-[#252538] text-xs text-white h-9"
+                className="input bg-(--n-171723) border-(--n-252538) text-xs text-white h-9"
               />
             </div>
 
             <div>
-              <label className="text-[11px] font-semibold text-[#888888] block mb-1">
+              <label className="text-[11px] font-semibold text-(--n-888888) block mb-1">
                 Selected Calendar
               </label>
               <input
@@ -997,14 +997,14 @@ export function SettingsManager() {
                 value={selectedCalendarName}
                 onChange={(e) => setSelectedCalendarName(e.target.value)}
                 placeholder="e.g. Primary Google Calendar"
-                className="input bg-[#171723] border-[#252538] text-xs text-white h-9"
+                className="input bg-(--n-171723) border-(--n-252538) text-xs text-white h-9"
               />
             </div>
           </div>
 
           <div>
             <div className="flex items-center justify-between mb-1">
-              <label className="text-[11px] font-semibold text-[#888888]">
+              <label className="text-[11px] font-semibold text-(--n-888888)">
                 Appointment Booking Page URL (Optional)
               </label>
               {bookingUrl && (
@@ -1024,7 +1024,7 @@ export function SettingsManager() {
               value={bookingUrl}
               onChange={(e) => setBookingUrl(e.target.value)}
               placeholder="https://calendar.google.com/calendar/u/0/appointments/schedules/..."
-              className="input bg-[#171723] border-[#252538] text-xs text-white h-9"
+              className="input bg-(--n-171723) border-(--n-252538) text-xs text-white h-9"
             />
           </div>
 
@@ -1033,9 +1033,9 @@ export function SettingsManager() {
               type="button"
               onClick={handleTestCalendar}
               disabled={testingCalendar}
-              className="rounded-[6px] bg-[#1d1d2c] border border-[#2c2c42] px-3.5 py-1.5 text-xs font-medium text-white hover:bg-[#252525] inline-flex items-center gap-1.5 transition disabled:opacity-50"
+              className="rounded-[6px] bg-(--n-1d1d2c) border border-(--n-2c2c42) px-3.5 py-1.5 text-xs font-medium text-white hover:bg-(--n-252525) inline-flex items-center gap-1.5 transition disabled:opacity-50"
             >
-              <RefreshCw className={`size-3 ${testingCalendar ? "animate-spin text-[#10B981]" : "text-[#888888]"}`} />
+              <RefreshCw className={`size-3 ${testingCalendar ? "animate-spin text-(--accent)" : "text-(--n-888888)"}`} />
               <span>{testingCalendar ? "Verifying..." : "Test Calendar Health"}</span>
             </button>
 
@@ -1043,32 +1043,32 @@ export function SettingsManager() {
               href="https://calendar.google.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="rounded-[6px] border border-[#252538] bg-[#171723] px-3.5 py-1.5 text-xs text-[#CCCCCC] hover:text-white inline-flex items-center gap-1 transition"
+              className="rounded-[6px] border border-(--n-252538) bg-(--n-171723) px-3.5 py-1.5 text-xs text-(--n-cccccc) hover:text-white inline-flex items-center gap-1 transition"
             >
               <span>Open Google Calendar UI</span>
-              <ExternalLink className="size-3 text-[#777777]" />
+              <ExternalLink className="size-3 text-(--n-777777)" />
             </a>
 
             <button
               type="button"
               onClick={() => setShowCalendarDetails(!showCalendarDetails)}
-              className="text-xs text-[#777777] hover:text-white underline ml-auto"
+              className="text-xs text-(--n-777777) hover:text-white underline ml-auto"
             >
               {showCalendarDetails ? "Hide Technical Details" : "Show Technical Details"}
             </button>
           </div>
 
           {calendarTestNotice && (
-            <div className="p-3 rounded-[6px] bg-[#191926] border border-[#29293d] text-xs text-[#E5E5E5]">
+            <div className="p-3 rounded-[6px] bg-(--n-191926) border border-(--n-29293d) text-xs text-(--n-e5e5e5)">
               {calendarTestNotice}
             </div>
           )}
 
           {showCalendarDetails && (
-            <div className="p-3 rounded-[8px] bg-[#14141e] border border-[#212132] text-xs font-mono space-y-1 text-[#888888]">
+            <div className="p-3 rounded-[8px] bg-(--n-14141e) border border-(--n-212132) text-xs font-mono space-y-1 text-(--n-888888)">
               <div>Target Calendar ID: <span className="text-white">{selectedCalendarId}</span></div>
               <div>Scopes: <span className="text-[#38BDF8]">https://www.googleapis.com/auth/calendar.events</span></div>
-              <div>Direct Web Render: <span className="text-[#10B981]">Enabled</span></div>
+              <div>Direct Web Render: <span className="text-(--accent)">Enabled</span></div>
             </div>
           )}
         </section>
@@ -1078,21 +1078,21 @@ export function SettingsManager() {
       {/* 6. TAB 4: BEHANCE VAULT (IMMUTABLE AUTHORITATIVE PROOF)  */}
       {/* ======================================================== */}
       {activeTab === "behance" && (
-        <section className="rounded-[10px] border border-[#1f1f2e] bg-[#11111a] p-5 space-y-4">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#1d1d2c] pb-3">
+        <section className="rounded-[10px] border border-(--n-1f1f2e) bg-(--n-11111a) p-5 space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-(--n-1d1d2c) pb-3">
             <div>
               <h2 className="text-sm font-semibold text-white flex items-center gap-2">
-                <FolderHeart className="size-4 text-[#10B981]" />
+                <FolderHeart className="size-4 text-(--accent)" />
                 Behance Portfolio Vault
               </h2>
-              <p className="text-xs text-[#888888] mt-0.5">
+              <p className="text-xs text-(--n-888888) mt-0.5">
                 Single authoritative personal profile URL. Locked against AI overwrites and external resets.
               </p>
             </div>
 
             <div className="flex items-center gap-2">
               {isBehanceLocked ? (
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-[#10B981]/15 px-3 py-1 text-xs font-semibold text-[#10B981] border border-[#10B981]/30">
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-(--accent)/15 px-3 py-1 text-xs font-semibold text-(--accent) border border-(--accent)/30">
                   <Lock className="size-3" />
                   Status: Saved &amp; Locked
                 </span>
@@ -1106,14 +1106,14 @@ export function SettingsManager() {
           </div>
 
           {behanceNotice && (
-            <div className="p-3 rounded-[8px] bg-[#10B981]/10 border border-[#10B981]/25 text-xs text-[#10B981]">
+            <div className="p-3 rounded-[8px] bg-(--accent)/10 border border-(--accent)/25 text-xs text-(--accent)">
               {behanceNotice}
             </div>
           )}
 
           <div>
             <div className="flex items-center justify-between mb-1">
-              <label className="text-[11px] font-semibold text-[#888888]">
+              <label className="text-[11px] font-semibold text-(--n-888888)">
                 Primary Authoritative Behance Profile URL *
               </label>
               <div className="flex items-center gap-2">
@@ -1121,7 +1121,7 @@ export function SettingsManager() {
                   type="button"
                   onClick={handleToggleBehanceLock}
                   className={`text-xs inline-flex items-center gap-1 font-medium transition ${
-                    isBehanceLocked ? "text-[#F59E0B] hover:text-[#D97706]" : "text-[#10B981] hover:text-[#059669]"
+                    isBehanceLocked ? "text-[#F59E0B] hover:text-[#D97706]" : "text-(--accent) hover:text-(--accent-strong)"
                   }`}
                 >
                   {isBehanceLocked ? (
@@ -1147,14 +1147,14 @@ export function SettingsManager() {
                 value={behanceUrl}
                 onChange={(e) => setBehanceUrl(e.target.value)}
                 placeholder="https://www.behance.net/your-username"
-                className="input bg-[#171723] border-[#252538] text-xs text-white h-9 flex-1 disabled:opacity-60 disabled:cursor-not-allowed font-mono"
+                className="input bg-(--n-171723) border-(--n-252538) text-xs text-white h-9 flex-1 disabled:opacity-60 disabled:cursor-not-allowed font-mono"
               />
 
               {!isBehanceLocked && (
                 <button
                   type="button"
                   onClick={handleSaveBehanceProfile}
-                  className="rounded-[6px] bg-[#10B981] px-3.5 h-9 text-xs font-semibold text-black hover:bg-[#0EA5E9] inline-flex items-center gap-1 shrink-0"
+                  className="rounded-[6px] bg-(--accent) px-3.5 h-9 text-xs font-semibold text-black hover:bg-[#0EA5E9] inline-flex items-center gap-1 shrink-0"
                 >
                   <Save className="size-3" />
                   <span>Save &amp; Lock</span>
@@ -1166,20 +1166,20 @@ export function SettingsManager() {
                   href={behanceUrl}
                   target="_blank"
                   rel="noreferrer"
-                  className="rounded-[6px] border border-[#2c2c42] bg-[#191926] px-3 h-9 text-xs text-white inline-flex items-center gap-1 hover:bg-[#252525] shrink-0"
+                  className="rounded-[6px] border border-(--n-2c2c42) bg-(--n-191926) px-3 h-9 text-xs text-white inline-flex items-center gap-1 hover:bg-(--n-252525) shrink-0"
                 >
                   <span>Open Profile</span>
                   <ExternalLink className="size-3" />
                 </a>
               )}
             </div>
-            <p className="text-[10px] text-[#71717A] mt-1">
+            <p className="text-[10px] text-(--n-71717a) mt-1">
               Must be your author profile URL (e.g., https://www.behance.net/username). Specific case studies are managed below.
             </p>
           </div>
 
           {/* Featured Case Studies */}
-          <div className="pt-3 border-t border-[#1d1d2c] space-y-3">
+          <div className="pt-3 border-t border-(--n-1d1d2c) space-y-3">
             <div className="flex items-center justify-between">
               <span className="text-xs font-semibold text-white">
                 Niche-Matched Behance Case Studies ({behanceProjects.length})
@@ -1190,12 +1190,12 @@ export function SettingsManager() {
               {behanceProjects.map((p) => (
                 <div
                   key={p.id}
-                  className="p-3 rounded-[8px] bg-[#171723] border border-[#252538] flex items-center justify-between gap-3 text-xs"
+                  className="p-3 rounded-[8px] bg-(--n-171723) border border-(--n-252538) flex items-center justify-between gap-3 text-xs"
                 >
                   <div className="min-w-0">
                     <p className="font-semibold text-white truncate">{p.title}</p>
-                    <div className="flex items-center gap-2 text-[11px] text-[#777777] mt-0.5">
-                      <span className="text-[#10B981] font-mono">{p.niche}</span>
+                    <div className="flex items-center gap-2 text-[11px] text-(--n-777777) mt-0.5">
+                      <span className="text-(--accent) font-mono">{p.niche}</span>
                       <span>&bull;</span>
                       <a href={p.url} target="_blank" rel="noreferrer" className="text-[#38BDF8] hover:underline truncate">
                         {p.url}
@@ -1205,7 +1205,7 @@ export function SettingsManager() {
                   <button
                     type="button"
                     onClick={() => handleDeleteProject(p.id)}
-                    className="text-[#666666] hover:text-[#EF4444] p-1"
+                    className="text-(--n-666666) hover:text-[#EF4444] p-1"
                   >
                     <Trash2 className="size-3.5" />
                   </button>
@@ -1214,22 +1214,22 @@ export function SettingsManager() {
             </div>
 
             {/* Add Project Form */}
-            <div className="p-3 rounded-[8px] bg-[#15151f] border border-[#212132] space-y-2">
-              <span className="text-[11px] font-semibold text-[#888888] block">Add Niche Project</span>
+            <div className="p-3 rounded-[8px] bg-(--n-15151f) border border-(--n-212132) space-y-2">
+              <span className="text-[11px] font-semibold text-(--n-888888) block">Add Niche Project</span>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                 <input
                   type="text"
                   value={newProjectTitle}
                   onChange={(e) => setNewProjectTitle(e.target.value)}
                   placeholder="Case Study Title"
-                  className="input bg-[#1d1d2c] border-[#29293d] text-xs text-white h-8"
+                  className="input bg-(--n-1d1d2c) border-(--n-29293d) text-xs text-white h-8"
                 />
                 <input
                   type="url"
                   value={newProjectUrl}
                   onChange={(e) => setNewProjectUrl(e.target.value)}
                   placeholder="https://www.behance.net/gallery/..."
-                  className="input bg-[#1d1d2c] border-[#29293d] text-xs text-white h-8"
+                  className="input bg-(--n-1d1d2c) border-(--n-29293d) text-xs text-white h-8"
                 />
                 <div className="flex items-center gap-2">
                   <input
@@ -1237,12 +1237,12 @@ export function SettingsManager() {
                     value={newProjectNiche}
                     onChange={(e) => setNewProjectNiche(e.target.value)}
                     placeholder="Target Niche (e.g. Real Estate)"
-                    className="input bg-[#1d1d2c] border-[#29293d] text-xs text-white h-8 flex-1"
+                    className="input bg-(--n-1d1d2c) border-(--n-29293d) text-xs text-white h-8 flex-1"
                   />
                   <button
                     type="button"
                     onClick={handleAddProject}
-                    className="rounded-[6px] bg-[#10B981] px-3 h-8 text-xs font-semibold text-white hover:bg-[#059669] shrink-0"
+                    className="rounded-[6px] bg-(--accent) px-3 h-8 text-xs font-semibold text-(--on-accent) hover:bg-(--accent-strong) shrink-0"
                   >
                     Add
                   </button>
@@ -1257,32 +1257,32 @@ export function SettingsManager() {
       {/* 7. TAB 5: AI MODELS & GATEWAYS (BLACK BIRD + GEMINI)      */}
       {/* ======================================================== */}
       {activeTab === "ai" && (
-        <section className="rounded-[10px] border border-[#1f1f2e] bg-[#11111a] p-5 space-y-5">
-          <div className="border-b border-[#1d1d2c] pb-3">
+        <section className="rounded-[10px] border border-(--n-1f1f2e) bg-(--n-11111a) p-5 space-y-5">
+          <div className="border-b border-(--n-1d1d2c) pb-3">
             <h2 className="text-sm font-semibold text-white flex items-center gap-2">
-              <Cpu className="size-4 text-[#10B981]" />
+              <Cpu className="size-4 text-(--accent)" />
               AI Routing Gateway &amp; Model Engine
             </h2>
-            <p className="text-xs text-[#888888] mt-0.5">
+            <p className="text-xs text-(--n-888888) mt-0.5">
               Dual-engine intelligence: seamlessly connect to Black Bird AI Gateway or use direct Gemini API.
             </p>
           </div>
 
           {bbNotice && (
-            <div className="p-3 rounded-[8px] bg-[#10B981]/10 border border-[#10B981]/25 text-xs text-[#10B981]">
+            <div className="p-3 rounded-[8px] bg-(--accent)/10 border border-(--accent)/25 text-xs text-(--accent)">
               {bbNotice}
             </div>
           )}
 
           {/* Provider Toggle */}
-          <div className="rounded-[8px] bg-[#15151f] border border-[#212132] p-4 space-y-3">
-            <span className="text-[11px] font-semibold text-[#888888] block">Primary AI Engine Selection</span>
+          <div className="rounded-[8px] bg-(--n-15151f) border border-(--n-212132) p-4 space-y-3">
+            <span className="text-[11px] font-semibold text-(--n-888888) block">Primary AI Engine Selection</span>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <label
                 className={`p-3 rounded-[8px] border cursor-pointer transition flex items-center gap-3 ${
                   aiProvider === "blackbird"
-                    ? "bg-[#10B981]/10 border-[#10B981]/50 text-white"
-                    : "bg-[#171723] border-[#29293d] text-[#888888] hover:border-[#38BDF8]/40"
+                    ? "bg-(--accent)/10 border-(--accent)/50 text-white"
+                    : "bg-(--n-171723) border-(--n-29293d) text-(--n-888888) hover:border-[#38BDF8]/40"
                 }`}
               >
                 <input
@@ -1290,16 +1290,16 @@ export function SettingsManager() {
                   name="ai_provider"
                   checked={aiProvider === "blackbird"}
                   onChange={() => setAiProvider("blackbird")}
-                  className="accent-[#10B981]"
+                  className="accent-(--accent)"
                 />
                 <div>
                   <div className="font-semibold text-xs text-white flex items-center gap-1.5">
                     <span>Black Bird AI Gateway</span>
-                    <span className="text-[10px] bg-[#10B981]/20 text-[#10B981] px-1.5 py-0.2 rounded font-mono">
+                    <span className="text-[10px] bg-(--accent)/20 text-(--accent) px-1.5 py-0.2 rounded font-mono">
                       Port 20129
                     </span>
                   </div>
-                  <p className="text-[11px] text-[#A1A1AA] mt-0.5">
+                  <p className="text-[11px] text-(--n-a1a1aa) mt-0.5">
                     Unified multi-model hub routing via local OpenAI-compatible API.
                   </p>
                 </div>
@@ -1308,8 +1308,8 @@ export function SettingsManager() {
               <label
                 className={`p-3 rounded-[8px] border cursor-pointer transition flex items-center gap-3 ${
                   aiProvider === "gemini"
-                    ? "bg-[#10B981]/10 border-[#10B981]/50 text-white"
-                    : "bg-[#171723] border-[#29293d] text-[#888888] hover:border-[#38BDF8]/40"
+                    ? "bg-(--accent)/10 border-(--accent)/50 text-white"
+                    : "bg-(--n-171723) border-(--n-29293d) text-(--n-888888) hover:border-[#38BDF8]/40"
                 }`}
               >
                 <input
@@ -1317,11 +1317,11 @@ export function SettingsManager() {
                   name="ai_provider"
                   checked={aiProvider === "gemini"}
                   onChange={() => setAiProvider("gemini")}
-                  className="accent-[#10B981]"
+                  className="accent-(--accent)"
                 />
                 <div>
                   <div className="font-semibold text-xs text-white">Direct Gemini API</div>
-                  <p className="text-[11px] text-[#A1A1AA] mt-0.5">
+                  <p className="text-[11px] text-(--n-a1a1aa) mt-0.5">
                     Direct Google AI Studio integration for ultra-fast fallback generation.
                   </p>
                 </div>
@@ -1330,25 +1330,25 @@ export function SettingsManager() {
           </div>
 
           {/* Black Bird Gateway Card */}
-          <div className="rounded-[8px] bg-[#15151f] border border-[#212132] p-4 space-y-4">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#1f1f2e] pb-3">
+          <div className="rounded-[8px] bg-(--n-15151f) border border-(--n-212132) p-4 space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-(--n-1f1f2e) pb-3">
               <div>
                 <h3 className="text-xs font-bold text-white flex items-center gap-2">
                   <Layers className="size-3.5 text-[#38BDF8]" />
                   <span>Black Bird Connection Hub</span>
                 </h3>
-                <span className="text-[11px] text-[#71717A] font-mono">{bbEndpoint}</span>
+                <span className="text-[11px] text-(--n-71717a) font-mono">{bbEndpoint}</span>
               </div>
 
               <div className="flex items-center gap-2">
                 <span
                   className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold border ${
                     bbStatus === "CONNECTED"
-                      ? "bg-[#10B981]/15 text-[#10B981] border-[#10B981]/30"
+                      ? "bg-(--accent)/15 text-(--accent) border-(--accent)/30"
                       : "bg-[#EF4444]/15 text-[#EF4444] border-[#EF4444]/30"
                   }`}
                 >
-                  <span className={`size-1.5 rounded-full ${bbStatus === "CONNECTED" ? "bg-[#10B981]" : "bg-[#EF4444]"}`} />
+                  <span className={`size-1.5 rounded-full ${bbStatus === "CONNECTED" ? "bg-(--accent)" : "bg-[#EF4444]"}`} />
                   {bbStatus === "CONNECTED" ? "Gateway Online & Connected" : "Disconnected"}
                 </span>
 
@@ -1356,7 +1356,7 @@ export function SettingsManager() {
                   type="button"
                   onClick={handlePairBlackBird}
                   disabled={pairingBB}
-                  className="rounded-[6px] bg-[#10B981] px-3 py-1 text-xs font-semibold text-black hover:bg-[#0EA5E9] transition disabled:opacity-50"
+                  className="rounded-[6px] bg-(--accent) px-3 py-1 text-xs font-semibold text-black hover:bg-[#0EA5E9] transition disabled:opacity-50"
                 >
                   {pairingBB ? "Pairing..." : bbPaired ? "Re-Sync Models" : "Pair with Black Bird"}
                 </button>
@@ -1365,13 +1365,13 @@ export function SettingsManager() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="text-[11px] font-semibold text-[#888888] block mb-1">
+                <label className="text-[11px] font-semibold text-(--n-888888) block mb-1">
                   Preferred Black Bird Model
                 </label>
                 <select
                   value={bbPreferredModel}
                   onChange={(e) => handleSetPreferredModel(e.target.value)}
-                  className="input bg-[#171723] border-[#252538] text-xs text-white h-9 w-full font-mono"
+                  className="input bg-(--n-171723) border-(--n-252538) text-xs text-white h-9 w-full font-mono"
                 >
                   {bbModels.length > 0 ? (
                     bbModels.map((m) => (
@@ -1387,13 +1387,13 @@ export function SettingsManager() {
                     </>
                   )}
                 </select>
-                <span className="text-[10px] text-[#71717A] mt-1 block">
+                <span className="text-[10px] text-(--n-71717a) mt-1 block">
                   Synchronized dynamically from Black Bird model registry.
                 </span>
               </div>
 
               <div>
-                <label className="text-[11px] font-semibold text-[#888888] block mb-1">
+                <label className="text-[11px] font-semibold text-(--n-888888) block mb-1">
                   Inference Verification
                 </label>
                 <div className="flex items-center gap-2">
@@ -1401,13 +1401,13 @@ export function SettingsManager() {
                     type="button"
                     onClick={handleTestBlackBird}
                     disabled={testingBB}
-                    className="rounded-[6px] bg-[#1d1d2c] border border-[#2c2c42] px-4 h-9 text-xs font-medium text-white hover:bg-[#252525] inline-flex items-center gap-1.5 transition disabled:opacity-50 flex-1 justify-center"
+                    className="rounded-[6px] bg-(--n-1d1d2c) border border-(--n-2c2c42) px-4 h-9 text-xs font-medium text-white hover:bg-(--n-252525) inline-flex items-center gap-1.5 transition disabled:opacity-50 flex-1 justify-center"
                   >
-                    <RefreshCw className={`size-3 ${testingBB ? "animate-spin text-[#10B981]" : "text-[#888888]"}`} />
+                    <RefreshCw className={`size-3 ${testingBB ? "animate-spin text-(--accent)" : "text-(--n-888888)"}`} />
                     <span>{testingBB ? "Sending prompt..." : "Test Black Bird Inference"}</span>
                   </button>
                 </div>
-                <span className="text-[10px] text-[#71717A] mt-1 block">
+                <span className="text-[10px] text-(--n-71717a) mt-1 block">
                   Sends live completion test to port 20129 and verifies response structure.
                 </span>
               </div>
@@ -1415,16 +1415,16 @@ export function SettingsManager() {
           </div>
 
           {/* Direct Gemini Configuration */}
-          <div className="rounded-[8px] bg-[#15151f] border border-[#212132] p-4 space-y-4">
-            <h3 className="text-xs font-bold text-white flex items-center gap-2 border-b border-[#1f1f2e] pb-2">
-              <Sparkles className="size-3.5 text-[#10B981]" />
+          <div className="rounded-[8px] bg-(--n-15151f) border border-(--n-212132) p-4 space-y-4">
+            <h3 className="text-xs font-bold text-white flex items-center gap-2 border-b border-(--n-1f1f2e) pb-2">
+              <Sparkles className="size-3.5 text-(--accent)" />
               <span>Direct Google Gemini Backup</span>
             </h3>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <div className="flex items-center justify-between mb-1">
-                  <label className="text-[11px] font-semibold text-[#888888]">
+                  <label className="text-[11px] font-semibold text-(--n-888888)">
                     Gemini API Key (Google AI Studio)
                   </label>
                   <a
@@ -1441,18 +1441,18 @@ export function SettingsManager() {
                   value={geminiApiKey}
                   onChange={(e) => setGeminiApiKey(e.target.value)}
                   placeholder="AIzaSy..."
-                  className="input bg-[#171723] border-[#252538] text-xs text-white h-9 font-mono"
+                  className="input bg-(--n-171723) border-(--n-252538) text-xs text-white h-9 font-mono"
                 />
               </div>
 
               <div>
-                <label className="text-[11px] font-semibold text-[#888888] block mb-1">
+                <label className="text-[11px] font-semibold text-(--n-888888) block mb-1">
                   Gemini Model Profile
                 </label>
                 <select
                   value={geminiModel}
                   onChange={(e) => setGeminiModel(e.target.value)}
-                  className="input bg-[#171723] border-[#252538] text-xs text-white h-9 w-full"
+                  className="input bg-(--n-171723) border-(--n-252538) text-xs text-white h-9 w-full"
                 >
                   <option value="gemini-2.5-flash">Gemini 2.5 Flash (Ultra Fast &amp; Reliable)</option>
                   <option value="gemini-1.5-pro">Gemini 1.5 Pro (Deep Audit Analysis)</option>
@@ -1465,14 +1465,14 @@ export function SettingsManager() {
                 type="button"
                 onClick={handleTestGemini}
                 disabled={testingGemini}
-                className="rounded-[6px] bg-[#1d1d2c] border border-[#2c2c42] px-4 py-1.5 text-xs font-medium text-white hover:bg-[#252525] inline-flex items-center gap-1.5 transition disabled:opacity-50"
+                className="rounded-[6px] bg-(--n-1d1d2c) border border-(--n-2c2c42) px-4 py-1.5 text-xs font-medium text-white hover:bg-(--n-252525) inline-flex items-center gap-1.5 transition disabled:opacity-50"
               >
-                <Sparkles className="size-3 text-[#10B981]" />
+                <Sparkles className="size-3 text-(--accent)" />
                 <span>{testingGemini ? "Testing..." : "Test Gemini Connection"}</span>
               </button>
 
               {geminiStatus && (
-                <span className="text-xs text-[#10B981] font-mono">{geminiStatus}</span>
+                <span className="text-xs text-(--accent) font-mono">{geminiStatus}</span>
               )}
             </div>
           </div>
@@ -1483,14 +1483,14 @@ export function SettingsManager() {
       {/* 7.5 TAB: SCRAPEGRAPHAI LEAD DISCOVERY PROVIDER          */}
       {/* ======================================================== */}
       {activeTab === "scrapegraph" && (
-        <section className="rounded-[10px] border border-[#1f1f2e] bg-[#11111a] p-5 space-y-5">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#1d1d2c] pb-3">
+        <section className="rounded-[10px] border border-(--n-1f1f2e) bg-(--n-11111a) p-5 space-y-5">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-(--n-1d1d2c) pb-3">
             <div>
               <h2 className="text-sm font-semibold text-white flex items-center gap-2">
-                <Cpu className="size-4 text-[#10B981]" />
+                <Cpu className="size-4 text-(--accent)" />
                 ScrapeGraphAI Search &amp; Web Discovery
               </h2>
-              <p className="text-xs text-[#888888] mt-0.5">
+              <p className="text-xs text-(--n-888888) mt-0.5">
                 AI-powered live web search and structured company extraction when local directories are exhausted.
               </p>
             </div>
@@ -1498,12 +1498,12 @@ export function SettingsManager() {
             <span
               className={`px-2.5 py-1 rounded-full text-[11px] font-mono font-semibold border ${
                 scrapeGraphStatus === "CONNECTED"
-                  ? "bg-[#10B981]/15 text-[#10B981] border-[#10B981]/30"
+                  ? "bg-(--accent)/15 text-(--accent) border-(--accent)/30"
                   : scrapeGraphStatus === "CONFIGURED"
                   ? "bg-[#38BDF8]/15 text-[#38BDF8] border-[#38BDF8]/30"
                   : scrapeGraphStatus === "ERROR"
                   ? "bg-[#EF4444]/15 text-[#EF4444] border-[#EF4444]/30"
-                  : "bg-[#71717A]/15 text-[#A1A1AA] border-[#71717A]/30"
+                  : "bg-(--n-71717a)/15 text-(--n-a1a1aa) border-(--n-71717a)/30"
               }`}
             >
               ● {scrapeGraphStatus}
@@ -1514,7 +1514,7 @@ export function SettingsManager() {
             <div
               className={`p-3 rounded-[8px] border text-xs flex items-center justify-between ${
                 scrapeGraphNotice.startsWith("✓")
-                  ? "bg-[#10B981]/10 border-[#10B981]/25 text-[#10B981]"
+                  ? "bg-(--accent)/10 border-(--accent)/25 text-(--accent)"
                   : "bg-[#EF4444]/10 border-[#EF4444]/25 text-[#EF4444]"
               }`}
             >
@@ -1522,7 +1522,7 @@ export function SettingsManager() {
               <button
                 type="button"
                 onClick={() => setScrapeGraphNotice(null)}
-                className="text-[#888888] hover:text-white"
+                className="text-(--n-888888) hover:text-white"
               >
                 <X className="size-3.5" />
               </button>
@@ -1530,16 +1530,16 @@ export function SettingsManager() {
           )}
 
           {/* Configuration Form */}
-          <div className="rounded-[8px] bg-[#15151f] border border-[#212132] p-4 space-y-4">
+          <div className="rounded-[8px] bg-(--n-15151f) border border-(--n-212132) p-4 space-y-4">
             {/* API Key */}
             <div className="space-y-1.5">
-              <label className="text-xs font-medium text-[#CCCCCC] flex items-center justify-between">
+              <label className="text-xs font-medium text-(--n-cccccc) flex items-center justify-between">
                 <span>ScrapeGraphAI API Key</span>
                 <a
                   href="https://dashboard.scrapegraphai.com"
                   target="_blank"
                   rel="noreferrer"
-                  className="text-[11px] text-[#10B981] hover:underline inline-flex items-center gap-1 font-mono"
+                  className="text-[11px] text-(--accent) hover:underline inline-flex items-center gap-1 font-mono"
                 >
                   <span>Get API Key</span>
                   <ExternalLink className="size-3" />
@@ -1549,18 +1549,18 @@ export function SettingsManager() {
                 value={scrapeGraphApiKey}
                 onChange={(e) => setScrapeGraphApiKey(e.target.value)}
                 placeholder="sgai-..."
-                className="w-full bg-[#171723] border-[#29293d] text-white text-xs font-mono"
+                className="w-full bg-(--n-171723) border-(--n-29293d) text-white text-xs font-mono"
               />
-              <p className="text-[11px] text-[#71717A]">
+              <p className="text-[11px] text-(--n-71717a)">
                 Requires a valid ScrapeGraphAI account. Enables real-time web discovery across Riyadh and global cities.
               </p>
             </div>
 
             {/* Enable Provider Toggle */}
-            <div className="flex items-center justify-between pt-2 border-t border-[#212132]">
+            <div className="flex items-center justify-between pt-2 border-t border-(--n-212132)">
               <div>
                 <span className="text-xs font-medium text-white block">Enable Live Web Discovery</span>
-                <p className="text-[11px] text-[#71717A]">
+                <p className="text-[11px] text-(--n-71717a)">
                   Automatically search and extract candidate businesses online when directory leads are exhausted.
                 </p>
               </div>
@@ -1571,28 +1571,28 @@ export function SettingsManager() {
                   onChange={(e) => setScrapeGraphEnabled(e.target.checked)}
                   className="sr-only peer"
                 />
-                <div className="w-11 h-6 bg-[#27272A] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#10B981]"></div>
+                <div className="w-11 h-6 bg-(--n-27272a) peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-(--accent)"></div>
               </label>
             </div>
 
             {/* Max Credits per Search */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-[#212132]">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-(--n-212132)">
               <div className="space-y-1">
-                <label className="text-xs font-medium text-[#CCCCCC]">Max Credits per Discovery Run</label>
+                <label className="text-xs font-medium text-(--n-cccccc)">Max Credits per Discovery Run</label>
                 <input
                   type="number"
                   min="1"
                   max="50"
                   value={scrapeGraphMaxCredits}
                   onChange={(e) => setScrapeGraphMaxCredits(Number(e.target.value) || 10)}
-                  className="w-full rounded-[6px] bg-[#171723] border border-[#29293d] px-3 py-1.5 text-xs text-white"
+                  className="w-full rounded-[6px] bg-(--n-171723) border border-(--n-29293d) px-3 py-1.5 text-xs text-white"
                 />
-                <span className="text-[10px] text-[#71717A]">Protects against accidental quota overconsumption.</span>
+                <span className="text-[10px] text-(--n-71717a)">Protects against accidental quota overconsumption.</span>
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-medium text-[#CCCCCC]">ScrapeGraph Account Balance</label>
-                <div className="p-2 rounded-[6px] bg-[#171723] border border-[#29293d] text-xs font-mono text-[#38BDF8] flex items-center justify-between">
+                <label className="text-xs font-medium text-(--n-cccccc)">ScrapeGraph Account Balance</label>
+                <div className="p-2 rounded-[6px] bg-(--n-171723) border border-(--n-29293d) text-xs font-mono text-[#38BDF8] flex items-center justify-between">
                   <span>Remaining Credits:</span>
                   <span className="font-bold text-white">
                     {scrapeGraphCreditsRemaining !== null ? scrapeGraphCreditsRemaining : "Not checked yet"}
@@ -1602,17 +1602,17 @@ export function SettingsManager() {
             </div>
 
             {/* Test Connection Button */}
-            <div className="pt-3 border-t border-[#212132] flex items-center gap-3">
+            <div className="pt-3 border-t border-(--n-212132) flex items-center gap-3">
               <button
                 type="button"
                 onClick={handleTestScrapeGraph}
                 disabled={isTestingScrapeGraph || !scrapeGraphApiKey}
-                className="rounded-[6px] bg-[#1d1d2c] border border-[#2c2c42] px-3.5 py-1.5 text-xs font-medium text-white hover:bg-[#29293d] inline-flex items-center gap-1.5 transition disabled:opacity-50"
+                className="rounded-[6px] bg-(--n-1d1d2c) border border-(--n-2c2c42) px-3.5 py-1.5 text-xs font-medium text-white hover:bg-(--n-29293d) inline-flex items-center gap-1.5 transition disabled:opacity-50"
               >
                 {isTestingScrapeGraph ? (
-                  <RefreshCw className="size-3 animate-spin text-[#10B981]" />
+                  <RefreshCw className="size-3 animate-spin text-(--accent)" />
                 ) : (
-                  <Sparkles className="size-3 text-[#10B981]" />
+                  <Sparkles className="size-3 text-(--accent)" />
                 )}
                 <span>{isTestingScrapeGraph ? "Verifying API..." : "Test Connection & Check Credits"}</span>
               </button>
@@ -1625,21 +1625,21 @@ export function SettingsManager() {
       {/* 8. TAB 6: SERVICES & PRICING ENGINE                      */}
       {/* ======================================================== */}
       {activeTab === "services" && (
-        <section className="rounded-[10px] border border-[#1f1f2e] bg-[#11111a] p-5 space-y-4">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#1d1d2c] pb-3">
+        <section className="rounded-[10px] border border-(--n-1f1f2e) bg-(--n-11111a) p-5 space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-(--n-1d1d2c) pb-3">
             <div>
               <h2 className="text-sm font-semibold text-white flex items-center gap-2">
-                <Briefcase className="size-4 text-[#10B981]" />
+                <Briefcase className="size-4 text-(--accent)" />
                 Services &amp; Deterministic Pricing Catalog
               </h2>
-              <p className="text-xs text-[#888888] mt-0.5">
+              <p className="text-xs text-(--n-888888) mt-0.5">
                 Deterministic price policies, deliverables, revisions, and advance deposit requirements.
               </p>
             </div>
             <button
               type="button"
               onClick={() => handleSaveServices(servicesCatalog)}
-              className="rounded-[6px] bg-[#10B981] px-3.5 py-1.5 text-xs font-semibold text-black hover:bg-[#0EA5E9] inline-flex items-center gap-1.5"
+              className="rounded-[6px] bg-(--accent) px-3.5 py-1.5 text-xs font-semibold text-black hover:bg-[#0EA5E9] inline-flex items-center gap-1.5"
             >
               <Save className="size-3" />
               <span>Save Catalog</span>
@@ -1647,7 +1647,7 @@ export function SettingsManager() {
           </div>
 
           {servicesNotice && (
-            <div className="p-3 rounded-[8px] bg-[#10B981]/10 border border-[#10B981]/25 text-xs text-[#10B981]">
+            <div className="p-3 rounded-[8px] bg-(--accent)/10 border border-(--accent)/25 text-xs text-(--accent)">
               {servicesNotice}
             </div>
           )}
@@ -1656,23 +1656,23 @@ export function SettingsManager() {
             {servicesCatalog.map((svc, idx) => (
               <div
                 key={svc.key || idx}
-                className="p-4 rounded-[8px] bg-[#15151f] border border-[#212132] space-y-3"
+                className="p-4 rounded-[8px] bg-(--n-15151f) border border-(--n-212132) space-y-3"
               >
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#1f1f2e] pb-2">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-(--n-1f1f2e) pb-2">
                   <div className="flex items-center gap-2">
                     <span className="text-xs font-bold text-white">{svc.name}</span>
-                    <span className="text-[10px] bg-[#10B981]/10 text-[#10B981] px-2 py-0.5 rounded font-mono">
+                    <span className="text-[10px] bg-(--accent)/10 text-(--accent) px-2 py-0.5 rounded font-mono">
                       ${svc.minPrice} &ndash; ${svc.maxPrice} USD
                     </span>
                   </div>
-                  <span className="text-[11px] text-[#A1A1AA]">
+                  <span className="text-[11px] text-(--n-a1a1aa)">
                     {svc.includedRevisions} Revisions &bull; {svc.advancePercent}% Advance
                   </span>
                 </div>
 
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
                   <div>
-                    <label className="text-[10px] text-[#71717A] uppercase block mb-1">Min Price ($)</label>
+                    <label className="text-[10px] text-(--n-71717a) uppercase block mb-1">Min Price ($)</label>
                     <input
                       type="number"
                       value={svc.minPrice}
@@ -1681,12 +1681,12 @@ export function SettingsManager() {
                         next[idx].minPrice = Number(e.target.value);
                         setServicesCatalog(next);
                       }}
-                      className="input bg-[#1d1d2c] border-[#29293d] text-xs text-white h-8"
+                      className="input bg-(--n-1d1d2c) border-(--n-29293d) text-xs text-white h-8"
                     />
                   </div>
 
                   <div>
-                    <label className="text-[10px] text-[#71717A] uppercase block mb-1">Max Price ($)</label>
+                    <label className="text-[10px] text-(--n-71717a) uppercase block mb-1">Max Price ($)</label>
                     <input
                       type="number"
                       value={svc.maxPrice}
@@ -1695,12 +1695,12 @@ export function SettingsManager() {
                         next[idx].maxPrice = Number(e.target.value);
                         setServicesCatalog(next);
                       }}
-                      className="input bg-[#1d1d2c] border-[#29293d] text-xs text-white h-8"
+                      className="input bg-(--n-1d1d2c) border-(--n-29293d) text-xs text-white h-8"
                     />
                   </div>
 
                   <div>
-                    <label className="text-[10px] text-[#71717A] uppercase block mb-1">Revisions</label>
+                    <label className="text-[10px] text-(--n-71717a) uppercase block mb-1">Revisions</label>
                     <input
                       type="number"
                       value={svc.includedRevisions}
@@ -1709,12 +1709,12 @@ export function SettingsManager() {
                         next[idx].includedRevisions = Number(e.target.value);
                         setServicesCatalog(next);
                       }}
-                      className="input bg-[#1d1d2c] border-[#29293d] text-xs text-white h-8"
+                      className="input bg-(--n-1d1d2c) border-(--n-29293d) text-xs text-white h-8"
                     />
                   </div>
 
                   <div>
-                    <label className="text-[10px] text-[#71717A] uppercase block mb-1">Advance Deposit %</label>
+                    <label className="text-[10px] text-(--n-71717a) uppercase block mb-1">Advance Deposit %</label>
                     <input
                       type="number"
                       value={svc.advancePercent}
@@ -1723,13 +1723,13 @@ export function SettingsManager() {
                         next[idx].advancePercent = Number(e.target.value);
                         setServicesCatalog(next);
                       }}
-                      className="input bg-[#1d1d2c] border-[#29293d] text-xs text-white h-8"
+                      className="input bg-(--n-1d1d2c) border-(--n-29293d) text-xs text-white h-8"
                     />
                   </div>
                 </div>
 
-                <div className="text-[11px] text-[#888888] pt-1">
-                  Deliverables: <span className="text-[#CCCCCC]">{svc.deliverables?.join(", ")}</span>
+                <div className="text-[11px] text-(--n-888888) pt-1">
+                  Deliverables: <span className="text-(--n-cccccc)">{svc.deliverables?.join(", ")}</span>
                 </div>
               </div>
             ))}
@@ -1741,14 +1741,14 @@ export function SettingsManager() {
       {/* 9. TAB 7: AI CLIENT CONVERSATION AGENT                    */}
       {/* ======================================================== */}
       {activeTab === "agent" && (
-        <section className="rounded-[10px] border border-[#1f1f2e] bg-[#11111a] p-5 space-y-5">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#1d1d2c] pb-3">
+        <section className="rounded-[10px] border border-(--n-1f1f2e) bg-(--n-11111a) p-5 space-y-5">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-(--n-1d1d2c) pb-3">
             <div>
               <h2 className="text-sm font-semibold text-white flex items-center gap-2">
-                <Bot className="size-4 text-[#10B981]" />
+                <Bot className="size-4 text-(--accent)" />
                 AI Client Conversation &amp; Negotiation Agent
               </h2>
-              <p className="text-xs text-[#888888] mt-0.5">
+              <p className="text-xs text-(--n-888888) mt-0.5">
                 Handles prospect replies, qualifies requirements, handles budget negotiations, and proposes meetings.
               </p>
             </div>
@@ -1758,24 +1758,24 @@ export function SettingsManager() {
                 className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold border ${
                   agentPaused
                     ? "bg-[#EF4444]/15 text-[#EF4444] border-[#EF4444]/30"
-                    : "bg-[#10B981]/15 text-[#10B981] border-[#10B981]/30"
+                    : "bg-(--accent)/15 text-(--accent) border-(--accent)/30"
                 }`}
               >
-                <span className={`size-1.5 rounded-full ${agentPaused ? "bg-[#EF4444]" : "bg-[#10B981]"}`} />
+                <span className={`size-1.5 rounded-full ${agentPaused ? "bg-[#EF4444]" : "bg-(--accent)"}`} />
                 {agentPaused ? "Agent Paused" : `Active: ${agentMode}`}
               </span>
             </div>
           </div>
 
           {agentNotice && (
-            <div className="p-3 rounded-[8px] bg-[#10B981]/10 border border-[#10B981]/25 text-xs text-[#10B981]">
+            <div className="p-3 rounded-[8px] bg-(--accent)/10 border border-(--accent)/25 text-xs text-(--accent)">
               {agentNotice}
             </div>
           )}
 
           {/* Mode Selector */}
-          <div className="rounded-[8px] bg-[#15151f] border border-[#212132] p-4 space-y-3">
-            <span className="text-[11px] font-semibold text-[#888888] block">AI Response Mode</span>
+          <div className="rounded-[8px] bg-(--n-15151f) border border-(--n-212132) p-4 space-y-3">
+            <span className="text-[11px] font-semibold text-(--n-888888) block">AI Response Mode</span>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               {[
                 {
@@ -1799,29 +1799,29 @@ export function SettingsManager() {
                   onClick={() => handleSaveAgentSettings({ mode: m.id as any })}
                   className={`p-3.5 rounded-[8px] border cursor-pointer transition ${
                     agentMode === m.id
-                      ? "bg-[#10B981]/10 border-[#10B981]/50 text-white"
-                      : "bg-[#171723] border-[#29293d] text-[#888888] hover:border-[#38BDF8]/40"
+                      ? "bg-(--accent)/10 border-(--accent)/50 text-white"
+                      : "bg-(--n-171723) border-(--n-29293d) text-(--n-888888) hover:border-[#38BDF8]/40"
                   }`}
                 >
                   <div className="font-semibold text-xs text-white mb-1">{m.title}</div>
-                  <p className="text-[11px] text-[#A1A1AA] leading-relaxed">{m.desc}</p>
+                  <p className="text-[11px] text-(--n-a1a1aa) leading-relaxed">{m.desc}</p>
                 </div>
               ))}
             </div>
           </div>
 
           {/* Safety Toggles */}
-          <div className="rounded-[8px] bg-[#15151f] border border-[#212132] p-4 space-y-3">
-            <span className="text-[11px] font-semibold text-[#888888] block">Negotiation &amp; Safety Guards</span>
+          <div className="rounded-[8px] bg-(--n-15151f) border border-(--n-212132) p-4 space-y-3">
+            <span className="text-[11px] font-semibold text-(--n-888888) block">Negotiation &amp; Safety Guards</span>
 
             <label className="flex items-center gap-2 cursor-pointer">
               <input
                 type="checkbox"
                 checked={strictPricing}
                 onChange={(e) => handleSaveAgentSettings({ strictPricingBoundaries: e.target.checked })}
-                className="size-3.5 accent-[#10B981] rounded"
+                className="size-3.5 accent-(--accent) rounded"
               />
-              <span className="text-xs text-[#CCCCCC]">
+              <span className="text-xs text-(--n-cccccc)">
                 Strict Pricing Boundaries: Refuse quotes below catalog minimums (e.g. Logo Design minimum $5).
               </span>
             </label>
@@ -1831,22 +1831,22 @@ export function SettingsManager() {
                 type="checkbox"
                 checked={requireNegotiationApproval}
                 onChange={(e) => handleSaveAgentSettings({ requireHumanApprovalOnNegotiation: e.target.checked })}
-                className="size-3.5 accent-[#10B981] rounded"
+                className="size-3.5 accent-(--accent) rounded"
               />
-              <span className="text-xs text-[#CCCCCC]">
+              <span className="text-xs text-(--n-cccccc)">
                 Require Human Review on Custom Budget Requests &amp; Out-of-Policy Inquiries.
               </span>
             </label>
           </div>
 
           {/* Emergency Pause Control */}
-          <div className="rounded-[8px] border border-[#29293d] bg-[#15151f] p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="rounded-[8px] border border-(--n-29293d) bg-(--n-15151f) p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
               <h3 className="text-xs font-bold text-white flex items-center gap-2">
                 <AlertCircle className={`size-4 ${agentPaused ? "text-[#EF4444]" : "text-[#F59E0B]"}`} />
                 <span>Agent Emergency Override</span>
               </h3>
-              <p className="text-xs text-[#888888] mt-1 leading-relaxed">
+              <p className="text-xs text-(--n-888888) mt-1 leading-relaxed">
                 Immediately halt all automated client message processing and auto-replies across all active conversations.
               </p>
             </div>
@@ -1855,7 +1855,7 @@ export function SettingsManager() {
               type="button"
               onClick={() => handleSaveAgentSettings({ paused: !agentPaused })}
               className={`rounded-[6px] px-4 py-2 text-xs font-semibold shrink-0 transition ${
-                agentPaused ? "bg-[#10B981] text-black hover:bg-[#0EA5E9]" : "bg-[#EF4444] text-white hover:bg-[#DC2626]"
+                agentPaused ? "bg-(--accent) text-black hover:bg-[#0EA5E9]" : "bg-[#EF4444] text-(--on-accent) hover:bg-[#DC2626]"
               }`}
             >
               {agentPaused ? "Resume AI Agent" : "Emergency Pause Agent"}
@@ -1868,10 +1868,10 @@ export function SettingsManager() {
       {/* 8. TAB 6: AUTOMATION & SAFETY                            */}
       {/* ======================================================== */}
       {activeTab === "automation" && (
-        <section className="rounded-[10px] border border-[#1f1f2e] bg-[#11111a] p-5 space-y-4">
-          <div className="border-b border-[#1d1d2c] pb-3">
+        <section className="rounded-[10px] border border-(--n-1f1f2e) bg-(--n-11111a) p-5 space-y-4">
+          <div className="border-b border-(--n-1d1d2c) pb-3">
             <h2 className="text-sm font-semibold text-white">Automation Safety & Suppression</h2>
-            <p className="text-xs text-[#888888] mt-0.5">
+            <p className="text-xs text-(--n-888888) mt-0.5">
               Prevent spam flags, stop sequences on prospect replies, and respect suppressions.
             </p>
           </div>
@@ -1882,9 +1882,9 @@ export function SettingsManager() {
                 type="checkbox"
                 checked={stopOnReply}
                 onChange={(e) => setStopOnReply(e.target.checked)}
-                className="size-3.5 accent-[#10B981] rounded"
+                className="size-3.5 accent-(--accent) rounded"
               />
-              <span className="text-xs text-[#CCCCCC]">
+              <span className="text-xs text-(--n-cccccc)">
                 Auto-suppress follow-ups immediately when a lead replies
               </span>
             </label>
@@ -1894,23 +1894,23 @@ export function SettingsManager() {
                 type="checkbox"
                 checked={stopOnMeeting}
                 onChange={(e) => setStopOnMeeting(e.target.checked)}
-                className="size-3.5 accent-[#10B981] rounded"
+                className="size-3.5 accent-(--accent) rounded"
               />
-              <span className="text-xs text-[#CCCCCC]">
+              <span className="text-xs text-(--n-cccccc)">
                 Auto-suppress follow-ups when a Google Calendar meeting is booked
               </span>
             </label>
           </div>
 
           <div className="pt-2">
-            <label className="text-[11px] font-semibold text-[#888888] block mb-1">
+            <label className="text-[11px] font-semibold text-(--n-888888) block mb-1">
               Do Not Contact (DNC) Domains / Emails (One per line)
             </label>
             <textarea
               rows={4}
               value={dncList}
               onChange={(e) => setDncList(e.target.value)}
-              className="input bg-[#171723] border-[#252538] text-xs font-mono text-white p-3 leading-relaxed"
+              className="input bg-(--n-171723) border-(--n-252538) text-xs font-mono text-white p-3 leading-relaxed"
             />
           </div>
         </section>
@@ -1920,14 +1920,14 @@ export function SettingsManager() {
       {/* 9. TAB 7: OUTREACH SAFETY & LIVE GATE                    */}
       {/* ======================================================== */}
       {activeTab === "safety" && (
-        <section className="rounded-[10px] border border-[#1f1f2e] bg-[#11111a] p-5 space-y-5">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#1d1d2c] pb-3">
+        <section className="rounded-[10px] border border-(--n-1f1f2e) bg-(--n-11111a) p-5 space-y-5">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-(--n-1d1d2c) pb-3">
             <div>
               <h2 className="text-sm font-semibold text-white flex items-center gap-2">
-                <Shield className="size-4 text-[#10B981]" />
+                <Shield className="size-4 text-(--accent)" />
                 Testing Mode & Outreach Safety Engine
               </h2>
-              <p className="text-xs text-[#888888] mt-0.5">
+              <p className="text-xs text-(--n-888888) mt-0.5">
                 Dual-gate safety architecture: default is dry-run testing mode. Real outreach requires environment unlock and manual live activation.
               </p>
             </div>
@@ -1938,7 +1938,7 @@ export function SettingsManager() {
                   outreachPaused
                     ? "bg-[#EF4444]/10 text-[#EF4444] border-[#EF4444]/30"
                     : operatingMode === "LIVE_ACTIVE"
-                    ? "bg-[#10B981]/15 text-[#10B981] border-[#10B981]/30"
+                    ? "bg-(--accent)/15 text-(--accent) border-(--accent)/30"
                     : "bg-[#38BDF8]/15 text-[#38BDF8] border-[#38BDF8]/30"
                 }`}
               >
@@ -1947,7 +1947,7 @@ export function SettingsManager() {
                     outreachPaused
                       ? "bg-[#EF4444]"
                       : operatingMode === "LIVE_ACTIVE"
-                      ? "bg-[#10B981] animate-pulse"
+                      ? "bg-(--accent) animate-pulse"
                       : "bg-[#38BDF8]"
                   }`}
                 />
@@ -1957,19 +1957,19 @@ export function SettingsManager() {
           </div>
 
           {safetyEngineNotice && (
-            <div className="p-3 rounded-[8px] bg-[#10B981]/10 border border-[#10B981]/25 text-xs text-[#10B981]">
+            <div className="p-3 rounded-[8px] bg-(--accent)/10 border border-(--accent)/25 text-xs text-(--accent)">
               {safetyEngineNotice}
             </div>
           )}
 
           {/* Emergency Stop Control */}
-          <div className="rounded-[8px] border border-[#29293d] bg-[#15151f] p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="rounded-[8px] border border-(--n-29293d) bg-(--n-15151f) p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
               <h3 className="text-xs font-bold text-white flex items-center gap-2">
                 <AlertCircle className={`size-4 ${outreachPaused ? "text-[#EF4444]" : "text-[#F59E0B]"}`} />
                 <span>Emergency Stop Control</span>
               </h3>
-              <p className="text-xs text-[#888888] mt-1 leading-relaxed">
+              <p className="text-xs text-(--n-888888) mt-1 leading-relaxed">
                 Immediately pauses all outbound email queues and follow-ups while keeping reply monitoring and calendar synchronization active.
               </p>
             </div>
@@ -1980,8 +1980,8 @@ export function SettingsManager() {
               disabled={togglingSafety}
               className={`rounded-[6px] px-4 py-2 text-xs font-semibold shrink-0 transition ${
                 outreachPaused
-                  ? "bg-[#10B981] text-black hover:bg-[#0EA5E9]"
-                  : "bg-[#EF4444] text-white hover:bg-[#DC2626]"
+                  ? "bg-(--accent) text-black hover:bg-[#0EA5E9]"
+                  : "bg-[#EF4444] text-(--on-accent) hover:bg-[#DC2626]"
               }`}
             >
               {outreachPaused ? "Resume Outreach (Safe Testing Mode)" : "Pause All Outreach"}
@@ -1991,7 +1991,7 @@ export function SettingsManager() {
           {/* Approved Test Recipient */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
             <div>
-              <label className="text-[11px] font-semibold text-[#888888] block mb-1">
+              <label className="text-[11px] font-semibold text-(--n-888888) block mb-1">
                 Approved Personal Test Address (Permitted in Testing Mode)
               </label>
               <input
@@ -1999,21 +1999,21 @@ export function SettingsManager() {
                 value={approvedTestRecipient}
                 onChange={(e) => setApprovedTestRecipient(e.target.value)}
                 placeholder="zohaibaidesigner@gmail.com"
-                className="input bg-[#171723] border-[#252538] text-xs text-white h-9"
+                className="input bg-(--n-171723) border-(--n-252538) text-xs text-white h-9"
               />
-              <span className="text-[10px] text-[#71717A] mt-1 block">
+              <span className="text-[10px] text-(--n-71717a) mt-1 block">
                 In Testing Mode, only emails sent to this verified address will actually be transmitted via SMTP.
               </span>
             </div>
 
             <div>
-              <label className="text-[11px] font-semibold text-[#888888] block mb-1">
+              <label className="text-[11px] font-semibold text-(--n-888888) block mb-1">
                 Environment Safety Flag (Dual-Gate)
               </label>
-              <div className="input bg-[#171723] border-[#252538] text-xs text-[#A1A1AA] h-9 flex items-center font-mono">
+              <div className="input bg-(--n-171723) border-(--n-252538) text-xs text-(--n-a1a1aa) h-9 flex items-center font-mono">
                 ENABLE_OUTBOUND_LIVE_SEND=&quot;false&quot; (Locked Safe)
               </div>
-              <span className="text-[10px] text-[#71717A] mt-1 block">
+              <span className="text-[10px] text-(--n-71717a) mt-1 block">
                 Server deployment lock ensures zero real outreach without an explicit production flag.
               </span>
             </div>
@@ -2025,39 +2025,39 @@ export function SettingsManager() {
       {/* 10. TAB 8: SUPPRESSION REGISTRY & LEAD BIN               */}
       {/* ======================================================== */}
       {activeTab === "suppression" && (
-        <section className="rounded-[10px] border border-[#1f1f2e] bg-[#11111a] p-5 space-y-4">
-          <div className="border-b border-[#1d1d2c] pb-3">
+        <section className="rounded-[10px] border border-(--n-1f1f2e) bg-(--n-11111a) p-5 space-y-4">
+          <div className="border-b border-(--n-1d1d2c) pb-3">
             <h2 className="text-sm font-semibold text-white flex items-center gap-2">
-              <Shield className="size-4 text-[#10B981]" />
+              <Shield className="size-4 text-(--accent)" />
               HMAC Suppression Registry & Lifecycle Memory
             </h2>
-            <p className="text-xs text-[#888888] mt-0.5">
+            <p className="text-xs text-(--n-888888) mt-0.5">
               Persistent memory prevents re-contacting prospects across sessions, even after deleting leads.
             </p>
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <div className="rounded-[8px] bg-[#15151f] border border-[#212132] p-3 text-center">
-              <span className="text-[10px] text-[#71717A] block uppercase font-mono">Active CRM Leads</span>
+            <div className="rounded-[8px] bg-(--n-15151f) border border-(--n-212132) p-3 text-center">
+              <span className="text-[10px] text-(--n-71717a) block uppercase font-mono">Active CRM Leads</span>
               <span className="text-lg font-bold text-white mt-1 block">{suppressionStats.activeLeads}</span>
             </div>
-            <div className="rounded-[8px] bg-[#15151f] border border-[#212132] p-3 text-center">
-              <span className="text-[10px] text-[#71717A] block uppercase font-mono">Follow-up Due</span>
+            <div className="rounded-[8px] bg-(--n-15151f) border border-(--n-212132) p-3 text-center">
+              <span className="text-[10px] text-(--n-71717a) block uppercase font-mono">Follow-up Due</span>
               <span className="text-lg font-bold text-[#F59E0B] mt-1 block">3-Day Trigger</span>
             </div>
-            <div className="rounded-[8px] bg-[#15151f] border border-[#212132] p-3 text-center">
-              <span className="text-[10px] text-[#71717A] block uppercase font-mono">Archived (7-Day)</span>
+            <div className="rounded-[8px] bg-(--n-15151f) border border-(--n-212132) p-3 text-center">
+              <span className="text-[10px] text-(--n-71717a) block uppercase font-mono">Archived (7-Day)</span>
               <span className="text-lg font-bold text-[#818CF8] mt-1 block">{suppressionStats.archivedLeads}</span>
             </div>
-            <div className="rounded-[8px] bg-[#15151f] border border-[#212132] p-3 text-center">
-              <span className="text-[10px] text-[#71717A] block uppercase font-mono">Lead Bin</span>
+            <div className="rounded-[8px] bg-(--n-15151f) border border-(--n-212132) p-3 text-center">
+              <span className="text-[10px] text-(--n-71717a) block uppercase font-mono">Lead Bin</span>
               <span className="text-lg font-bold text-[#EF4444] mt-1 block">{suppressionStats.binLeads}</span>
             </div>
           </div>
 
-          <div className="rounded-[8px] bg-[#15151f] border border-[#212132] p-4 space-y-2 text-xs">
+          <div className="rounded-[8px] bg-(--n-15151f) border border-(--n-212132) p-4 space-y-2 text-xs">
             <h3 className="font-semibold text-white">Suppression Invariants Enforced:</h3>
-            <ul className="space-y-1 text-[#A1A1AA] list-disc list-inside">
+            <ul className="space-y-1 text-(--n-a1a1aa) list-disc list-inside">
               <li>Every contacted domain is fingerprinted using SHA-256 HMAC and blocked from duplicate discovery.</li>
               <li>Leads with no replies after follow-up are automatically archived after 7 days to keep your pipeline clean.</li>
               <li>Permanently deleting a lead preserves their suppression hash so they are never contacted again.</li>

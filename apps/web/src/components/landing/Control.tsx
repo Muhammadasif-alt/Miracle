@@ -2,7 +2,7 @@ import { Ban, Check, Clock, FileSearch, Hand, Power, ShieldCheck, UserCheck } fr
 import SectionTitle from "./SectionTitle";
 
 const DECISIONS = [
-  { label: "ACT", note: "Follow-up to an interested lead", icon: Check, cls: "border-emerald-400/30 bg-emerald-400/10 text-emerald-200" },
+  { label: "ACT", note: "Follow-up to an interested lead", icon: Check, cls: "border-[#6ad8ff]/30 bg-[#6ad8ff]/10 text-[#a8e8ff]" },
   { label: "ASK", note: "Message mentions pricing", icon: Hand, cls: "border-amber-300/30 bg-amber-300/10 text-amber-100" },
   { label: "WAIT", note: "Contacted 2 days ago", icon: Clock, cls: "border-sky-400/30 bg-sky-400/10 text-sky-200" },
   { label: "BLOCK", note: "Asked to unsubscribe", icon: Ban, cls: "border-rose-400/30 bg-rose-400/10 text-rose-200" },

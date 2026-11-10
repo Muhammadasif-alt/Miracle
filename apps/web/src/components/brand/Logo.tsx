@@ -10,7 +10,7 @@ export function LogoMark({ className = "h-7 w-auto" }: { className?: string }) {
       <img
         src="/brand/logo-white.svg"
         alt="Miracle Emblem"
-        className="h-full w-auto object-contain max-h-7"
+        className="logo-img h-full w-auto object-contain max-h-7"
       />
     </div>
   );
@@ -35,7 +35,7 @@ export function Logo({
       <img
         src="/brand/logo-white.svg"
         alt="Miracle"
-        className={`${heights} w-auto object-contain`}
+        className={`logo-img ${heights} w-auto object-contain`}
       />
     </Link>
   );

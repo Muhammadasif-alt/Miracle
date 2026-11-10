@@ -220,13 +220,13 @@ export function MeetingsView() {
       {/* ======================================================== */}
       {/* 1. TOP HEADER & GOOGLE CALENDAR CONNECTION BAR          */}
       {/* ======================================================== */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#212132] pb-5">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-(--n-212132) pb-5">
         <div>
           <h1 className="text-xl font-bold tracking-tight text-white flex items-center gap-2">
-            <CalendarCheck className="size-5 text-[#10B981]" />
+            <CalendarCheck className="size-5 text-(--accent)" />
             Meetings & Google Calendar
           </h1>
-          <p className="text-xs text-[#888888] mt-1">
+          <p className="text-xs text-(--n-888888) mt-1">
             Real appointments, Google Meet video conferences, and bidirectional calendar synchronization.
           </p>
         </div>
@@ -236,9 +236,9 @@ export function MeetingsView() {
             type="button"
             onClick={handleSyncNow}
             disabled={syncing}
-            className="rounded-[6px] border border-[#29293d] bg-[#15151f] px-3 py-1.5 text-xs font-medium text-white hover:bg-[#1f1f2e] inline-flex items-center gap-1.5 transition disabled:opacity-50"
+            className="rounded-[6px] border border-(--n-29293d) bg-(--n-15151f) px-3 py-1.5 text-xs font-medium text-white hover:bg-(--n-1f1f2e) inline-flex items-center gap-1.5 transition disabled:opacity-50"
           >
-            <RefreshCw className={`size-3.5 ${syncing ? "animate-spin text-[#10B981]" : "text-[#888888]"}`} />
+            <RefreshCw className={`size-3.5 ${syncing ? "animate-spin text-(--accent)" : "text-(--n-888888)"}`} />
             <span>{syncing ? "Syncing..." : "Sync Now"}</span>
           </button>
 
@@ -257,16 +257,16 @@ export function MeetingsView() {
               )}&location=${encodeURIComponent("Google Meet: https://meet.google.com/new")}`;
               window.open(url, "_blank");
             }}
-            className="rounded-[6px] border border-[#10B981]/40 bg-[#10B981]/10 px-3 py-1.5 text-xs font-semibold text-[#10B981] hover:bg-[#10B981]/20 inline-flex items-center gap-1.5 transition"
+            className="rounded-[6px] border border-(--accent)/40 bg-(--accent)/10 px-3 py-1.5 text-xs font-semibold text-(--accent) hover:bg-(--accent)/20 inline-flex items-center gap-1.5 transition"
           >
-            <Calendar className="size-3.5 text-[#10B981]" />
+            <Calendar className="size-3.5 text-(--accent)" />
             <span>Instant Add in Google Calendar</span>
           </button>
 
           <button
             type="button"
             onClick={() => setShowModal(true)}
-            className="rounded-[6px] bg-[#10B981] px-3.5 py-1.5 text-xs font-semibold text-white hover:bg-[#059669] inline-flex items-center gap-1.5 transition shadow-sm"
+            className="rounded-[6px] bg-(--accent) px-3.5 py-1.5 text-xs font-semibold text-(--on-accent) hover:bg-(--accent-strong) inline-flex items-center gap-1.5 transition shadow-sm"
           >
             <Plus className="size-3.5" />
             <span>Schedule Meeting</span>
@@ -275,17 +275,17 @@ export function MeetingsView() {
       </div>
 
       {/* Verified Google Calendar Connection Card */}
-      <div className="rounded-[10px] border border-[#212132] bg-[#11111a] p-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="rounded-[10px] border border-(--n-212132) bg-(--n-11111a) p-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex items-start gap-3">
-          <div className="grid size-9 shrink-0 place-items-center rounded-lg border border-[#252538] bg-[#171723]">
-            <Calendar className="size-4 text-[#10B981]" />
+          <div className="grid size-9 shrink-0 place-items-center rounded-lg border border-(--n-252538) bg-(--n-171723)">
+            <Calendar className="size-4 text-(--accent)" />
           </div>
           <div>
             <div className="flex items-center gap-2">
               <span className="text-xs font-semibold text-white">Google Calendar</span>
               {calendarStatus.connected ? (
-                <span className="inline-flex items-center gap-1 rounded-full bg-[#10B981]/15 px-2 py-0.5 text-[10px] font-semibold text-[#10B981] border border-[#10B981]/30">
-                  <span className="size-1.5 rounded-full bg-[#10B981] animate-pulse" />
+                <span className="inline-flex items-center gap-1 rounded-full bg-(--accent)/15 px-2 py-0.5 text-[10px] font-semibold text-(--accent) border border-(--accent)/30">
+                  <span className="size-1.5 rounded-full bg-(--accent) animate-pulse" />
                   Connected & Verified
                 </span>
               ) : (
@@ -295,7 +295,7 @@ export function MeetingsView() {
                 </span>
               )}
             </div>
-            <p className="text-[11px] text-[#888888] mt-0.5">
+            <p className="text-[11px] text-(--n-888888) mt-0.5">
               Target Calendar: <strong className="text-white">{calendarStatus.selectedCalendarName}</strong>
               {calendarStatus.accountEmail && (
                 <span> ({calendarStatus.accountEmail})</span>
@@ -309,7 +309,7 @@ export function MeetingsView() {
             type="button"
             onClick={handleTestConnection}
             disabled={testing}
-            className="rounded-[6px] border border-[#252538] bg-[#171723] px-3 py-1.5 text-xs text-[#CCCCCC] hover:text-white hover:bg-[#212132] transition disabled:opacity-50"
+            className="rounded-[6px] border border-(--n-252538) bg-(--n-171723) px-3 py-1.5 text-xs text-(--n-cccccc) hover:text-white hover:bg-(--n-212132) transition disabled:opacity-50"
           >
             {testing ? "Testing API..." : "Test Connection"}
           </button>
@@ -318,15 +318,15 @@ export function MeetingsView() {
             href="https://calendar.google.com"
             target="_blank"
             rel="noopener noreferrer"
-            className="rounded-[6px] border border-[#252538] bg-[#171723] px-3 py-1.5 text-xs text-[#CCCCCC] hover:text-white hover:bg-[#212132] inline-flex items-center gap-1 transition"
+            className="rounded-[6px] border border-(--n-252538) bg-(--n-171723) px-3 py-1.5 text-xs text-(--n-cccccc) hover:text-white hover:bg-(--n-212132) inline-flex items-center gap-1 transition"
           >
             <span>Open Google Calendar</span>
-            <ExternalLink className="size-3 text-[#777777]" />
+            <ExternalLink className="size-3 text-(--n-777777)" />
           </a>
 
           <Link
             href="/settings"
-            className="rounded-[6px] border border-[#252538] bg-[#171723] px-3 py-1.5 text-xs text-[#10B981] hover:bg-[#212132] transition"
+            className="rounded-[6px] border border-(--n-252538) bg-(--n-171723) px-3 py-1.5 text-xs text-(--accent) hover:bg-(--n-212132) transition"
           >
             Configure in Settings
           </Link>
@@ -334,9 +334,9 @@ export function MeetingsView() {
       </div>
 
       {statusMessage && (
-        <div className="rounded-[8px] bg-[#191926] border border-[#2c2c42] p-3 text-xs text-[#E5E5E5] flex items-center justify-between">
+        <div className="rounded-[8px] bg-(--n-191926) border border-(--n-2c2c42) p-3 text-xs text-(--n-e5e5e5) flex items-center justify-between">
           <span>{statusMessage}</span>
-          <button onClick={() => setStatusMessage(null)} className="text-[#888888] hover:text-white">
+          <button onClick={() => setStatusMessage(null)} className="text-(--n-888888) hover:text-white">
             <X className="size-3.5" />
           </button>
         </div>
@@ -346,7 +346,7 @@ export function MeetingsView() {
       {/* 2. FILTER TABS & SEARCH ROW                             */}
       {/* ======================================================== */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div className="flex items-center gap-1.5 bg-[#13131d] p-1 rounded-lg border border-[#212132] text-xs">
+        <div className="flex items-center gap-1.5 bg-(--n-13131d) p-1 rounded-lg border border-(--n-212132) text-xs">
           {(["UPCOMING", "TODAY", "THIS_WEEK", "PAST", "ALL"] as const).map((tab) => {
             const labels = {
               UPCOMING: "Upcoming",
@@ -363,8 +363,8 @@ export function MeetingsView() {
                 onClick={() => setFilterTab(tab)}
                 className={`px-3 py-1 rounded-[6px] font-medium transition ${
                   isActive
-                    ? "bg-[#212132] text-white shadow-sm font-semibold"
-                    : "text-[#888888] hover:text-[#CCCCCC]"
+                    ? "bg-(--n-212132) text-white shadow-sm font-semibold"
+                    : "text-(--n-888888) hover:text-(--n-cccccc)"
                 }`}
               >
                 {labels[tab]}
@@ -374,13 +374,13 @@ export function MeetingsView() {
         </div>
 
         <div className="relative w-full sm:w-64">
-          <Search className="size-3.5 absolute left-3 top-2.5 text-[#666666]" />
+          <Search className="size-3.5 absolute left-3 top-2.5 text-(--n-666666)" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search meetings by client or company..."
-            className="input bg-[#13131d] border-[#212132] pl-8 text-xs text-white h-8 w-full rounded-md"
+            className="input bg-(--n-13131d) border-(--n-212132) pl-8 text-xs text-white h-8 w-full rounded-md"
           />
         </div>
       </div>
@@ -389,25 +389,25 @@ export function MeetingsView() {
       {/* 3. MEETINGS LIST OR GENUINE EMPTY STATE                  */}
       {/* ======================================================== */}
       {loading ? (
-        <div className="rounded-[10px] border border-[#212132] bg-[#11111a] p-12 text-center text-xs text-[#777777]">
+        <div className="rounded-[10px] border border-(--n-212132) bg-(--n-11111a) p-12 text-center text-xs text-(--n-777777)">
           Loading scheduled meetings from database and Google Calendar...
         </div>
       ) : filteredMeetings.length === 0 ? (
-        <div className="rounded-[10px] border border-[#212132] bg-[#11111a] p-12 text-center space-y-3">
-          <div className="grid size-12 place-items-center rounded-full bg-[#171723] border border-[#252538] mx-auto text-[#666666]">
+        <div className="rounded-[10px] border border-(--n-212132) bg-(--n-11111a) p-12 text-center space-y-3">
+          <div className="grid size-12 place-items-center rounded-full bg-(--n-171723) border border-(--n-252538) mx-auto text-(--n-666666)">
             <CalendarCheck className="size-6" />
           </div>
           <h3 className="text-sm font-semibold text-white">No upcoming meetings</h3>
-          <p className="text-xs text-[#888888] max-w-sm mx-auto">
+          <p className="text-xs text-(--n-888888) max-w-sm mx-auto">
             No meetings found for this filter. When a lead replies and books a call, or when you schedule a strategy session, confirmed events will appear here with live Google Meet links.
           </p>
           <div className="pt-2">
             <button
               type="button"
               onClick={() => setShowModal(true)}
-              className="rounded-[6px] bg-[#1d1d2c] border border-[#29293d] px-3.5 py-1.5 text-xs text-white hover:bg-[#252525] inline-flex items-center gap-1.5 transition"
+              className="rounded-[6px] bg-(--n-1d1d2c) border border-(--n-29293d) px-3.5 py-1.5 text-xs text-white hover:bg-(--n-252525) inline-flex items-center gap-1.5 transition"
             >
-              <Plus className="size-3.5 text-[#10B981]" />
+              <Plus className="size-3.5 text-(--accent)" />
               <span>Schedule Strategy Call</span>
             </button>
           </div>
@@ -431,14 +431,14 @@ export function MeetingsView() {
             return (
               <div
                 key={m.id}
-                className="rounded-[10px] border border-[#1f1f2e] bg-[#11111a] hover:border-[#29293d] p-4 transition flex flex-col md:flex-row md:items-center justify-between gap-4"
+                className="rounded-[10px] border border-(--n-1f1f2e) bg-(--n-11111a) hover:border-(--n-29293d) p-4 transition flex flex-col md:flex-row md:items-center justify-between gap-4"
               >
                 <div className="space-y-1.5">
                   <div className="flex flex-wrap items-center gap-2">
                     <span className="font-semibold text-sm text-white">{m.clientName}</span>
-                    <span className="text-xs text-[#888888]">({m.businessName})</span>
+                    <span className="text-xs text-(--n-888888)">({m.businessName})</span>
                     {isGoogleSynced ? (
-                      <span className="inline-flex items-center gap-1 rounded-full bg-[#10B981]/15 px-2 py-0.5 text-[10px] font-semibold text-[#10B981] border border-[#10B981]/30">
+                      <span className="inline-flex items-center gap-1 rounded-full bg-(--accent)/15 px-2 py-0.5 text-[10px] font-semibold text-(--accent) border border-(--accent)/30">
                         <CheckCircle2 className="size-3" />
                         Google Calendar Synced
                       </span>
@@ -449,18 +449,18 @@ export function MeetingsView() {
                     )}
                   </div>
 
-                  <div className="flex flex-wrap items-center gap-3 text-xs text-[#AAAAAA]">
-                    <span className="flex items-center gap-1 text-[#E5E5E5] font-medium">
-                      <Clock className="size-3 text-[#10B981]" />
+                  <div className="flex flex-wrap items-center gap-3 text-xs text-(--n-aaaaaa)">
+                    <span className="flex items-center gap-1 text-(--n-e5e5e5) font-medium">
+                      <Clock className="size-3 text-(--accent)" />
                       {dateDisplay} at {timeDisplay} ({m.durationMinutes} mins)
                     </span>
                     {m.clientEmail && (
-                      <span className="text-[#777777]">&bull; {m.clientEmail}</span>
+                      <span className="text-(--n-777777)">&bull; {m.clientEmail}</span>
                     )}
                   </div>
 
                   {m.topic && (
-                    <p className="text-xs text-[#777777] line-clamp-1 max-w-xl">
+                    <p className="text-xs text-(--n-777777) line-clamp-1 max-w-xl">
                       {m.topic}
                     </p>
                   )}
@@ -472,7 +472,7 @@ export function MeetingsView() {
                       href={m.googleEventUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="rounded-[6px] bg-[#10B981] hover:bg-[#059669] px-3 py-1.5 text-xs font-semibold text-white inline-flex items-center gap-1.5 transition shadow-sm"
+                      className="rounded-[6px] bg-(--accent) hover:bg-(--accent-strong) px-3 py-1.5 text-xs font-semibold text-(--on-accent) inline-flex items-center gap-1.5 transition shadow-sm"
                       title="Add or View in Google Calendar"
                     >
                       <Calendar className="size-3.5" />
@@ -486,9 +486,9 @@ export function MeetingsView() {
                       href={m.googleMeetUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="rounded-[6px] border border-[#29293d] bg-[#191926] hover:bg-[#252525] px-3 py-1.5 text-xs font-medium text-white inline-flex items-center gap-1.5 transition"
+                      className="rounded-[6px] border border-(--n-29293d) bg-(--n-191926) hover:bg-(--n-252525) px-3 py-1.5 text-xs font-medium text-white inline-flex items-center gap-1.5 transition"
                     >
-                      <Video className="size-3.5 text-[#10B981]" />
+                      <Video className="size-3.5 text-(--accent)" />
                       <span>Join Meet</span>
                     </a>
                   )}
@@ -496,7 +496,7 @@ export function MeetingsView() {
                   <button
                     type="button"
                     onClick={() => handleDeleteMeeting(m.id)}
-                    className="rounded-[6px] border border-transparent p-1.5 text-[#666666] hover:text-[#EF4444] hover:bg-[#1f1f2e] transition"
+                    className="rounded-[6px] border border-transparent p-1.5 text-(--n-666666) hover:text-[#EF4444] hover:bg-(--n-1f1f2e) transition"
                     title="Remove Meeting"
                   >
                     <Trash2 className="size-3.5" />
@@ -513,16 +513,16 @@ export function MeetingsView() {
       {/* ======================================================== */}
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-          <div className="w-full max-w-lg rounded-xl border border-[#29293d] bg-[#13131d] shadow-2xl p-6 space-y-4">
-            <div className="flex items-center justify-between border-b border-[#212132] pb-3">
+          <div className="w-full max-w-lg rounded-xl border border-(--n-29293d) bg-(--n-13131d) shadow-2xl p-6 space-y-4">
+            <div className="flex items-center justify-between border-b border-(--n-212132) pb-3">
               <h2 className="text-sm font-semibold text-white flex items-center gap-2">
-                <CalendarCheck className="size-4 text-[#10B981]" />
+                <CalendarCheck className="size-4 text-(--accent)" />
                 Schedule Strategy Session
               </h2>
               <button
                 type="button"
                 onClick={() => setShowModal(false)}
-                className="text-[#888888] hover:text-white"
+                className="text-(--n-888888) hover:text-white"
               >
                 <X className="size-4" />
               </button>
@@ -531,7 +531,7 @@ export function MeetingsView() {
             <form onSubmit={handleCreateMeeting} className="space-y-3.5">
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-[11px] font-semibold text-[#888888] block mb-1">
+                  <label className="text-[11px] font-semibold text-(--n-888888) block mb-1">
                     Client Name *
                   </label>
                   <input
@@ -540,11 +540,11 @@ export function MeetingsView() {
                     value={newClientName}
                     onChange={(e) => setNewClientName(e.target.value)}
                     placeholder="e.g. Marcus Vance"
-                    className="input bg-[#191926] border-[#29293d] text-xs text-white h-9"
+                    className="input bg-(--n-191926) border-(--n-29293d) text-xs text-white h-9"
                   />
                 </div>
                 <div>
-                  <label className="text-[11px] font-semibold text-[#888888] block mb-1">
+                  <label className="text-[11px] font-semibold text-(--n-888888) block mb-1">
                     Client Email
                   </label>
                   <input
@@ -552,13 +552,13 @@ export function MeetingsView() {
                     value={newClientEmail}
                     onChange={(e) => setNewClientEmail(e.target.value)}
                     placeholder="marcus@company.com"
-                    className="input bg-[#191926] border-[#29293d] text-xs text-white h-9"
+                    className="input bg-(--n-191926) border-(--n-29293d) text-xs text-white h-9"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="text-[11px] font-semibold text-[#888888] block mb-1">
+                <label className="text-[11px] font-semibold text-(--n-888888) block mb-1">
                   Business / Company Name
                 </label>
                 <input
@@ -566,41 +566,41 @@ export function MeetingsView() {
                   value={newBusinessName}
                   onChange={(e) => setNewBusinessName(e.target.value)}
                   placeholder="e.g. Apex Luxury Properties"
-                  className="input bg-[#191926] border-[#29293d] text-xs text-white h-9"
+                  className="input bg-(--n-191926) border-(--n-29293d) text-xs text-white h-9"
                 />
               </div>
 
               <div className="grid grid-cols-3 gap-3">
                 <div>
-                  <label className="text-[11px] font-semibold text-[#888888] block mb-1">
+                  <label className="text-[11px] font-semibold text-(--n-888888) block mb-1">
                     Date
                   </label>
                   <input
                     type="date"
                     value={newDate}
                     onChange={(e) => setNewDate(e.target.value)}
-                    className="input bg-[#191926] border-[#29293d] text-xs text-white h-9"
+                    className="input bg-(--n-191926) border-(--n-29293d) text-xs text-white h-9"
                   />
                 </div>
                 <div>
-                  <label className="text-[11px] font-semibold text-[#888888] block mb-1">
+                  <label className="text-[11px] font-semibold text-(--n-888888) block mb-1">
                     Time
                   </label>
                   <input
                     type="time"
                     value={newTime}
                     onChange={(e) => setNewTime(e.target.value)}
-                    className="input bg-[#191926] border-[#29293d] text-xs text-white h-9"
+                    className="input bg-(--n-191926) border-(--n-29293d) text-xs text-white h-9"
                   />
                 </div>
                 <div>
-                  <label className="text-[11px] font-semibold text-[#888888] block mb-1">
+                  <label className="text-[11px] font-semibold text-(--n-888888) block mb-1">
                     Duration
                   </label>
                   <select
                     value={newDuration}
                     onChange={(e) => setNewDuration(e.target.value)}
-                    className="input bg-[#191926] border-[#29293d] text-xs text-white h-9"
+                    className="input bg-(--n-191926) border-(--n-29293d) text-xs text-white h-9"
                   >
                     <option value="15">15 mins</option>
                     <option value="30">30 mins</option>
@@ -611,7 +611,7 @@ export function MeetingsView() {
               </div>
 
               <div>
-                <label className="text-[11px] font-semibold text-[#888888] block mb-1">
+                <label className="text-[11px] font-semibold text-(--n-888888) block mb-1">
                   Meeting Notes / Agenda
                 </label>
                 <textarea
@@ -619,7 +619,7 @@ export function MeetingsView() {
                   value={newNotes}
                   onChange={(e) => setNewNotes(e.target.value)}
                   placeholder="Scope review, design retainer discussion, and creative showreel walkthrough."
-                  className="input bg-[#191926] border-[#29293d] text-xs text-white py-2"
+                  className="input bg-(--n-191926) border-(--n-29293d) text-xs text-white py-2"
                 />
               </div>
 
@@ -628,25 +628,25 @@ export function MeetingsView() {
                   type="checkbox"
                   checked={attachMeet}
                   onChange={(e) => setAttachMeet(e.target.checked)}
-                  className="size-3.5 accent-[#10B981] rounded"
+                  className="size-3.5 accent-(--accent) rounded"
                 />
-                <span className="text-xs text-[#CCCCCC]">
+                <span className="text-xs text-(--n-cccccc)">
                   Attach Google Meet video conference link automatically
                 </span>
               </label>
 
-              <div className="flex items-center justify-end gap-2 pt-3 border-t border-[#212132]">
+              <div className="flex items-center justify-end gap-2 pt-3 border-t border-(--n-212132)">
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}
-                  className="rounded-[6px] border border-[#29293d] bg-transparent px-3 py-1.5 text-xs text-[#888888] hover:text-white"
+                  className="rounded-[6px] border border-(--n-29293d) bg-transparent px-3 py-1.5 text-xs text-(--n-888888) hover:text-white"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="rounded-[6px] bg-[#10B981] hover:bg-[#059669] px-4 py-1.5 text-xs font-semibold text-white transition disabled:opacity-50"
+                  className="rounded-[6px] bg-(--accent) hover:bg-(--accent-strong) px-4 py-1.5 text-xs font-semibold text-(--on-accent) transition disabled:opacity-50"
                 >
                   {submitting ? "Booking..." : "Confirm & Create Event"}
                 </button>

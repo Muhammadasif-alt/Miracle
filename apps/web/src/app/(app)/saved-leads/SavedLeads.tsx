@@ -255,7 +255,7 @@ export function SavedLeads() {
       ) : (
         <div className="card overflow-hidden">
           <table className="w-full text-xs text-left">
-            <thead className="bg-[#12141C] border-b border-[#2A2E3D] text-[#94A3B8] font-semibold uppercase text-[10px] tracking-wider">
+            <thead className="bg-(--n-12141c) border-b border-(--n-2a2e3d) text-[#94A3B8] font-semibold uppercase text-[10px] tracking-wider">
               <tr>
                 <th className="px-4 py-3">Business / Prospect</th>
                 <th className="px-4 py-3">Source & Location</th>
@@ -265,9 +265,9 @@ export function SavedLeads() {
                 <th className="px-4 py-3 text-right">Action</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#2A2E3D]">
+            <tbody className="divide-y divide-(--n-2a2e3d)">
               {filteredLeads.map((lead) => (
-                <tr key={lead.id} className="hover:bg-[#12141C]/80 transition-colors">
+                <tr key={lead.id} className="hover:bg-(--n-12141c)/80 transition-colors">
                   <td className="px-4 py-3">
                     <div className="font-bold text-white text-sm">{lead.businessName}</div>
                     <div className="text-[#94A3B8] text-[11px] mt-0.5">
@@ -276,7 +276,7 @@ export function SavedLeads() {
                   </td>
 
                   <td className="px-4 py-3">
-                    <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded bg-[#12141C] border border-[#2A2E3D] text-white">
+                    <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded bg-(--n-12141c) border border-(--n-2a2e3d) text-white">
                       {lead.source === "google_maps" ? (
                         <>
                           <MapPin className="size-3 text-[#F43F5E]" />
@@ -294,7 +294,7 @@ export function SavedLeads() {
 
                   <td className="px-4 py-3 space-y-1">
                     {lead.email && (
-                      <div className="text-[#E2E8F0] font-mono text-[11px]">
+                      <div className="text-(--n-e2e8f0) font-mono text-[11px]">
                         {lead.email}
                       </div>
                     )}

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { Logo } from "@/components/brand/Logo";
+import { ThemeToggle } from "@/components/app/ThemeToggle";
 import { MemberAvatar, ROLE_STYLE, RoleChip } from "@/components/auth/MemberCard";
 import { safeNext } from "@/lib/me";
 import { TEAM } from "@/lib/team";
@@ -21,8 +22,9 @@ export default async function LoginPage({ searchParams }: PageProps<"/login">) {
         <div className="fx-aurora right-[10%] bottom-[5%] h-[380px] w-[420px] bg-[#2bb8e8]" style={{ opacity: 0.22, animationDelay: "-7s" }} />
       </div>
 
-      <header className="mx-auto flex h-20 w-full max-w-page items-center px-4 sm:px-6">
+      <header className="mx-auto flex h-20 w-full max-w-page items-center justify-between px-4 sm:px-6">
         <Logo href="/" size="lg" />
+        <ThemeToggle />
       </header>
 
       <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col items-center justify-center px-4 pb-20 sm:px-6">

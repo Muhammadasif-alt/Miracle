@@ -342,7 +342,7 @@ export function LinkedInScraper() {
             {filteredLeads.length} Creative Prospects Found
           </span>
           <span className="text-line-strong">•</span>
-          <span className="inline-flex items-center gap-1 text-emerald-500">
+          <span className="inline-flex items-center gap-1 text-(--good)">
             <UserCheck className="size-3.5" /> 100% Verified Work Emails
           </span>
           <span className="text-line-strong">•</span>

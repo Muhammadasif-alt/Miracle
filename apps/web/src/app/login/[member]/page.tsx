@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { Logo } from "@/components/brand/Logo";
+import { ThemeToggle } from "@/components/app/ThemeToggle";
 import { LoginForm } from "@/components/auth/LoginForm";
 import { MemberAvatar, ROLE_STYLE, RoleChip } from "@/components/auth/MemberCard";
 import { safeNext } from "@/lib/me";
@@ -30,8 +31,9 @@ export default async function MemberLoginPage({ params, searchParams }: PageProp
         />
       </div>
 
-      <header className="mx-auto flex h-20 w-full max-w-page items-center px-4 sm:px-6">
+      <header className="mx-auto flex h-20 w-full max-w-page items-center justify-between px-4 sm:px-6">
         <Logo href="/" size="lg" />
+        <ThemeToggle />
       </header>
 
       <main className="mx-auto flex w-full max-w-md flex-1 flex-col justify-center px-4 pb-20 sm:px-6">

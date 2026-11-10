@@ -1028,7 +1028,7 @@ Creative Outreach Team`
                 onClick={handleCopyPitch}
                 className="btn-secondary text-xs px-3 py-1.5 inline-flex items-center gap-1.5"
               >
-                {pitchCopied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                {pitchCopied ? <Check className="w-3.5 h-3.5 text-(--good)" /> : <Copy className="w-3.5 h-3.5" />}
                 <span>{pitchCopied ? "Copied to Clipboard" : "Copy Email"}</span>
               </button>
 

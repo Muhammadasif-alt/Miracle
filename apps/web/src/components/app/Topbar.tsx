@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { Menu, PauseCircle, PlayCircle, Settings, ShieldAlert, Sparkles } from "lucide-react";
 import { findScreen } from "@/lib/screens";
+import { ThemeToggle } from "./ThemeToggle";
 import { UserMenu } from "./UserMenu";
 
 export function Topbar({ onOpenMenu }: { onOpenMenu: () => void }) {
@@ -57,13 +58,13 @@ export function Topbar({ onOpenMenu }: { onOpenMenu: () => void }) {
   };
 
   return (
-    <header className="sticky top-0 z-20 flex h-14 items-center justify-between border-b border-white/[0.06] bg-[#07070c]/70 px-4 backdrop-blur-xl sm:px-5">
+    <header className="sticky top-0 z-20 flex h-14 items-center justify-between border-b border-white/[0.06] bg-(--n-07070c)/70 px-4 backdrop-blur-xl sm:px-5">
       {/* Left: mobile menu + page title (the logo lives in the sidebar only) */}
       <div className="flex min-w-0 items-center gap-2.5">
         <button
           type="button"
           onClick={onOpenMenu}
-          className="p-1 text-[#888888] hover:text-white lg:hidden"
+          className="p-1 text-(--n-888888) hover:text-white lg:hidden"
           aria-label="Open menu"
         >
           <Menu className="size-4" />
@@ -75,13 +76,13 @@ export function Topbar({ onOpenMenu }: { onOpenMenu: () => void }) {
       {/* Right: Operational Status + Safety Mode Badge + Emergency Stop + Settings Icon + User Menu */}
       <div className="flex shrink-0 items-center gap-2 sm:gap-3">
         {/* Safety Mode Badge */}
-        <div className="flex items-center gap-1.5 whitespace-nowrap px-2.5 py-1 rounded-full border text-[11px] font-medium bg-[#13131d] border-[#29293d]">
+        <div className="flex items-center gap-1.5 whitespace-nowrap px-2.5 py-1 rounded-full border text-[11px] font-medium bg-(--n-13131d) border-(--n-29293d)">
           <span
             className={`size-2 rounded-full ${
               isPaused
                 ? "bg-[#EF4444]"
                 : operatingMode === "LIVE_ACTIVE"
-                ? "bg-[#10B981] animate-pulse"
+                ? "bg-(--accent) animate-pulse"
                 : "bg-[#38BDF8]"
             }`}
           />
@@ -98,7 +99,7 @@ export function Topbar({ onOpenMenu }: { onOpenMenu: () => void }) {
           title={isPaused ? "Resume Outreach (Switches to Safe Testing Mode)" : "Emergency Stop: Pause All Outreach"}
           className={`flex items-center gap-1.5 whitespace-nowrap px-2 py-1 rounded-[6px] text-[11px] font-semibold transition ${
             isPaused
-              ? "bg-[#10B981]/10 text-[#10B981] hover:bg-[#10B981]/20 border border-[#10B981]/30"
+              ? "bg-(--accent)/10 text-(--accent) hover:bg-(--accent)/20 border border-(--accent)/30"
               : "bg-[#EF4444]/10 text-[#EF4444] hover:bg-[#EF4444]/20 border border-[#EF4444]/30"
           }`}
         >
@@ -106,19 +107,20 @@ export function Topbar({ onOpenMenu }: { onOpenMenu: () => void }) {
           <span className="hidden sm:inline">{isPaused ? "Resume" : "Pause All Outreach"}</span>
         </button>
 
-        <div className="hidden md:flex items-center gap-1.5 text-[11px] text-[#71717A]">
-          <span className="size-1.5 rounded-full bg-[#10B981]" />
-          <span className="text-[#A1A1AA] font-mono">{emailStatus}</span>
+        <div className="hidden md:flex items-center gap-1.5 text-[11px] text-(--n-71717a)">
+          <span className="size-1.5 rounded-full bg-(--accent)" />
+          <span className="text-(--n-a1a1aa) font-mono">{emailStatus}</span>
         </div>
 
         <Link
           href="/settings"
-          className="p-1 text-[#71717A] hover:text-white transition-colors"
+          className="p-1 text-(--n-71717a) hover:text-white transition-colors"
           title="Account Settings"
         >
           <Settings className="size-4" />
         </Link>
 
+        <ThemeToggle />
         <UserMenu />
       </div>
     </header>

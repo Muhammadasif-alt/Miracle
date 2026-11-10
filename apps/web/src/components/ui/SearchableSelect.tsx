@@ -78,7 +78,7 @@ export function SearchableSelect({
 
   return (
     <div className={`relative ${className}`} ref={containerRef}>
-      <label className="text-[11px] font-semibold text-[#888888] block mb-1">
+      <label className="text-[11px] font-semibold text-(--n-888888) block mb-1">
         {label}
       </label>
 
@@ -98,7 +98,7 @@ export function SearchableSelect({
               }
             }}
             placeholder={customPlaceholder}
-            className="input bg-[#171723] border-[#252538] text-xs text-white h-9 flex-1"
+            className="input bg-(--n-171723) border-(--n-252538) text-xs text-white h-9 flex-1"
             autoFocus
           />
           <button
@@ -109,14 +109,14 @@ export function SearchableSelect({
               }
               setIsCustomMode(false);
             }}
-            className="rounded-[6px] bg-[#10B981] px-2.5 h-9 text-xs font-semibold text-white hover:bg-[#059669] transition"
+            className="rounded-[6px] bg-(--accent) px-2.5 h-9 text-xs font-semibold text-(--on-accent) hover:bg-(--accent-strong) transition"
           >
             Save
           </button>
           <button
             type="button"
             onClick={() => setIsCustomMode(false)}
-            className="rounded-[6px] border border-[#29293d] bg-[#1b1b29] px-2 h-9 text-xs text-[#888888] hover:text-white"
+            className="rounded-[6px] border border-(--n-29293d) bg-(--n-1b1b29) px-2 h-9 text-xs text-(--n-888888) hover:text-white"
           >
             <X className="size-3.5" />
           </button>
@@ -125,37 +125,37 @@ export function SearchableSelect({
         <button
           type="button"
           onClick={() => setIsOpen(!isOpen)}
-          className="w-full flex items-center justify-between gap-2 h-9 px-3 rounded-[6px] bg-[#171723] border border-[#252538] hover:border-[#313147] text-left text-xs text-white transition focus:outline-none focus:border-[#10B981]"
+          className="w-full flex items-center justify-between gap-2 h-9 px-3 rounded-[6px] bg-(--n-171723) border border-(--n-252538) hover:border-(--n-313147) text-left text-xs text-white transition focus:outline-none focus:border-(--accent)"
         >
           <span className="truncate flex items-center gap-1.5">
             {selectedItem?.icon && <span>{selectedItem.icon}</span>}
-            <span className={value ? "text-white font-medium" : "text-[#777777]"}>
+            <span className={value ? "text-white font-medium" : "text-(--n-777777)"}>
               {displayLabel}
             </span>
           </span>
-          <ChevronDown className={`size-3.5 text-[#666666] shrink-0 transition-transform ${isOpen ? "rotate-180" : ""}`} />
+          <ChevronDown className={`size-3.5 text-(--n-666666) shrink-0 transition-transform ${isOpen ? "rotate-180" : ""}`} />
         </button>
       )}
 
       {isOpen && (
-        <div className="absolute top-full left-0 mt-1 w-full min-w-[200px] z-50 rounded-lg border border-[#29293d] bg-[#15151f] shadow-xl overflow-hidden animate-in fade-in zoom-in-95 duration-100">
-          <div className="p-2 border-b border-[#212132]">
+        <div className="absolute top-full left-0 mt-1 w-full min-w-[200px] z-50 rounded-lg border border-(--n-29293d) bg-(--n-15151f) shadow-xl overflow-hidden animate-in fade-in zoom-in-95 duration-100">
+          <div className="p-2 border-b border-(--n-212132)">
             <div className="relative">
-              <Search className="size-3.5 absolute left-2.5 top-2.5 text-[#666666]" />
+              <Search className="size-3.5 absolute left-2.5 top-2.5 text-(--n-666666)" />
               <input
                 ref={inputRef}
                 type="text"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Search..."
-                className="w-full bg-[#1e1e2d] border border-[#2B2B2B] pl-8 pr-2 py-1 text-xs text-white rounded-[4px] focus:outline-none focus:border-[#10B981]"
+                className="w-full bg-(--n-1e1e2d) border border-(--n-2b2b2b) pl-8 pr-2 py-1 text-xs text-white rounded-[4px] focus:outline-none focus:border-(--accent)"
               />
             </div>
           </div>
 
           <div className="max-h-52 overflow-y-auto p-1 space-y-0.5">
             {filteredOptions.length === 0 ? (
-              <div className="p-3 text-center text-xs text-[#777777]">
+              <div className="p-3 text-center text-xs text-(--n-777777)">
                 No matches found
               </div>
             ) : (
@@ -171,25 +171,25 @@ export function SearchableSelect({
                     }}
                     className={`w-full flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-[4px] text-xs text-left transition ${
                       isSelected
-                        ? "bg-[#10B981]/15 text-[#10B981] font-semibold"
-                        : "text-[#CCCCCC] hover:bg-[#1f1f2e] hover:text-white"
+                        ? "bg-(--accent)/15 text-(--accent) font-semibold"
+                        : "text-(--n-cccccc) hover:bg-(--n-1f1f2e) hover:text-white"
                     }`}
                   >
                     <span className="truncate flex items-center gap-1.5">
                       {opt.icon && <span>{opt.icon}</span>}
                       <span>{opt.label}</span>
                       {opt.sublabel && (
-                        <span className="text-[10px] text-[#666666]">({opt.sublabel})</span>
+                        <span className="text-[10px] text-(--n-666666)">({opt.sublabel})</span>
                       )}
                     </span>
-                    {isSelected && <Check className="size-3.5 text-[#10B981] shrink-0" />}
+                    {isSelected && <Check className="size-3.5 text-(--accent) shrink-0" />}
                   </button>
                 );
               })
             )}
 
             {allowCustom && (
-              <div className="pt-1 mt-1 border-t border-[#212132]">
+              <div className="pt-1 mt-1 border-t border-(--n-212132)">
                 <button
                   type="button"
                   onClick={() => {
@@ -197,7 +197,7 @@ export function SearchableSelect({
                     setCustomValue("");
                     setIsCustomMode(true);
                   }}
-                  className="w-full px-2.5 py-1.5 text-xs text-[#10B981] hover:bg-[#10B981]/10 rounded-[4px] text-left font-medium flex items-center gap-1.5"
+                  className="w-full px-2.5 py-1.5 text-xs text-(--accent) hover:bg-(--accent)/10 rounded-[4px] text-left font-medium flex items-center gap-1.5"
                 >
                   <span>+ Custom entry...</span>
                 </button>

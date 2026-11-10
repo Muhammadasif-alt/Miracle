@@ -19,7 +19,7 @@ export const metadata: Metadata = {
 
 export default function Home() {
   return (
-    <div className="relative min-h-screen bg-canvas">
+    <div data-theme="dark" className="relative min-h-screen bg-canvas text-fg">
       <Navbar />
       <main>
         <Hero />

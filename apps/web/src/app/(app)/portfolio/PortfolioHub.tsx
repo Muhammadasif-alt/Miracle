@@ -230,7 +230,7 @@ export function PortfolioHub() {
   return (
     <div className="space-y-6 max-w-5xl mx-auto pb-16">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#212132] pb-5">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-(--n-212132) pb-5">
         <div>
           <PageHeader
             title="My Behance Portfolio"
@@ -241,7 +241,7 @@ export function PortfolioHub() {
         <button
           type="button"
           onClick={() => handleSave()}
-          className="inline-flex items-center gap-2 rounded-[8px] bg-[#10B981] px-4 py-2.5 text-xs font-semibold text-black transition-all hover:bg-[#0EA5E9] shadow-sm"
+          className="inline-flex items-center gap-2 rounded-[8px] bg-(--accent) px-4 py-2.5 text-xs font-semibold text-black transition-all hover:bg-[#0EA5E9] shadow-sm"
         >
           {savedNotice ? <Check className="size-3.5" /> : <Save className="size-3.5" />}
           <span>{savedNotice ? "Portfolio Saved!" : "Save All Changes"}</span>
@@ -249,39 +249,39 @@ export function PortfolioHub() {
       </div>
 
       {/* Primary Behance Profile Setup Card */}
-      <div className="rounded-[14px] border border-[#212132] bg-[#11111a] p-6 space-y-5">
-        <div className="flex items-center justify-between border-b border-[#212132] pb-4">
+      <div className="rounded-[14px] border border-(--n-212132) bg-(--n-11111a) p-6 space-y-5">
+        <div className="flex items-center justify-between border-b border-(--n-212132) pb-4">
           <div className="flex items-center gap-3">
             <span className="grid size-10 place-items-center rounded-[10px] bg-white text-black font-black text-sm">
               Bē
             </span>
             <div>
               <h2 className="text-sm font-semibold text-white">Single Behance Portfolio Setup</h2>
-              <p className="text-xs text-[#888888]">Exclusive client proof source for all generated cold emails.</p>
+              <p className="text-xs text-(--n-888888)">Exclusive client proof source for all generated cold emails.</p>
             </div>
           </div>
 
-          <span className="rounded-full bg-[#10B981]/10 px-2.5 py-0.5 text-[11px] font-medium text-[#10B981] border border-[#10B981]/20 flex items-center gap-1.5">
+          <span className="rounded-full bg-(--accent)/10 px-2.5 py-0.5 text-[11px] font-medium text-(--accent) border border-(--accent)/20 flex items-center gap-1.5">
             <CheckCircle2 className="size-3.5" /> Behance Verified
           </span>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="text-xs font-semibold text-[#CCCCCC]">My Main Behance Profile URL</label>
+            <label className="text-xs font-semibold text-(--n-cccccc)">My Main Behance Profile URL</label>
             <div className="relative mt-1.5">
               <input
                 type="url"
                 value={behanceUrl}
                 onChange={(e) => setBehanceUrl(e.target.value)}
                 placeholder="https://www.behance.net/your-agency"
-                className="input bg-[#171723] border-[#29293d] text-white text-xs pr-10"
+                className="input bg-(--n-171723) border-(--n-29293d) text-white text-xs pr-10"
               />
               <a
                 href={behanceUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#888888] hover:text-[#10B981]"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-(--n-888888) hover:text-(--accent)"
                 title="Preview Behance"
               >
                 <ExternalLink className="size-3.5" />
@@ -290,67 +290,67 @@ export function PortfolioHub() {
           </div>
 
           <div>
-            <label className="text-xs font-semibold text-[#CCCCCC]">Creative Studio / Brand Name</label>
+            <label className="text-xs font-semibold text-(--n-cccccc)">Creative Studio / Brand Name</label>
             <input
               type="text"
               value={studioName}
               onChange={(e) => setStudioName(e.target.value)}
               placeholder="Miracle Creative Studio"
-              className="input mt-1.5 bg-[#171723] border-[#29293d] text-white text-xs"
+              className="input mt-1.5 bg-(--n-171723) border-(--n-29293d) text-white text-xs"
             />
           </div>
         </div>
 
         <div>
-          <label className="text-xs font-semibold text-[#CCCCCC]">Primary Services Offered</label>
+          <label className="text-xs font-semibold text-(--n-cccccc)">Primary Services Offered</label>
           <input
             type="text"
             value={coreServices}
             onChange={(e) => setCoreServices(e.target.value)}
-            className="input mt-1.5 bg-[#171723] border-[#29293d] text-white text-xs"
+            className="input mt-1.5 bg-(--n-171723) border-(--n-29293d) text-white text-xs"
           />
         </div>
       </div>
 
       {/* Add New Case Study Form */}
-      <form onSubmit={handleAddProject} className="rounded-[14px] border border-[#212132] bg-[#11111a] p-6 space-y-4">
-        <div className="flex items-center justify-between border-b border-[#212132] pb-3">
+      <form onSubmit={handleAddProject} className="rounded-[14px] border border-(--n-212132) bg-(--n-11111a) p-6 space-y-4">
+        <div className="flex items-center justify-between border-b border-(--n-212132) pb-3">
           <h2 className="text-sm font-semibold text-white flex items-center gap-2">
-            <Plus className="size-4 text-[#10B981]" />
+            <Plus className="size-4 text-(--accent)" />
             <span>Add Specific Behance Case Study</span>
           </h2>
-          <span className="text-[11px] text-[#888888]">Matched to prospects by niche in email outreach</span>
+          <span className="text-[11px] text-(--n-888888)">Matched to prospects by niche in email outreach</span>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="text-xs font-semibold text-[#CCCCCC]">Project Title</label>
+            <label className="text-xs font-semibold text-(--n-cccccc)">Project Title</label>
             <input
               type="text"
               placeholder="e.g. Modern Dental Clinic Rebrand & Signage"
               value={newTitle}
               onChange={(e) => setNewTitle(e.target.value)}
-              className="input mt-1.5 bg-[#171723] border-[#29293d] text-white text-xs"
+              className="input mt-1.5 bg-(--n-171723) border-(--n-29293d) text-white text-xs"
             />
           </div>
 
           <div>
-            <label className="text-xs font-semibold text-[#CCCCCC]">Behance Project URL</label>
+            <label className="text-xs font-semibold text-(--n-cccccc)">Behance Project URL</label>
             <input
               type="url"
               placeholder="https://www.behance.net/gallery/..."
               value={newUrl}
               onChange={(e) => setNewUrl(e.target.value)}
-              className="input mt-1.5 bg-[#171723] border-[#29293d] text-white text-xs"
+              className="input mt-1.5 bg-(--n-171723) border-(--n-29293d) text-white text-xs"
             />
           </div>
 
           <div>
-            <label className="text-xs font-semibold text-[#CCCCCC]">Work Category</label>
+            <label className="text-xs font-semibold text-(--n-cccccc)">Work Category</label>
             <select
               value={newCategory}
               onChange={(e) => setNewCategory(e.target.value as any)}
-              className="input mt-1.5 bg-[#171723] border-[#29293d] text-white text-xs"
+              className="input mt-1.5 bg-(--n-171723) border-(--n-29293d) text-white text-xs"
             >
               <option value="Graphic Design & Branding">Graphic Design & Branding</option>
               <option value="Video Editing & Showreels">Video Editing & Showreels</option>
@@ -360,11 +360,11 @@ export function PortfolioHub() {
           </div>
 
           <div>
-            <label className="text-xs font-semibold text-[#CCCCCC]">Best Matching Prospect Niche</label>
+            <label className="text-xs font-semibold text-(--n-cccccc)">Best Matching Prospect Niche</label>
             <select
               value={newNiche}
               onChange={(e) => setNewNiche(e.target.value as any)}
-              className="input mt-1.5 bg-[#171723] border-[#29293d] text-white text-xs"
+              className="input mt-1.5 bg-(--n-171723) border-(--n-29293d) text-white text-xs"
             >
               <option value="All Niches">All Niches (Universal)</option>
               <option value="Real Estate">Real Estate Agents & Luxury Brokers</option>
@@ -377,20 +377,20 @@ export function PortfolioHub() {
         </div>
 
         <div>
-          <label className="text-xs font-semibold text-[#CCCCCC]">Brief Project Context (Optional)</label>
+          <label className="text-xs font-semibold text-(--n-cccccc)">Brief Project Context (Optional)</label>
           <input
             type="text"
             placeholder="e.g. Generated +45% booking conversion through refined luxury visual identity"
             value={newDesc}
             onChange={(e) => setNewDesc(e.target.value)}
-            className="input mt-1.5 bg-[#171723] border-[#29293d] text-white text-xs"
+            className="input mt-1.5 bg-(--n-171723) border-(--n-29293d) text-white text-xs"
           />
         </div>
 
         <div className="flex justify-end pt-2">
           <button
             type="submit"
-            className="rounded-[8px] bg-[#1d1d2c] border border-[#313147] px-4 py-2 text-xs font-semibold text-white hover:bg-[#252525] transition-all"
+            className="rounded-[8px] bg-(--n-1d1d2c) border border-(--n-313147) px-4 py-2 text-xs font-semibold text-white hover:bg-(--n-252525) transition-all"
           >
             + Add Case Study to Vault
           </button>
@@ -398,22 +398,22 @@ export function PortfolioHub() {
       </form>
 
       {/* Case Studies List */}
-      <div className="rounded-[14px] border border-[#212132] bg-[#11111a] p-6 space-y-4">
-        <div className="flex items-center justify-between border-b border-[#212132] pb-3">
+      <div className="rounded-[14px] border border-(--n-212132) bg-(--n-11111a) p-6 space-y-4">
+        <div className="flex items-center justify-between border-b border-(--n-212132) pb-3">
           <div>
             <h2 className="text-sm font-semibold text-white">Configured Behance Projects ({projects.length})</h2>
-            <p className="text-xs text-[#888888]">These exact URLs will be referenced in your outreach emails based on prospect industry.</p>
+            <p className="text-xs text-(--n-888888)">These exact URLs will be referenced in your outreach emails based on prospect industry.</p>
           </div>
         </div>
 
-        <div className="divide-y divide-[#212132]">
+        <div className="divide-y divide-(--n-212132)">
           {projects.map((proj) => (
             <div key={proj.id} className="py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div className="space-y-1 min-w-0">
                 <div className="flex items-center gap-2">
                   <p className="text-xs font-semibold text-white truncate">{proj.title}</p>
                   {proj.featured && (
-                    <span className="rounded-full bg-[#10B981]/10 px-2 py-0.5 text-[9px] font-medium text-[#10B981] border border-[#10B981]/20">
+                    <span className="rounded-full bg-(--accent)/10 px-2 py-0.5 text-[9px] font-medium text-(--accent) border border-(--accent)/20">
                       Featured
                     </span>
                   )}
@@ -423,26 +423,26 @@ export function PortfolioHub() {
                   href={proj.url}
                   target="_blank"
                   rel="noreferrer"
-                  className="text-[11px] text-[#10B981] hover:underline flex items-center gap-1 font-mono truncate"
+                  className="text-[11px] text-(--accent) hover:underline flex items-center gap-1 font-mono truncate"
                 >
                   <span>{proj.url}</span>
                   <ExternalLink className="size-2.5" />
                 </a>
 
                 {proj.description && (
-                  <p className="text-[11px] text-[#71717A] italic">{proj.description}</p>
+                  <p className="text-[11px] text-(--n-71717a) italic">{proj.description}</p>
                 )}
               </div>
 
               <div className="flex items-center gap-2 shrink-0">
-                <span className="text-[10px] text-[#A1A1AA] bg-[#171723] border border-[#27273a] px-2.5 py-1 rounded-[6px]">
+                <span className="text-[10px] text-(--n-a1a1aa) bg-(--n-171723) border border-(--n-27273a) px-2.5 py-1 rounded-[6px]">
                   {proj.targetNiche}
                 </span>
 
                 <button
                   type="button"
                   onClick={() => handleToggleFeatured(proj.id)}
-                  className={`p-1.5 rounded-[6px] border ${proj.featured ? "text-[#F59E0B] border-[#F59E0B]/30 bg-[#F59E0B]/10" : "text-[#71717A] border-[#29293d] hover:text-white"}`}
+                  className={`p-1.5 rounded-[6px] border ${proj.featured ? "text-[#F59E0B] border-[#F59E0B]/30 bg-[#F59E0B]/10" : "text-(--n-71717a) border-(--n-29293d) hover:text-white"}`}
                   title="Toggle Featured"
                 >
                   <Star className="size-3.5" />
@@ -451,7 +451,7 @@ export function PortfolioHub() {
                 <button
                   type="button"
                   onClick={() => handleRemoveProject(proj.id)}
-                  className="p-1.5 rounded-[6px] border border-[#29293d] text-[#71717A] hover:text-[#EF4444] hover:border-[#EF4444]/30"
+                  className="p-1.5 rounded-[6px] border border-(--n-29293d) text-(--n-71717a) hover:text-[#EF4444] hover:border-[#EF4444]/30"
                   title="Remove Project"
                 >
                   <Trash2 className="size-3.5" />

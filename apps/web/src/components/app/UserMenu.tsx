@@ -49,7 +49,7 @@ export function UserMenu() {
         aria-expanded={open}
         className="flex items-center gap-2 rounded-full p-0.5 pr-2 transition-colors hover:bg-hover"
       >
-        <span className="grid size-8 place-items-center rounded-full bg-[#191926] text-xs font-semibold text-white ring-1 ring-white/20">
+        <span className="grid size-8 place-items-center rounded-full bg-(--n-191926) text-xs font-semibold text-white ring-1 ring-white/20">
           <StarIcon className="size-4 text-white" />
         </span>
         <span className="hidden text-sm font-medium lg:inline">{me.user.name.split(" ")[0]}</span>

@@ -359,9 +359,9 @@ export function MeetingsSetup() {
       />
 
       {/* Google Ecosystem Status Header */}
-      <div className="card p-5 bg-[#11111a] border border-[#29293d] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="card p-5 bg-(--n-11111a) border border-(--n-29293d) flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <div className="p-2.5 rounded-[12px] bg-[#191926] border border-[#29293d]">
+          <div className="p-2.5 rounded-[12px] bg-(--n-191926) border border-(--n-29293d)">
             <Laptop className="size-5 text-white" />
           </div>
           <div>
@@ -369,17 +369,17 @@ export function MeetingsSetup() {
             <div className="flex items-center gap-2 mt-0.5">
               <span
                 className={`size-2 rounded-full ${
-                  browserProfileActive || apiVerified ? "bg-white" : "bg-[#666666] animate-pulse"
+                  browserProfileActive || apiVerified ? "bg-white" : "bg-(--n-666666) animate-pulse"
                 }`}
               />
-              <span className="text-xs text-[#AAAAAA]">
+              <span className="text-xs text-(--n-aaaaaa)">
                 {browserProfileActive || apiVerified ? (
-                  <span className="text-[#10B981] font-semibold flex items-center gap-2">
-                    <span className="size-2 rounded-full bg-[#10B981] shadow-[0_0_8px_rgba(16,185,129,0.8)]" />
+                  <span className="text-(--accent) font-semibold flex items-center gap-2">
+                    <span className="size-2 rounded-full bg-(--accent) shadow-[0_0_8px_rgba(139,123,255,0.8)]" />
                     Connected: {browserEmail || apiEmail} (Persistent Browser Profile + Gmail SMTP Active)
                   </span>
                 ) : (
-                  <span className="text-[#AAAAAA]">No Google Account Connected — Log in below to activate</span>
+                  <span className="text-(--n-aaaaaa)">No Google Account Connected — Log in below to activate</span>
                 )}
               </span>
             </div>
@@ -393,7 +393,7 @@ export function MeetingsSetup() {
             className={`px-3 py-1.5 text-xs font-medium rounded-[8px] border transition-all ${
               authMethod === "BROWSER"
                 ? "bg-white text-black font-semibold border-white"
-                : "bg-[#191926] text-[#AAAAAA] border-[#29293d]"
+                : "bg-(--n-191926) text-(--n-aaaaaa) border-(--n-29293d)"
             }`}
           >
             Method A (Persistent Browser Profile)
@@ -404,7 +404,7 @@ export function MeetingsSetup() {
             className={`px-3 py-1.5 text-xs font-medium rounded-[8px] border transition-all ${
               authMethod === "API"
                 ? "bg-white text-black font-semibold border-white"
-                : "bg-[#191926] text-[#AAAAAA] border-[#29293d]"
+                : "bg-(--n-191926) text-(--n-aaaaaa) border-(--n-29293d)"
             }`}
           >
             Method B (Google APIs & SMTP)
@@ -416,8 +416,8 @@ export function MeetingsSetup() {
         {/* Authentication Column */}
         {authMethod === "BROWSER" ? (
           /* Method A: Direct ID/Password + Persistent Profile */
-          <div className="card p-6 space-y-5 bg-[#11111a] border border-[#29293d]">
-            <div className="flex items-center justify-between pb-3 border-b border-[#29293d]">
+          <div className="card p-6 space-y-5 bg-(--n-11111a) border border-(--n-29293d)">
+            <div className="flex items-center justify-between pb-3 border-b border-(--n-29293d)">
               <div className="flex items-center gap-2">
                 <Laptop className="size-4 text-white" />
                 <h3 className="text-sm font-semibold text-white">
@@ -427,22 +427,22 @@ export function MeetingsSetup() {
               <div className="flex items-center gap-1.5">
                 <span
                   className={`size-2 rounded-full ${
-                    browserProfileActive ? "bg-white" : "bg-[#666666]"
+                    browserProfileActive ? "bg-white" : "bg-(--n-666666)"
                   }`}
                 />
-                <span className="text-[11px] text-[#AAAAAA]">
+                <span className="text-[11px] text-(--n-aaaaaa)">
                   {browserProfileActive ? "Active Session" : "Not Initialized"}
                 </span>
               </div>
             </div>
 
-            <p className="text-xs text-[#AAAAAA] leading-relaxed">
+            <p className="text-xs text-(--n-aaaaaa) leading-relaxed">
               Uses Playwright with a persistent <code className="text-white font-mono">userDataDir</code> stored in <code className="text-white font-mono">./browser_data</code>. Once saved, Google cookies & tokens remain active locally so YouTube and scraping engines never ask for login or 2FA again.
             </p>
 
             <form onSubmit={handleSaveBrowserProfile} className="space-y-3.5">
               <div>
-                <label className="text-xs font-semibold text-[#AAAAAA] block mb-1">
+                <label className="text-xs font-semibold text-(--n-aaaaaa) block mb-1">
                   Google / Gmail Account ID
                 </label>
                 <input
@@ -451,27 +451,27 @@ export function MeetingsSetup() {
                   value={browserEmail}
                   onChange={(e) => setBrowserEmail(e.target.value)}
                   placeholder="your.account@gmail.com"
-                  className="input h-10 text-xs rounded-[10px] bg-[#191926] border-[#29293d]"
+                  className="input h-10 text-xs rounded-[10px] bg-(--n-191926) border-(--n-29293d)"
                 />
               </div>
 
               <div>
-                <label className="text-xs font-semibold text-[#AAAAAA] block mb-1">
+                <label className="text-xs font-semibold text-(--n-aaaaaa) block mb-1">
                   Password or App Password
                 </label>
                 <PasswordInput
                   value={browserPassword}
                   onChange={(e) => setBrowserPassword(e.target.value)}
                   placeholder="••••••••••••••••"
-                  className="input h-10 text-xs font-mono rounded-[10px] bg-[#191926] border-[#29293d]"
+                  className="input h-10 text-xs font-mono rounded-[10px] bg-(--n-191926) border-(--n-29293d)"
                 />
-                <span className="text-[11px] text-[#777777] block mt-1">
-                  Encrypted locally in <code className="text-[#AAAAAA]">.env</code> & <code className="text-[#AAAAAA]">browser_data/</code>. Never exposed or committed to Git.
+                <span className="text-[11px] text-(--n-777777) block mt-1">
+                  Encrypted locally in <code className="text-(--n-aaaaaa)">.env</code> & <code className="text-(--n-aaaaaa)">browser_data/</code>. Never exposed or committed to Git.
                 </span>
               </div>
 
               {browserSessionMessage && (
-                <div className="p-3 rounded-[10px] bg-[#191926] border border-white text-white text-xs">
+                <div className="p-3 rounded-[10px] bg-(--n-191926) border border-white text-white text-xs">
                   {browserSessionMessage}
                 </div>
               )}
@@ -499,8 +499,8 @@ export function MeetingsSetup() {
           </div>
         ) : (
           /* Method B: Direct Google APIs & SMTP */
-          <div className="card p-6 space-y-5 bg-[#11111a] border border-[#29293d]">
-            <div className="flex items-center justify-between pb-3 border-b border-[#29293d]">
+          <div className="card p-6 space-y-5 bg-(--n-11111a) border border-(--n-29293d)">
+            <div className="flex items-center justify-between pb-3 border-b border-(--n-29293d)">
               <div className="flex items-center gap-2">
                 <KeyRound className="size-4 text-white" />
                 <h3 className="text-sm font-semibold text-white">
@@ -509,9 +509,9 @@ export function MeetingsSetup() {
               </div>
               <div className="flex items-center gap-1.5">
                 <span
-                  className={`size-2 rounded-full ${apiVerified ? "bg-[#10B981] shadow-[0_0_8px_rgba(16,185,129,0.8)]" : "bg-[#666666]"}`}
+                  className={`size-2 rounded-full ${apiVerified ? "bg-(--accent) shadow-[0_0_8px_rgba(139,123,255,0.8)]" : "bg-(--n-666666)"}`}
                 />
-                <span className={`text-[11px] font-semibold ${apiVerified ? "text-[#10B981]" : "text-[#AAAAAA]"}`}>
+                <span className={`text-[11px] font-semibold ${apiVerified ? "text-(--accent)" : "text-(--n-aaaaaa)"}`}>
                   {apiVerified ? "Verified" : "Unverified"}
                 </span>
               </div>
@@ -519,7 +519,7 @@ export function MeetingsSetup() {
 
             <form onSubmit={handleVerifyApiSmtp} className="space-y-3.5">
               <div>
-                <label className="text-xs font-semibold text-[#AAAAAA] block mb-1">
+                <label className="text-xs font-semibold text-(--n-aaaaaa) block mb-1">
                   Display Sender Name
                 </label>
                 <input
@@ -528,12 +528,12 @@ export function MeetingsSetup() {
                   value={senderName}
                   onChange={(e) => setSmtpSenderName(e.target.value)}
                   placeholder="e.g. Alex | Miracle Studio"
-                  className="input h-10 text-xs rounded-[10px] bg-[#191926] border-[#29293d]"
+                  className="input h-10 text-xs rounded-[10px] bg-(--n-191926) border-(--n-29293d)"
                 />
               </div>
 
               <div>
-                <label className="text-xs font-semibold text-[#AAAAAA] block mb-1">
+                <label className="text-xs font-semibold text-(--n-aaaaaa) block mb-1">
                   Gmail / Google Workspace Address
                 </label>
                 <input
@@ -542,13 +542,13 @@ export function MeetingsSetup() {
                   value={apiEmail}
                   onChange={(e) => setApiEmail(e.target.value)}
                   placeholder="you@gmail.com"
-                  className="input h-10 text-xs rounded-[10px] bg-[#191926] border-[#29293d]"
+                  className="input h-10 text-xs rounded-[10px] bg-(--n-191926) border-(--n-29293d)"
                 />
               </div>
 
               <div>
                 <div className="flex items-center justify-between mb-1">
-                  <label className="text-xs font-semibold text-[#AAAAAA]">
+                  <label className="text-xs font-semibold text-(--n-aaaaaa)">
                     Google 16-Character App Password
                   </label>
                   <a
@@ -566,16 +566,16 @@ export function MeetingsSetup() {
                   value={apiPassword}
                   onChange={(e) => setApiPassword(e.target.value)}
                   placeholder="xxxx xxxx xxxx xxxx"
-                  className="input h-10 text-xs font-mono rounded-[10px] bg-[#191926] border-[#29293d]"
+                  className="input h-10 text-xs font-mono rounded-[10px] bg-(--n-191926) border-(--n-29293d)"
                 />
-                <span className="text-[11px] text-[#AAAAAA] block mt-1">
+                <span className="text-[11px] text-(--n-aaaaaa) block mt-1">
                   Google blocks regular passwords for security. Use a 16-character App Password (spaces will be removed automatically).
                 </span>
               </div>
 
               {/* Red Error Container */}
               {apiErrorMessage && (
-                <div className="p-4 rounded-[12px] bg-[#200A0D] border-2 border-[#EF4444] text-[#FCA5A5] text-xs space-y-2.5 shadow-xl">
+                <div className="p-4 rounded-[12px] bg-(--n-200a0d) border-2 border-[#EF4444] text-[#FCA5A5] text-xs space-y-2.5 shadow-xl">
                   <div className="flex items-start gap-2.5">
                     <ShieldAlert className="size-4 shrink-0 text-[#EF4444] mt-0.5" />
                     <div className="space-y-1">
@@ -588,7 +588,7 @@ export function MeetingsSetup() {
                     </div>
                   </div>
 
-                  <div className="p-3 rounded-[8px] bg-[#140608] border border-[#EF4444]/40 text-[11px] text-[#E2E8F0] space-y-1">
+                  <div className="p-3 rounded-[8px] bg-(--n-140608) border border-[#EF4444]/40 text-[11px] text-(--n-e2e8f0) space-y-1">
                     <span className="font-semibold text-white block">How to get your free Google App Password (1 minute):</span>
                     <ol className="list-decimal list-inside space-y-0.5">
                       <li>Go to your Google Account &rarr; Security &rarr; <strong>2-Step Verification</strong> (ensure it is ON).</li>
@@ -602,7 +602,7 @@ export function MeetingsSetup() {
                       href="https://myaccount.google.com/apppasswords"
                       target="_blank"
                       rel="noreferrer"
-                      className="px-3 py-1.5 rounded-[6px] bg-[#EF4444] hover:bg-[#DC2626] text-white font-semibold text-[11px] inline-flex items-center gap-1 transition-colors"
+                      className="px-3 py-1.5 rounded-[6px] bg-[#EF4444] hover:bg-[#DC2626] text-(--on-accent) font-semibold text-[11px] inline-flex items-center gap-1 transition-colors"
                     >
                       <span>Open Google App Passwords ↗</span>
                     </a>
@@ -611,7 +611,7 @@ export function MeetingsSetup() {
               )}
 
               {apiVerified && (
-                <div className="p-3 rounded-[10px] bg-[#191926] border border-white text-white text-xs flex items-center gap-2">
+                <div className="p-3 rounded-[10px] bg-(--n-191926) border border-white text-white text-xs flex items-center gap-2">
                   <CheckCircle2 className="size-4 shrink-0 text-white" />
                   <span>Google SMTP Handshake Verified: Sending as <strong>{apiEmail}</strong></span>
                 </div>
@@ -643,25 +643,25 @@ export function MeetingsSetup() {
         {/* Ecosystem Control Cards: Sheets, YouTube, Calendar */}
         <div className="space-y-5">
           {/* 1. Google Sheets Master Tracker */}
-          <div className="card p-6 space-y-4 bg-[#11111a] border border-[#29293d]">
-            <div className="flex items-center justify-between pb-3 border-b border-[#29293d]">
+          <div className="card p-6 space-y-4 bg-(--n-11111a) border border-(--n-29293d)">
+            <div className="flex items-center justify-between pb-3 border-b border-(--n-29293d)">
               <div className="flex items-center gap-2">
                 <Table className="size-4 text-white" />
                 <h3 className="text-sm font-semibold text-white">Google Sheets Master Lead Tracker</h3>
               </div>
-              <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#191926] border border-[#29293d] text-white">
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-(--n-191926) border border-(--n-29293d) text-white">
                 Auto-Synced (Score &gt;= 7)
               </span>
             </div>
 
-            <p className="text-xs text-[#AAAAAA] leading-relaxed">
+            <p className="text-xs text-(--n-aaaaaa) leading-relaxed">
               Every qualified lead scraped from YouTube or Google Maps is formatted and saved with columns:
               <br />
               <code className="text-white text-[11px]">Lead Name | Email | Channel/Website | AI Quality Score | Personalized Hook | Outreach Status</code>
             </p>
 
             <div className="space-y-2">
-              <label className="text-xs font-semibold text-[#AAAAAA] block">
+              <label className="text-xs font-semibold text-(--n-aaaaaa) block">
                 Target Google Sheet ID
               </label>
               <div className="flex gap-2">
@@ -670,7 +670,7 @@ export function MeetingsSetup() {
                   value={spreadsheetId}
                   onChange={(e) => setSpreadsheetId(e.target.value)}
                   placeholder="Paste Google Spreadsheet ID"
-                  className="input h-9 text-xs rounded-[8px] bg-[#191926] border-[#29293d] flex-1 font-mono"
+                  className="input h-9 text-xs rounded-[8px] bg-(--n-191926) border-(--n-29293d) flex-1 font-mono"
                 />
                 <a
                   href={`https://docs.google.com/spreadsheets/d/${spreadsheetId}`}
@@ -686,8 +686,8 @@ export function MeetingsSetup() {
           </div>
 
           {/* 2. Google Calendar & Google Meet Booking */}
-          <div className="card p-6 space-y-4 bg-[#11111a] border border-[#29293d]">
-            <div className="flex items-center justify-between pb-3 border-b border-[#29293d]">
+          <div className="card p-6 space-y-4 bg-(--n-11111a) border border-(--n-29293d)">
+            <div className="flex items-center justify-between pb-3 border-b border-(--n-29293d)">
               <div className="flex items-center gap-2">
                 <CalendarCheck className="size-4 text-white" />
                 <h3 className="text-sm font-semibold text-white">Google Calendar & Meet Invitations</h3>
@@ -695,10 +695,10 @@ export function MeetingsSetup() {
               <div className="flex items-center gap-1.5">
                 <span
                   className={`size-2 rounded-full ${
-                    calendarConnected ? "bg-white" : "bg-[#666666]"
+                    calendarConnected ? "bg-white" : "bg-(--n-666666)"
                   }`}
                 />
-                <span className="text-[11px] text-[#AAAAAA]">
+                <span className="text-[11px] text-(--n-aaaaaa)">
                   {calendarConnected ? "Synced" : "Ready"}
                 </span>
               </div>
@@ -706,24 +706,24 @@ export function MeetingsSetup() {
 
             <form onSubmit={handleSaveBookingUrl} className="space-y-3.5">
               <div>
-                <label className="text-xs font-semibold text-[#AAAAAA] block mb-1">
+                <label className="text-xs font-semibold text-(--n-aaaaaa) block mb-1">
                   Discovery Call Link (Google Calendar Appointment or Calendly)
                 </label>
                 <div className="relative">
-                  <CalendarDays className="size-3.5 text-[#777777] absolute left-3 top-1/2 -translate-y-1/2" />
+                  <CalendarDays className="size-3.5 text-(--n-777777) absolute left-3 top-1/2 -translate-y-1/2" />
                   <input
                     type="url"
                     required
                     value={bookingUrl}
                     onChange={(e) => setBookingUrl(e.target.value)}
                     placeholder="https://calendar.google.com/calendar/appointments/..."
-                    className="input h-9 pl-9 text-xs rounded-[8px] bg-[#191926] border-[#29293d]"
+                    className="input h-9 pl-9 text-xs rounded-[8px] bg-(--n-191926) border-(--n-29293d)"
                   />
                 </div>
               </div>
 
               {bookingSaved && (
-                <div className="p-2.5 rounded-[8px] bg-[#191926] border border-white text-white text-xs flex items-center gap-2">
+                <div className="p-2.5 rounded-[8px] bg-(--n-191926) border border-white text-white text-xs flex items-center gap-2">
                   <Check className="size-3.5 shrink-0 text-white" />
                   <span>Google Meet booking link saved!</span>
                 </div>
@@ -757,14 +757,14 @@ export function MeetingsSetup() {
       </div>
 
       {/* Confirmed Real Google Meet Discovery Calls (Synced with Official Google UI) */}
-      <section className="card p-6 space-y-4 bg-[#11111a] border border-[#29293d]">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#29293d]">
+      <section className="card p-6 space-y-4 bg-(--n-11111a) border border-(--n-29293d)">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-(--n-29293d)">
           <div>
             <h3 className="text-sm font-semibold text-white flex items-center gap-2">
               <Clock className="size-4 text-white" />
               <span>Real Google Calendar & Meet Events ({liveMeetings.length})</span>
             </h3>
-            <p className="text-xs text-[#AAAAAA] mt-0.5">
+            <p className="text-xs text-(--n-aaaaaa) mt-0.5">
               Live synchronized events appearing in your official <strong>calendar.google.com</strong> schedule and <strong>meet.google.com</strong> UI.
             </p>
           </div>
@@ -774,7 +774,7 @@ export function MeetingsSetup() {
               href="https://calendar.google.com"
               target="_blank"
               rel="noreferrer"
-              className="btn-secondary h-8 px-3 text-xs inline-flex items-center gap-1.5 rounded-[8px] bg-[#191926] border-[#313147] hover:border-white text-white transition-all"
+              className="btn-secondary h-8 px-3 text-xs inline-flex items-center gap-1.5 rounded-[8px] bg-(--n-191926) border-(--n-313147) hover:border-white text-white transition-all"
             >
               <span>Open calendar.google.com</span>
               <ExternalLink className="size-3" />
@@ -792,10 +792,10 @@ export function MeetingsSetup() {
 
         {/* Modal: Create Real Google Meet Event */}
         {showCreateModal && (
-          <div className="p-5 rounded-[16px] bg-[#191926] border-2 border-white/20 space-y-4 animate-in fade-in">
-            <div className="flex items-center justify-between pb-2 border-b border-[#29293d]">
+          <div className="p-5 rounded-[16px] bg-(--n-191926) border-2 border-white/20 space-y-4 animate-in fade-in">
+            <div className="flex items-center justify-between pb-2 border-b border-(--n-29293d)">
               <div className="flex items-center gap-2">
-                <Video className="size-4 text-[#10B981]" />
+                <Video className="size-4 text-(--accent)" />
                 <h4 className="text-xs font-bold text-white uppercase tracking-wider">
                   Create Google Meet Event (Pushes to Official Google UI)
                 </h4>
@@ -803,7 +803,7 @@ export function MeetingsSetup() {
               <button
                 type="button"
                 onClick={() => setShowCreateModal(false)}
-                className="text-[#AAAAAA] hover:text-white p-1 rounded"
+                className="text-(--n-aaaaaa) hover:text-white p-1 rounded"
               >
                 <X className="size-4" />
               </button>
@@ -812,7 +812,7 @@ export function MeetingsSetup() {
             <form onSubmit={handleCreateNewMeeting} className="space-y-3.5">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="space-y-1">
-                  <label className="text-[11px] font-semibold text-[#AAAAAA] block">
+                  <label className="text-[11px] font-semibold text-(--n-aaaaaa) block">
                     Prospect / Client Name
                   </label>
                   <input
@@ -821,12 +821,12 @@ export function MeetingsSetup() {
                     value={newClientName}
                     onChange={(e) => setNewClientName(e.target.value)}
                     placeholder="e.g. Jordan Welch"
-                    className="input h-9 text-xs rounded-[8px] bg-[#11111a] border-[#29293d] text-white"
+                    className="input h-9 text-xs rounded-[8px] bg-(--n-11111a) border-(--n-29293d) text-white"
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-[11px] font-semibold text-[#AAAAAA] block">
+                  <label className="text-[11px] font-semibold text-(--n-aaaaaa) block">
                     Prospect Email Address *
                   </label>
                   <input
@@ -835,13 +835,13 @@ export function MeetingsSetup() {
                     value={newClientEmail}
                     onChange={(e) => setNewClientEmail(e.target.value)}
                     placeholder="prospect@company.com"
-                    className="input h-9 text-xs rounded-[8px] bg-[#11111a] border-[#29293d] text-white"
+                    className="input h-9 text-xs rounded-[8px] bg-(--n-11111a) border-(--n-29293d) text-white"
                   />
                 </div>
               </div>
 
               <div className="space-y-1">
-                <label className="text-[11px] font-semibold text-[#AAAAAA] block">
+                <label className="text-[11px] font-semibold text-(--n-aaaaaa) block">
                   Meeting Topic / Focus
                 </label>
                 <input
@@ -849,7 +849,7 @@ export function MeetingsSetup() {
                   value={newTopic}
                   onChange={(e) => setNewTopic(e.target.value)}
                   placeholder="Creative Strategy & Sample Review"
-                  className="input h-9 text-xs rounded-[8px] bg-[#11111a] border-[#29293d] text-white"
+                  className="input h-9 text-xs rounded-[8px] bg-(--n-11111a) border-(--n-29293d) text-white"
                 />
               </div>
 
@@ -887,33 +887,33 @@ export function MeetingsSetup() {
           {liveMeetings.map((meeting) => (
             <div
               key={meeting.id}
-              className="p-4 rounded-[14px] bg-[#191926] border border-[#29293d] space-y-3 shadow-lg"
+              className="p-4 rounded-[14px] bg-(--n-191926) border border-(--n-29293d) space-y-3 shadow-lg"
             >
               <div className="flex items-start justify-between">
                 <div>
                   <h4 className="text-xs font-semibold text-white">{meeting.companyName}</h4>
-                  <div className="text-[11px] text-[#AAAAAA]">
+                  <div className="text-[11px] text-(--n-aaaaaa)">
                     {meeting.clientName} ({meeting.email})
                   </div>
                 </div>
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded-[6px] bg-[#11111a] border border-[#29293d] text-[#10B981] flex items-center gap-1.5">
-                  <span className="size-1.5 rounded-full bg-[#10B981]" />
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded-[6px] bg-(--n-11111a) border border-(--n-29293d) text-(--accent) flex items-center gap-1.5">
+                  <span className="size-1.5 rounded-full bg-(--accent)" />
                   <span>Google Meet</span>
                 </span>
               </div>
 
-              <div className="p-3 rounded-[10px] bg-[#11111a] border border-[#29293d] space-y-1">
-                <span className="text-[10px] uppercase font-mono text-[#777777] block">
+              <div className="p-3 rounded-[10px] bg-(--n-11111a) border border-(--n-29293d) space-y-1">
+                <span className="text-[10px] uppercase font-mono text-(--n-777777) block">
                   Topic & Context:
                 </span>
                 <p className="text-xs text-white font-medium">{meeting.serviceGap}</p>
-                <div className="flex items-center gap-1 text-[11px] text-[#AAAAAA] mt-0.5 font-mono">
+                <div className="flex items-center gap-1 text-[11px] text-(--n-aaaaaa) mt-0.5 font-mono">
                   <span>Meet Link:</span>
                   <span className="text-white truncate max-w-[200px]">{meeting.meetingLink}</span>
                 </div>
               </div>
 
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pt-2 border-t border-[#29293d] text-xs">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pt-2 border-t border-(--n-29293d) text-xs">
                 <span className="font-medium text-white">
                   {meeting.date} at {meeting.time}
                 </span>
@@ -935,7 +935,7 @@ export function MeetingsSetup() {
                       href={meeting.googleCalendarUrl}
                       target="_blank"
                       rel="noreferrer"
-                      className="btn-secondary h-7 px-2 text-[11px] inline-flex items-center gap-1 rounded-[6px] bg-[#212132] border-[#313147] hover:border-white text-white"
+                      className="btn-secondary h-7 px-2 text-[11px] inline-flex items-center gap-1 rounded-[6px] bg-(--n-212132) border-(--n-313147) hover:border-white text-white"
                     >
                       <span>In Calendar</span>
                       <ExternalLink className="size-2.5" />
@@ -947,7 +947,7 @@ export function MeetingsSetup() {
                       )}&location=${encodeURIComponent(meeting.meetingLink)}`}
                       target="_blank"
                       rel="noreferrer"
-                      className="btn-secondary h-7 px-2 text-[11px] inline-flex items-center gap-1 rounded-[6px] bg-[#212132] border-[#313147] hover:border-white text-white"
+                      className="btn-secondary h-7 px-2 text-[11px] inline-flex items-center gap-1 rounded-[6px] bg-(--n-212132) border-(--n-313147) hover:border-white text-white"
                     >
                       <span>In Calendar</span>
                       <ExternalLink className="size-2.5" />

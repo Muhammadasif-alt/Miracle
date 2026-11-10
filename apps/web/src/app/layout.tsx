@@ -28,7 +28,15 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${geistSans.variable} ${geistMono.variable} h-full`}>
+    <html lang="en" data-theme="dark" suppressHydrationWarning className={`${geistSans.variable} ${geistMono.variable} h-full`}>
+      <head>
+        {/* Apply the saved day/night theme before first paint so the page never flashes the wrong colours. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `try{var t=localStorage.getItem("miracle-theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}`,
+          }}
+        />
+      </head>
       <body className="min-h-full font-sans">{children}</body>
     </html>
   );

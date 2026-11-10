@@ -62,10 +62,10 @@ function RadarVisual() {
 /** Replies scrolling with their detected intent. */
 function InboxVisual() {
   const rows = [
-    ["Interested", "Sounds good, can we talk Thursday?", "bg-emerald-400/15 text-emerald-200"],
+    ["Interested", "Sounds good, can we talk Thursday?", "bg-[#6ad8ff]/15 text-[#a8e8ff]"],
     ["Question", "What would a logo refresh cost?", "bg-sky-400/15 text-sky-200"],
     ["Not now", "Maybe after the holidays.", "bg-amber-300/15 text-amber-100"],
-    ["Interested", "Send me some website examples", "bg-emerald-400/15 text-emerald-200"],
+    ["Interested", "Send me some website examples", "bg-[#6ad8ff]/15 text-[#a8e8ff]"],
     ["Unsubscribe", "Please remove me.", "bg-rose-400/15 text-rose-200"],
   ] as const;
   const list = [...rows, ...rows];

@@ -88,7 +88,7 @@ export default function AIConsole() {
           <span className="ml-auto flex items-center gap-1.5 text-[11px] text-muted">
             <span className="relative grid size-2 place-items-center">
               <span className="fx-pulse-ring" />
-              <span className="size-2 rounded-full bg-emerald-400" />
+              <span className="size-2 rounded-full bg-[#6ad8ff]" />
             </span>
             live
           </span>
@@ -121,7 +121,7 @@ export default function AIConsole() {
                   <span className={s === "active" ? "text-shine font-medium" : "text-muted"}>{label}</span>
                   <span className="ml-auto">
                     {s === "active" ? <Loader2 className="size-4 animate-spin text-white/70" aria-hidden="true" /> : null}
-                    {s === "done" ? <Check className="size-4 text-emerald-400" aria-hidden="true" /> : null}
+                    {s === "done" ? <Check className="size-4 text-[#6ad8ff]" aria-hidden="true" /> : null}
                   </span>
                 </li>
               );
@@ -167,7 +167,7 @@ export default function AIConsole() {
           {/* result */}
           <div
             className={`flex items-center gap-2 rounded-xl border px-3 py-2.5 text-[13px] transition-all duration-700 ${
-              done ? "border-emerald-400/30 bg-emerald-400/[0.07] text-emerald-200 opacity-100" : "border-transparent opacity-0"
+              done ? "border-[#6ad8ff]/30 bg-[#6ad8ff]/[0.07] text-[#a8e8ff] opacity-100" : "border-transparent opacity-0"
             }`}
           >
             <Sparkles className="size-4 shrink-0" aria-hidden="true" />

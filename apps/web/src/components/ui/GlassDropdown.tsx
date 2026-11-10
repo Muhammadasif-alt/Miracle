@@ -92,7 +92,7 @@ export function GlassDropdown({
 
       {/* Floating Glass Menu */}
       {isOpen && (
-        <div className="absolute z-50 left-0 right-0 mt-2 p-2 rounded-[20px] bg-[#0E1017]/95 backdrop-blur-[28px] border border-[rgba(255,255,255,0.12)] shadow-[0_16px_40px_rgba(0,0,0,0.6)] space-y-1.5 animate-in fade-in zoom-in-95 duration-100">
+        <div className="absolute z-50 left-0 right-0 mt-2 p-2 rounded-[20px] bg-(--n-0e1017)/95 backdrop-blur-[28px] border border-[rgba(255,255,255,0.12)] shadow-[0_16px_40px_rgba(0,0,0,0.6)] space-y-1.5 animate-in fade-in zoom-in-95 duration-100">
           {/* Search Input */}
           <div className="relative mb-1">
             <Search className="size-3.5 text-[#64748B] absolute left-3 top-1/2 -translate-y-1/2" />
@@ -123,7 +123,7 @@ export function GlassDropdown({
                     className={`w-full px-3 py-2 rounded-[10px] text-xs text-left flex items-center justify-between transition-colors ${
                       isSelected
                         ? "bg-[rgba(255,255,255,0.12)] text-white font-semibold"
-                        : "text-[#CBD5E1] hover:bg-[rgba(255,255,255,0.06)] hover:text-white"
+                        : "text-(--n-cbd5e1) hover:bg-[rgba(255,255,255,0.06)] hover:text-white"
                     }`}
                   >
                     <span className="flex items-center gap-2 truncate">

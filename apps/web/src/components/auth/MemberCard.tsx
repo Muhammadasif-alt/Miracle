@@ -11,7 +11,7 @@ export function MemberAvatar({ member, size = "md" }: { member: TeamMember; size
   const box = size === "lg" ? "size-20 text-3xl" : "size-14 text-xl";
   return (
     <span className={`grid ${box} place-items-center rounded-full bg-gradient-to-br p-[2px] ${ROLE_STYLE[member.role].ring}`}>
-      <span className="grid size-full place-items-center rounded-full bg-[#0a0a11] font-semibold text-fg">{member.name[0]}</span>
+      <span className="grid size-full place-items-center rounded-full bg-(--n-0a0a11) font-semibold text-fg">{member.name[0]}</span>
     </span>
   );
 }

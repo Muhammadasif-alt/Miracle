@@ -44,12 +44,12 @@
 
 html {
   color-scheme: dark;
-  background-color: #05050a;
+  background-color: var(--color-canvas);
 }
 
 body {
-  background: #05050a;
-  color: #FFFFFF;
+  background: var(--n-05050a);
+  color: var(--n-ffffff);
   font-feature-settings: "cv11", "ss01";
   -webkit-font-smoothing: antialiased;
   overflow-x: clip;
@@ -57,7 +57,7 @@ body {
 
 ::selection {
   background: rgba(255, 255, 255, 0.25);
-  color: #FFFFFF;
+  color: var(--n-ffffff);
 }
 
 :focus-visible {
@@ -68,10 +68,10 @@ body {
 
 /* Monochrome UI Components */
 @layer components {
-  /* Card / Container (#11111a with #29293d border) */
+  /* Card / Container (var(--n-11111a) with var(--n-29293d) border) */
   .card {
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.01)), #11111a;
-    border: 1px solid #29293d;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.01)), var(--n-11111a);
+    border: 1px solid var(--n-29293d);
     border-radius: 20px;
     box-shadow:
       inset 0 1px 0 rgba(255, 255, 255, 0.05),
@@ -106,38 +106,38 @@ body {
   }
 
   .btn-primary {
-    background: #FFFFFF;
-    color: #05050a;
+    background: var(--n-ffffff);
+    color: var(--n-05050a);
     font-weight: 600;
-    border: 1px solid #FFFFFF;
+    border: 1px solid var(--n-ffffff);
   }
 
   .btn-primary:hover:not(:disabled) {
-    background: #EAEAEA;
+    background: var(--n-eaeaea);
     transform: translateY(-1px);
     box-shadow: 0 4px 14px rgba(255, 255, 255, 0.15);
   }
 
   .btn-secondary {
-    background: #191926;
-    border: 1px solid #29293d;
-    color: #FFFFFF;
+    background: var(--n-191926);
+    border: 1px solid var(--n-29293d);
+    color: var(--n-ffffff);
   }
 
   .btn-secondary:hover:not(:disabled) {
-    background: #242424;
-    border-color: #38384f;
+    background: var(--n-242424);
+    border-color: var(--n-38384f);
     transform: translateY(-1px);
   }
 
   .btn-ghost {
     background: transparent;
-    color: #AAAAAA;
+    color: var(--n-aaaaaa);
   }
 
   .btn-ghost:hover:not(:disabled) {
     background: rgba(255, 255, 255, 0.06);
-    color: #FFFFFF;
+    color: var(--n-ffffff);
   }
 
   .btn-lg {
@@ -152,22 +152,22 @@ body {
     height: 2.75rem;
     width: 100%;
     border-radius: 12px;
-    border: 1px solid #29293d;
-    background: #191926;
+    border: 1px solid var(--n-29293d);
+    background: var(--n-191926);
     padding: 0 0.875rem;
     font-size: 0.875rem;
-    color: #FFFFFF;
+    color: var(--n-ffffff);
     transition: all 180ms ease;
   }
 
   .input::placeholder {
-    color: #64647c;
+    color: var(--n-64647c);
   }
 
   .input:focus {
     outline: none;
-    border-color: #4f4f6a;
-    background: #1f1f2e;
+    border-color: var(--n-4f4f6a);
+    background: var(--n-1f1f2e);
   }
 
   select.input {
@@ -182,8 +182,8 @@ body {
   }
 
   select.input option {
-    background: #11111a;
-    color: #FFFFFF;
+    background: var(--n-11111a);
+    color: var(--n-ffffff);
   }
 
   /* Badges & Pills */
@@ -196,17 +196,17 @@ body {
     border-radius: 9999px;
     font-size: 0.75rem;
     font-weight: 500;
-    border: 1px solid #29293d;
-    background: #191926;
-    color: #AAAAAA;
+    border: 1px solid var(--n-29293d);
+    background: var(--n-191926);
+    color: var(--n-aaaaaa);
     white-space: nowrap;
   }
 
   /* Status Indicators & Semantic Badges (Part 1.1 Fix for All-White Washout) */
   .badge-success {
-    background: rgba(16, 185, 129, 0.12);
-    border: 1px solid rgba(16, 185, 129, 0.35);
-    color: #10B981;
+    background: rgba(139, 123, 255, 0.12);
+    border: 1px solid rgba(139, 123, 255, 0.35);
+    color: var(--accent);
     font-weight: 600;
   }
 
@@ -229,8 +229,8 @@ body {
     width: 6.5px;
     height: 6.5px;
     border-radius: 9999px;
-    background-color: #10B981;
-    box-shadow: 0 0 8px rgba(16, 185, 129, 0.7);
+    background-color: var(--accent);
+    box-shadow: 0 0 8px rgba(139, 123, 255, 0.7);
   }
 
   .status-dot-active {
@@ -238,8 +238,8 @@ body {
     width: 6.5px;
     height: 6.5px;
     border-radius: 9999px;
-    background-color: #10B981;
-    box-shadow: 0 0 8px rgba(16, 185, 129, 0.7);
+    background-color: var(--accent);
+    box-shadow: 0 0 8px rgba(139, 123, 255, 0.7);
   }
 
   .status-dot-error {
@@ -269,11 +269,11 @@ body {
     box-shadow: 0 4px 20px rgba(239, 68, 68, 0.15);
   }
 
-  /* Semantic Action Buttons (Electric Blue #2563EB & Emerald #10B981) */
+  /* Semantic Action Buttons (Electric Blue #2563EB & Emerald var(--accent)) */
   .btn-send,
   .btn-action-primary {
     background: #2563EB;
-    color: #FFFFFF;
+    color: var(--on-accent);
     font-weight: 600;
     border: 1px solid #3B82F6;
     box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
@@ -288,17 +288,17 @@ body {
   }
 
   .btn-action-emerald {
-    background: #10B981;
-    color: #FFFFFF;
+    background: var(--accent);
+    color: var(--on-accent);
     font-weight: 600;
-    border: 1px solid #34D399;
-    box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);
+    border: 1px solid var(--accent-text);
+    box-shadow: 0 4px 14px rgba(139, 123, 255, 0.35);
   }
 
   .btn-action-emerald:hover:not(:disabled) {
-    background: #059669;
+    background: var(--accent-strong);
     transform: translateY(-1px);
-    box-shadow: 0 6px 20px rgba(16, 185, 129, 0.5);
+    box-shadow: 0 6px 20px rgba(139, 123, 255, 0.5);
   }
 
   .status-dot-pending {
@@ -306,7 +306,7 @@ body {
     width: 6px;
     height: 6px;
     border-radius: 9999px;
-    background-color: #AAAAAA;
+    background-color: var(--n-aaaaaa);
   }
 
   .eyebrow {
@@ -314,7 +314,7 @@ body {
     font-weight: 600;
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    color: #AAAAAA;
+    color: var(--n-aaaaaa);
   }
 }
 
@@ -408,7 +408,7 @@ body {
   }
   .fx-beam-inner {
     border-radius: 23px;
-    background: #070707;
+    background: var(--beam-bg);
     height: 100%;
   }
 
@@ -649,7 +649,7 @@ body {
     background:
       radial-gradient(900px 500px at 15% -10%, rgba(109, 93, 252, 0.13), transparent 60%),
       radial-gradient(700px 420px at 100% 0%, rgba(43, 184, 232, 0.08), transparent 60%),
-      #05050a;
+      var(--color-canvas);
   }
   .nav-active {
     background: linear-gradient(90deg, rgba(157, 140, 255, 0.16), rgba(106, 216, 255, 0.05));
@@ -660,3 +660,184 @@ body {
     background: linear-gradient(90deg, #9d8cff, #6ad8ff);
   }
 }
+
+/* ─── Day / night themes ───────────────────────────────────────────────────────────────
+ * <html data-theme="dark|light"> (set before paint by the root layout, toggled by ThemeToggle).
+ * App colours are CSS variables: --n-* are the neutral surfaces/borders/greys, --accent* are the hero
+ * violet/cyan that replaced the old green. The landing page pins data-theme="dark".
+ * Generated by the theme codemod from the colours the screens actually use.
+ */
+:root,
+[data-theme="dark"] {
+  color-scheme: dark;
+  --accent: #9d8cff;
+  --accent-strong: #8b7bff;
+  --accent-text: #c7bfff;
+  --good: #6ad8ff;
+  --good-text: #a8e8ff;
+  --on-accent: #ffffff;
+  --beam-bg: #070707;
+  --color-white: #ffffff;
+  --color-black: #000000;
+  --color-canvas: #05050a;
+  --color-surface: #11111a;
+  --color-raised: #191926;
+  --color-hover: rgba(255, 255, 255, 0.06);
+  --color-line: #29293d;
+  --color-line-strong: #38384f;
+  --color-fg: #ffffff;
+  --color-muted: #aaaaaa;
+  --color-faint: #777777;
+  --color-brand: #ffffff;
+  --color-brand-strong: #ffffff;
+  --color-brand-soft: rgba(255, 255, 255, 0.08);
+  --color-accent: #ffffff;
+  --color-accent-soft: rgba(255, 255, 255, 0.05);
+  --color-tone: #ffffff;
+  --color-tone-soft: rgba(255, 255, 255, 0.06);
+  --n-05050a: #05050a;
+  --n-07070c: #07070c;
+  --n-08080e: #08080e;
+  --n-0a0a11: #0a0a11;
+  --n-0e1017: #0e1017;
+  --n-0e2017: #16122c;
+  --n-101018: #101018;
+  --n-11111a: #11111a;
+  --n-12141c: #12141c;
+  --n-13131d: #13131d;
+  --n-140608: #140608;
+  --n-14141e: #14141e;
+  --n-15151f: #15151f;
+  --n-171723: #171723;
+  --n-181510: #181510;
+  --n-191926: #191926;
+  --n-1b1b29: #1b1b29;
+  --n-1d1d2c: #1d1d2c;
+  --n-1e1e2d: #1e1e2d;
+  --n-1f1f2e: #1f1f2e;
+  --n-200a0d: #200a0d;
+  --n-212132: #212132;
+  --n-232335: #232335;
+  --n-242424: #242424;
+  --n-252525: #252525;
+  --n-252538: #252538;
+  --n-27272a: #27272a;
+  --n-27273a: #27273a;
+  --n-29293d: #29293d;
+  --n-2a2e3d: #2a2e3d;
+  --n-2b2b2b: #2b2b2b;
+  --n-2c2c42: #2c2c42;
+  --n-313147: #313147;
+  --n-383838: #383838;
+  --n-38384f: #38384f;
+  --n-4f4f6a: #4f4f6a;
+  --n-555555: #555555;
+  --n-5c5c75: #5c5c75;
+  --n-64647c: #64647c;
+  --n-666666: #666666;
+  --n-6b6b85: #6b6b85;
+  --n-71717a: #71717a;
+  --n-777777: #777777;
+  --n-888888: #888888;
+  --n-8b8ba3: #8b8ba3;
+  --n-a1a1aa: #a1a1aa;
+  --n-aaaaaa: #aaaaaa;
+  --n-cbd5e1: #cbd5e1;
+  --n-cccccc: #cccccc;
+  --n-d1d5db: #d1d5db;
+  --n-d4d4d8: #d4d4d8;
+  --n-e2e8f0: #e2e8f0;
+  --n-e4e4e7: #e4e4e7;
+  --n-e5e5e5: #e5e5e5;
+  --n-eaeaea: #eaeaea;
+  --n-ffffff: #ffffff;
+}
+
+[data-theme="light"] {
+  color-scheme: light;
+  --accent: #6d5dfc;
+  --accent-strong: #5646e8;
+  --accent-text: #5646e8;
+  --good: #0b8fc0;
+  --good-text: #0a6f96;
+  --on-accent: #ffffff;
+  --beam-bg: #ffffff;
+  --color-white: #14141f;
+  --color-black: #ffffff;
+  --color-canvas: #f4f4f9;
+  --color-surface: #ffffff;
+  --color-raised: #f7f7fb;
+  --color-hover: rgba(20, 20, 40, 0.05);
+  --color-line: #e2e2ec;
+  --color-line-strong: #cfcfdd;
+  --color-fg: #14141f;
+  --color-muted: #555568;
+  --color-faint: #8a8a9c;
+  --color-brand: #14141f;
+  --color-brand-strong: #14141f;
+  --color-brand-soft: rgba(20, 20, 40, 0.06);
+  --color-accent: #14141f;
+  --color-accent-soft: rgba(20, 20, 40, 0.05);
+  --color-tone: #14141f;
+  --color-tone-soft: rgba(20, 20, 40, 0.06);
+  --n-05050a: #f0f1f6;
+  --n-07070c: #f0f1f6;
+  --n-08080e: #f0f1f6;
+  --n-0a0a11: #fafbff;
+  --n-0e1017: #f8f9fe;
+  --n-0e2017: #f5f6fb;
+  --n-101018: #f7f8fd;
+  --n-11111a: #f7f8fd;
+  --n-12141c: #f6f7fc;
+  --n-13131d: #f5f6fb;
+  --n-140608: #fafbff;
+  --n-14141e: #f5f6fb;
+  --n-15151f: #f5f6fb;
+  --n-171723: #f3f4f9;
+  --n-181510: #f6f7fc;
+  --n-191926: #f2f3f8;
+  --n-1b1b29: #f1f2f7;
+  --n-1d1d2c: #f0f1f6;
+  --n-1e1e2d: #e7e8ed;
+  --n-1f1f2e: #e7e8ed;
+  --n-200a0d: #f7f8fd;
+  --n-212132: #e5e6eb;
+  --n-232335: #e3e4e9;
+  --n-242424: #e7e8ed;
+  --n-252525: #e6e7ec;
+  --n-252538: #e1e2e7;
+  --n-27272a: #e4e5ea;
+  --n-27273a: #e0e1e6;
+  --n-29293d: #dedfe4;
+  --n-2a2e3d: #dcdde2;
+  --n-2b2b2b: #e1e2e7;
+  --n-2c2c42: #dbdce1;
+  --n-313147: #d7d8dd;
+  --n-383838: #d8d9de;
+  --n-38384f: #d2d3d8;
+  --n-4f4f6a: #c0c1c6;
+  --n-555555: #8f8f99;
+  --n-5c5c75: #81818b;
+  --n-64647c: #7b7b85;
+  --n-666666: #80808a;
+  --n-6b6b85: #74747e;
+  --n-71717a: #74747e;
+  --n-777777: #72727c;
+  --n-888888: #63636d;
+  --n-8b8ba3: #5a5a64;
+  --n-a1a1aa: #4b4b55;
+  --n-aaaaaa: #464650;
+  --n-cbd5e1: #21212b;
+  --n-cccccc: #292933;
+  --n-d1d5db: #21212b;
+  --n-d4d4d8: #21212b;
+  --n-e2e8f0: #11111b;
+  --n-e4e4e7: #14141e;
+  --n-e5e5e5: #14141e;
+  --n-eaeaea: #10101a;
+  --n-ffffff: #000008;
+}
+
+/* White logo SVG: dark ink in day mode (the landing page pins dark, and the later rule wins inside it). */
+[data-theme="light"] .logo-img { filter: invert(1) brightness(0.15); }
+[data-theme="dark"] .logo-img { filter: none; }

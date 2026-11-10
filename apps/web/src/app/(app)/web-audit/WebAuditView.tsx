@@ -26,7 +26,7 @@ const VERDICT: Record<AuditResult["verdict"], { label: string; cls: string; line
   UNREACHABLE: { label: "Website down", cls: "border-rose-400/30 bg-rose-400/10 text-rose-200", line: "The site doesn't open — a rebuild is the pitch." },
   WEAK: { label: "Weak website", cls: "border-amber-300/30 bg-amber-300/10 text-amber-100", line: "Plenty to fix — a strong lead for development work." },
   AVERAGE: { label: "Average website", cls: "border-sky-400/30 bg-sky-400/10 text-sky-200", line: "Works, but there are clear upgrades to offer." },
-  GOOD: { label: "Good website", cls: "border-emerald-400/30 bg-emerald-400/10 text-emerald-200", line: "Solid site — pitch SEO or ranking instead." },
+  GOOD: { label: "Good website", cls: "border-(--good)/30 bg-(--good)/10 text-(--good-text)", line: "Solid site — pitch SEO or ranking instead." },
 };
 
 const PRIORITY = {
@@ -36,7 +36,7 @@ const PRIORITY = {
 };
 
 function StatusIcon({ s }: { s: Check["status"] }) {
-  if (s === "pass") return <CheckCircle2 className="size-4 shrink-0 text-emerald-400" aria-label="Pass" />;
+  if (s === "pass") return <CheckCircle2 className="size-4 shrink-0 text-(--good)" aria-label="Pass" />;
   if (s === "warn") return <AlertTriangle className="size-4 shrink-0 text-amber-300" aria-label="Needs work" />;
   if (s === "fail") return <XCircle className="size-4 shrink-0 text-rose-400" aria-label="Fail" />;
   return <CircleSlash className="size-4 shrink-0 text-faint" aria-label="Not checked" />;
@@ -86,7 +86,7 @@ function Bar({ label, value }: { label: string; value?: number }) {
       </div>
       <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-white/10">
         <div
-          className={`h-full rounded-full ${value == null ? "" : value >= 80 ? "bg-emerald-400" : value >= 50 ? "bg-amber-300" : "bg-rose-400"}`}
+          className={`h-full rounded-full ${value == null ? "" : value >= 80 ? "bg-(--good)" : value >= 50 ? "bg-amber-300" : "bg-rose-400"}`}
           style={{ width: `${value ?? 0}%`, transition: "width 1s cubic-bezier(.2,.7,.2,1)" }}
         />
       </div>
@@ -165,12 +165,12 @@ export function WebAuditView() {
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-start gap-4">
             <span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-[#6ad8ff] via-[#8b7bff] to-[#7dffc4] p-[1.5px]">
-              <span className="grid size-full place-items-center rounded-[14px] bg-[#0a0a11]">
+              <span className="grid size-full place-items-center rounded-[14px] bg-(--n-0a0a11)">
                 <ScanSearch className="size-5 text-white" aria-hidden="true" />
               </span>
             </span>
             <div>
-              <p className="text-[11px] font-semibold tracking-[0.14em] text-[#a99dff] uppercase">Developer tools</p>
+              <p className="text-[11px] font-semibold tracking-[0.14em] text-(--accent-text) uppercase">Developer tools</p>
               <h1 className="mt-1 text-2xl font-semibold tracking-tight">Web Audit</h1>
               <p className="mt-1 max-w-xl text-sm text-muted">
                 Check any lead’s website and Google visibility, then see exactly which development services to pitch.
@@ -274,7 +274,7 @@ export function WebAuditView() {
               <div>
                 <span className="relative mx-auto grid size-14 place-items-center">
                   <span className="fx-pulse-ring" />
-                  <ScanSearch className="size-6 text-[#c7bfff]" aria-hidden="true" />
+                  <ScanSearch className="size-6 text-(--accent-text)" aria-hidden="true" />
                 </span>
                 <p className="mt-4 text-sm font-medium">Auditing…</p>
                 <p className="mt-1 text-xs text-faint">Opening the site, checking SEO and asking Google. Speed tests can take up to a minute.</p>
@@ -301,7 +301,7 @@ export function WebAuditView() {
                     {v ? <span className={`rounded-full border px-2.5 py-0.5 text-xs font-semibold ${v.cls}`}>{v.label}</span> : null}
                   </div>
                   {result.finalUrl ? (
-                    <a href={result.finalUrl} target="_blank" rel="noreferrer" className="mt-1 inline-flex items-center gap-1 text-xs text-[#a99dff] hover:underline">
+                    <a href={result.finalUrl} target="_blank" rel="noreferrer" className="mt-1 inline-flex items-center gap-1 text-xs text-(--accent-text) hover:underline">
                       {result.finalUrl.replace(/^https?:\/\//, "")}
                       <ExternalLink className="size-3" aria-hidden="true" />
                     </a>
@@ -319,7 +319,7 @@ export function WebAuditView() {
               {/* opportunities */}
               <div className="card p-6">
                 <h3 className="flex items-center gap-2 text-sm font-semibold">
-                  <Sparkles className="size-4 text-[#c7bfff]" aria-hidden="true" />
+                  <Sparkles className="size-4 text-(--accent-text)" aria-hidden="true" />
                   What Asif can offer
                 </h3>
                 {result.opportunities.length === 0 ? (
@@ -361,7 +361,7 @@ export function WebAuditView() {
                           {result.listing.websiteMatches === false ? <span className="ml-1 text-amber-200">· listing links a different site</span> : null}
                         </p>
                         {result.listing.mapsUrl ? (
-                          <a href={result.listing.mapsUrl} target="_blank" rel="noreferrer" className="mt-1 inline-flex items-center gap-1 text-xs text-[#a99dff] hover:underline">
+                          <a href={result.listing.mapsUrl} target="_blank" rel="noreferrer" className="mt-1 inline-flex items-center gap-1 text-xs text-(--accent-text) hover:underline">
                             Open in Maps <ExternalLink className="size-3" aria-hidden="true" />
                           </a>
                         ) : null}
