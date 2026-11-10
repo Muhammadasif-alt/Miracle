@@ -1,0 +1,622 @@
+import { JOBS, PRIORITY, QUEUES, type JobName, type QueueName } from '@revenue-os/shared';
+
+/**
+ * Event registry (docs/07 §125). Every domain event the system emits is declared here: its payload, version,
+ * owning module, PII class, whether replaying it is safe, and which consumers (queue jobs) it fans out to.
+ *
+ * Rules:
+ * - Names are past-tense business language (CompanyCreated, not CompanyThingUpdated) — docs/07 §123.
+ * - Payloads carry IDs and minimal business data, never whole rows or message bodies (docs/07 §89, §132).
+ * - An incompatible payload change is a new version; old versions stay readable (docs/07 §88).
+ * - Replaying an event never re-executes an external side effect (docs/07 §79-80): routes that lead to one
+ *   go through ExternalAction, whose idempotency key and state machine make a replay a no-op.
+ */
+export interface EventPayloads {
+  // identity
+  WorkspaceCreated: { slug: string; ownerUserId: string };
+  MemberAdded: { memberId: string; userId: string; role: string };
+  // crm
+  CompanyCreated: { companyId: string; displayName: string; websiteDomain: string | null };
+  CompanyUpdated: { companyId: string; version: number; changedFields: string[] };
+  PersonCreated: { personId: string };
+  EmploymentAttached: { employmentId: string; personId: string; companyId: string };
+  ContactPointAdded: { contactPointId: string; entityType: string; entityId: string; type: string };
+  CompanyArchived: { companyId: string; reason: string | null };
+  CompanyRestored: { companyId: string };
+  PersonUpdated: { personId: string; version: number; changedFields: string[] };
+  EmploymentEnded: { employmentId: string; personId: string; companyId: string };
+  ContactPointUpdated: { contactPointId: string; entityType: string; entityId: string; changedFields: string[] };
+  ContactPointArchived: { contactPointId: string; entityType: string; entityId: string };
+  // entity resolution (docs/17 §40-45)
+  DuplicateCandidateDetected: { candidateId: string; entityType: string; leftId: string; rightId: string; score: number; confidence: string };
+  DuplicateCandidateRejected: { candidateId: string; entityType: string; leftId: string; rightId: string };
+  /** Source was merged into target; the source row is archived and kept for history. */
+  CompaniesMerged: { mergeId: string; sourceCompanyId: string; targetCompanyId: string; mode: 'MANUAL' | 'AUTO'; candidateId: string | null };
+  // discovery (docs/07 §60-62, docs/17 §46-51)
+  MarketCreated: { marketId: string; marketKey: string };
+  DiscoveryMissionStarted: { missionId: string; marketId: string; mode: string };
+  /** A round finished and coverage was assessed. `decision` CONTINUE schedules the next round. */
+  DiscoveryRoundCompleted: { missionId: string; round: number; newUnique: number; cumulativeUnique: number; decision: 'CONTINUE' | 'COMPLETE' };
+  DiscoveryMissionPaused: { missionId: string; reason: string | null };
+  DiscoveryMissionResumed: { missionId: string; status: string };
+  DiscoveryMissionWaiting: { missionId: string; reason: string; retryAt: string };
+  DiscoveryMissionBlocked: { missionId: string; reason: string };
+  DiscoveryMissionCompleted: { missionId: string; stopReason: string; coverageConfidence: string; uniqueCompanies: number };
+  DiscoveryMissionFailed: { missionId: string; reason: string };
+  /** A mission found a business (new or already known) — research/enrichment eligibility hooks here (Phase 8). */
+  CompanyDiscovered: { companyId: string; missionId: string; observationId: string; provider: string; outcome: 'CREATED' | 'MATCHED_EXISTING' };
+  // research (docs/17 §52-57)
+  /** A person asked for research; the run waits in QUEUED for a worker. */
+  ResearchRequested: { runId: string; companyId: string };
+  ResearchRunStarted: { runId: string; companyId: string; trigger: string };
+  /** PARTIAL = useful results with named gaps (e.g. no verifier connected). */
+  ResearchRunCompleted: { runId: string; companyId: string; status: 'COMPLETED' | 'PARTIAL'; hypotheses: number; gaps: number };
+  ResearchRunFailed: { runId: string; companyId: string; reason: string };
+  WebsiteAudited: { websiteId: string; companyId: string; auditId: string; auditVersion: number; status: string };
+  /** A rule (Phase 9: AI) proposed why the company may need us — a hypothesis, not a verified pain. */
+  OpportunityHypothesisProposed: { hypothesisId: string; companyId: string; key: string; confidence: string };
+  OpportunityHypothesisInvalidated: { hypothesisId: string; companyId: string; key: string; reason: string };
+  ContactPointVerified: { contactPointId: string; entityType: string; entityId: string; status: string; provider: string };
+  // AI runtime (docs/08, docs/17 §58-61) — agents only propose; these record what they did
+  CompanyIntelligenceRequested: { companyId: string; requestId: string };
+  AgentTaskCompleted: { agentTaskId: string; agentType: string; entityType: string; entityId: string; decision: string };
+  AgentTaskFailed: { agentTaskId: string; agentType: string; entityType: string; entityId: string; category: string; reason: string };
+  AgentTaskBlocked: { agentTaskId: string; agentType: string; entityType: string; entityId: string; category: string; reason: string };
+  CompanyAssessed: { companyId: string; agentTaskId: string; priority: string };
+  /** A person turned an agent on/off or changed its daily limit. */
+  AgentDefinitionUpdated: { agentType: string; changedFields: string[] };
+  // policy (docs/10, docs/17 §62-66) — decisions are rows (PolicyDecision); these record the state changes
+  /** Kill switch: ACTIVE ↔ PAUSED ↔ EMERGENCY_STOP. */
+  OutboundStateChanged: { from: string; to: string; reason: string | null };
+  /** Autonomy level or a configurable rule changed; `version` is the new policy version. */
+  PolicyUpdated: { version: number; changedFields: string[] };
+  SuppressionAdded: { suppressionId: string; scope: string; reason: string; cancelledActions: number };
+  SuppressionLifted: { suppressionId: string; scope: string; reason: string };
+  /** The Policy Engine said ASK: a person must approve this exact action before it can run. */
+  ApprovalRequested: { approvalId: string; externalActionId: string; actionType: string; reasonCodes: string[]; expiresAt: string };
+  ApprovalGranted: { approvalId: string; externalActionId: string; outcome: string };
+  ApprovalRejected: { approvalId: string; externalActionId: string };
+  ApprovalExpired: { approvalId: string; externalActionId: string };
+  /** The action changed after the approval was asked for, so the approval no longer applies. */
+  ApprovalInvalidated: { approvalId: string; externalActionId: string; reason: string };
+  // campaigns (docs/09 §21-33, docs/17 §67-76)
+  CampaignCreated: { campaignId: string; name: string };
+  CampaignUpdated: { campaignId: string; changedFields: string[] };
+  /** Pre-launch checks ran; READY when all blocking checks passed. */
+  CampaignChecked: { campaignId: string; status: string; failed: string[] };
+  CampaignStarted: { campaignId: string; enrolled: number };
+  CampaignPaused: { campaignId: string; reason: string | null };
+  CampaignResumed: { campaignId: string };
+  CampaignCompleted: { campaignId: string; reason: string };
+  CampaignArchived: { campaignId: string };
+  ProspectsEnrolled: { campaignId: string; count: number };
+  /** A genuine reply ended the cold sequence; pending follow-ups were cancelled. */
+  EnrollmentReplied: { enrollmentId: string; campaignId: string; companyId: string; mailboxMessageId: string | null };
+  EnrollmentSuppressed: { enrollmentId: string; campaignId: string; reason: string };
+  EnrollmentBlocked: { enrollmentId: string; campaignId: string; reason: string };
+  EnrollmentCompleted: { enrollmentId: string; campaignId: string };
+  EnrollmentRemoved: { enrollmentId: string; campaignId: string; reason: string };
+  CampaignMessageDrafted: { messageId: string; enrollmentId: string; campaignId: string; position: number; decision: string };
+  MailboxMessageReceived: { mailboxMessageId: string; integrationId: string; kind: string; enrollmentId: string | null };
+  // conversations (docs/17 §77-86) — ids and labels only, never message text
+  ConversationStarted: { conversationId: string; companyId: string; campaignId: string | null; enrollmentId: string | null };
+  /** An inbound message joined the conversation; the cold sequence was already stopped in the same transaction. */
+  ConversationMessageReceived: { conversationId: string; messageId: string; kind: string };
+  ConversationMessageClassified: { conversationId: string; messageId: string; primaryIntent: string; method: string; needsHuman: boolean };
+  /** A person must act (pricing, risk, unclear, AI unavailable, snooze ended…). */
+  ConversationEscalated: { conversationId: string; reason: string };
+  ConversationReplyDrafted: { conversationId: string; replyId: string; author: string; status: string };
+  ConversationReplySent: { conversationId: string; replyId: string; externalActionId: string; author: string };
+  ConversationModeChanged: { conversationId: string; from: string; to: string; takeover: boolean; cancelledReplies: number };
+  ConversationResolved: { conversationId: string; reason: string | null };
+  ConversationReopened: { conversationId: string };
+  ConversationSnoozed: { conversationId: string; until: string };
+  ConversationAssigned: { conversationId: string; assignedToId: string | null };
+  ConversationNoteAdded: { conversationId: string; messageId: string };
+  /** A stated fact was rejected by a person (applied facts are part of ConversationMessageClassified). */
+  ConversationContextCorrected: { conversationId: string; extractionId: string; field: string };
+  // opportunities (docs/17 §87-92) — values in minor units, never conversation text
+  OpportunityCreated: { opportunityId: string; companyId: string; conversationId: string | null; source: string };
+  /** Commercial evidence was noticed in a conversation but not acted on — a person decides (aggregate: the conversation). */
+  OpportunityProposed: { conversationId: string; companyId: string; strength: string; reason: string };
+  OpportunityUpdated: { opportunityId: string; changedFields: string[] };
+  OpportunityStageChanged: { opportunityId: string; from: string; to: string; reason: string | null };
+  OpportunityWon: { opportunityId: string; companyId: string; amountMinor: number; currency: string };
+  OpportunityLost: { opportunityId: string; companyId: string; reason: string; revisitAt: string | null };
+  OpportunityReopened: { opportunityId: string; from: string; to: string; reason: string };
+  OpportunityStakeholderAdded: { opportunityId: string; name: string; role: string; source: string };
+  QualificationUpdated: { opportunityId: string; status: string; changedKeys: string[] };
+  // meetings (docs/17 §93-98) — ids and times, never message text. MeetingBooked is never edited: a move or a
+  // cancellation is a new event (docs/07 §106).
+  MeetingProposed: { meetingId: string; companyId: string; conversationId: string | null; opportunityId: string | null; slots: number; requestedBy: string };
+  MeetingSlotsOffered: { meetingId: string; slots: number };
+  MeetingBookingRequested: { meetingId: string; externalActionId: string; start: string; requestedBy: string };
+  MeetingBooked: { meetingId: string; companyId: string; opportunityId: string | null; start: string; end: string; via: 'PROVIDER' | 'MANUAL' };
+  MeetingBookingFailed: { meetingId: string; reason: string };
+  MeetingRescheduleRequested: { meetingId: string; externalActionId: string; from: string | null; to: string };
+  MeetingRescheduled: { meetingId: string; from: string | null; to: string; source: string };
+  MeetingCancelled: { meetingId: string; source: string; reason: string | null };
+  MeetingCompleted: { meetingId: string; outcome: string; recommendedStage: string | null };
+  MeetingNoShow: { meetingId: string; companyId: string; noShows: number };
+  MeetingBriefGenerated: { meetingId: string; version: number; gaps: number };
+  MeetingTypeUpdated: { meetingTypeId: string; changedFields: string[] };
+  SchedulingProfileUpdated: { userId: string; changedFields: string[] };
+  // memory (docs/13 §100-113) — keys and ids, never the remembered value or the quote
+  MemoryCandidateCreated: { candidateId: string; companyId: string; key: string; status: string };
+  MemoryCandidateRejected: { candidateId: string; key: string };
+  MemoryAccepted: { memoryId: string; companyId: string; entityType: string; key: string; via: 'AUTO' | 'PERSON' | 'NOTE' };
+  MemoryCorrected: { memoryId: string; replacedMemoryId: string; companyId: string; key: string };
+  MemorySuperseded: { memoryId: string; supersededById: string; key: string };
+  MemoryInvalidated: { memoryId: string; key: string };
+  MemoryVerified: { memoryId: string; key: string };
+  MemoryExpired: { memoryId: string; key: string; status: 'STALE' | 'ARCHIVED' };
+  MemoryConflictDetected: { conflictId: string; memoryAId: string; memoryBId: string; key: string };
+  MemoryConflictResolved: { conflictId: string; resolution: string };
+  CommitmentCreated: { commitmentId: string; companyId: string; direction: string; origin: string; dueAt: string | null };
+  CommitmentDue: { commitmentId: string; companyId: string; direction: string };
+  CommitmentCompleted: { commitmentId: string; companyId: string };
+  CommitmentBroken: { commitmentId: string; companyId: string };
+  CommitmentCancelled: { commitmentId: string; companyId: string };
+  RelationshipCreated: { relationshipId: string; companyId: string; type: string; status: string };
+  RelationshipUpdated: { relationshipId: string; status: string };
+  // signals (docs/17 §106-110) — ids and labels only; a signal never authorises outreach by itself
+  SignalDetected: { signalId: string; companyId: string; type: string; strength: string; status: string; sourceKind: string };
+  /** Another source reported the same event: one signal, more evidence (screen #9 §15). */
+  SignalEvidenceAdded: { signalId: string; companyId: string; evidenceId: string; sourceCount: number };
+  SignalInterpreted: { signalId: string; source: 'RULE' | 'AI'; hypothesisId: string | null; whyNow: boolean };
+  SignalStatusChanged: { signalId: string; from: string; to: string; reason: string | null };
+  SignalActedOn: { signalId: string; companyId: string; action: string };
+  SignalDismissed: { signalId: string; feedback: string };
+  SignalExpired: { signalId: string; type: string };
+  SignalWindowMissed: { signalId: string; companyId: string; type: string };
+  SignalRuleMatched: { signalId: string; ruleId: string; actions: string[] };
+  SignalRuleChanged: { ruleId: string; change: 'CREATED' | 'UPDATED' | 'DELETED' };
+  // analytics (docs/17 §111-113) — ids and amounts in minor units
+  RevenueRecorded: { revenueEventId: string; opportunityId: string; companyId: string; type: string; amountMinor: number; currency: string };
+  AttributionUpdated: { opportunityId: string; touches: number };
+  AnalyticsViewSaved: { viewId: string; change: 'CREATED' | 'UPDATED' | 'DELETED' };
+  WatchlistChanged: { watchlistId: string; change: 'CREATED' | 'UPDATED' | 'ARCHIVED' | 'MEMBERS_ADDED' | 'MEMBERS_REMOVED'; count: number };
+  // knowledge (docs/13 §100-113)
+  KnowledgeDraftCreated: { itemId: string; revisionId: string; type: string; version: number; origin: string };
+  KnowledgeReviewRequested: { itemId: string; revisionId: string; version: number };
+  KnowledgeApproved: { itemId: string; revisionId: string; version: number; effectiveFrom: string | null };
+  KnowledgePublished: { itemId: string; revisionId: string; version: number; previousRevisionId: string | null };
+  KnowledgeRejected: { itemId: string; revisionId: string; version: number };
+  KnowledgeStale: { itemId: string; reason: string };
+  KnowledgeArchived: { itemId: string };
+  KnowledgeDisabled: { itemId: string };
+  KnowledgeEnabled: { itemId: string };
+  KnowledgeConflictDetected: { conflictId: string; itemId: string; conflictType: string };
+  KnowledgeConflictResolved: { conflictId: string; itemId: string; resolution: string };
+  KnowledgeGapDetected: { gapId: string; topic: string; occurrences: number };
+  KnowledgeGapResolved: { gapId: string; itemId: string | null; status: string };
+  KnowledgeSourceAdded: { sourceId: string; contentType: string; sizeBytes: number };
+  KnowledgeSourceProcessed: { sourceId: string; status: string; candidates: number; conflicts: number };
+  KnowledgeControlsChanged: { changedFields: string[] };
+  KnowledgeFeedbackRecorded: { itemId: string; kind: string };
+  // evidence
+  EvidenceRecorded: { evidenceId: string; entityType: string; entityId: string; sourceType: string };
+  FactRecorded: { factId: string; entityType: string; entityId: string; field: string; outcome: 'CREATED' | 'CONFIRMED' };
+  FactConflicted: { factId: string; conflictingFactIds: string[]; entityType: string; entityId: string; field: string };
+  FactSuperseded: { factId: string; supersededFactIds: string[]; entityType: string; entityId: string; field: string };
+  // external actions (docs/11 §18-29)
+  ExternalActionPrepared: { externalActionId: string; actionType: string; provider: string };
+  ExternalActionQueued: { externalActionId: string; actionType: string };
+  ExternalActionSucceeded: { externalActionId: string; actionType: string; providerRef: string; attempt: number };
+  ExternalActionFailed: { externalActionId: string; actionType: string; reason: string; attempt: number };
+  ExternalActionBlocked: { externalActionId: string; actionType: string; reason: string };
+  ExternalActionCancelled: { externalActionId: string; actionType: string; reason: string };
+  ExternalActionWaiting: { externalActionId: string; actionType: string; reason: string };
+  /** A worker's claim expired mid-call (crash). The consumer reconciles with the provider — never blindly resends. */
+  ExternalActionClaimExpired: { externalActionId: string; actionType: string; claimedAt: string };
+  /** Reconciliation could not tell whether the provider acted. A human decides (Phase 21 turns this into attention). */
+  ExternalActionNeedsReview: { externalActionId: string; actionType: string; reason: string };
+  // integrations (docs/12 §129) — never carry credentials
+  IntegrationConnected: { integrationId: string; provider: string; reconnected: boolean };
+  IntegrationDisconnected: { integrationId: string; provider: string };
+  IntegrationDisabled: { integrationId: string; provider: string };
+  IntegrationEnabled: { integrationId: string; provider: string };
+  /** Capability health transitions, observed from real calls or health checks. */
+  IntegrationDegraded: ProviderHealthPayload;
+  IntegrationAuthExpired: ProviderHealthPayload;
+  ProviderRateLimited: ProviderHealthPayload;
+  ProviderUnavailable: ProviderHealthPayload;
+  ProviderRecovered: ProviderHealthPayload;
+}
+
+export interface ProviderHealthPayload {
+  integrationId: string;
+  provider: string;
+  capability: string;
+  from: string | null;
+  to: string;
+  reason: string | null;
+}
+
+export type EventType = keyof EventPayloads;
+
+export type AggregateType =
+  | 'WORKSPACE'
+  | 'COMPANY'
+  | 'PERSON'
+  | 'EMPLOYMENT'
+  | 'CONTACT_POINT'
+  | 'EVIDENCE'
+  | 'FACT'
+  | 'EXTERNAL_ACTION'
+  | 'INTEGRATION'
+  | 'ENTITY_MATCH_CANDIDATE'
+  | 'MARKET'
+  | 'DISCOVERY_MISSION'
+  | 'WEBSITE'
+  | 'RESEARCH_RUN'
+  | 'OPPORTUNITY_HYPOTHESIS'
+  | 'AGENT_TASK'
+  | 'SUPPRESSION'
+  | 'APPROVAL_REQUEST'
+  | 'CAMPAIGN'
+  | 'CAMPAIGN_ENROLLMENT'
+  | 'CAMPAIGN_MESSAGE'
+  | 'MAILBOX_MESSAGE'
+  | 'CONVERSATION'
+  | 'OPPORTUNITY'
+  | 'MEETING'
+  | 'MEETING_TYPE'
+  | 'MEMORY'
+  | 'COMMITMENT'
+  | 'RELATIONSHIP'
+  | 'KNOWLEDGE_ITEM'
+  | 'KNOWLEDGE_SOURCE'
+  | 'KNOWLEDGE_GAP'
+  | 'SIGNAL'
+  | 'SIGNAL_WATCHLIST'
+  | 'SIGNAL_RULE'
+  | 'REVENUE_EVENT'
+  | 'ANALYTICS_VIEW';
+
+/** An outbox row as the dispatcher sees it, used to build consumer job payloads. */
+export interface DispatchedEvent {
+  outboxId: string;
+  domainEventId: string | null;
+  eventType: string;
+  eventVersion: number;
+  workspaceId: string | null;
+  aggregateType: string;
+  aggregateId: string;
+  payload: Record<string, unknown>;
+  correlationId: string | null;
+}
+
+export interface EventRoute {
+  /** Stable consumer name; part of the job id, so the same event is enqueued at most once per consumer. */
+  consumer: string;
+  queue: QueueName;
+  job: JobName;
+  priority: number;
+  /** Minimal job payload (IDs + intent). Tracing fields are added by the dispatcher. */
+  toJobData: (event: DispatchedEvent) => Record<string, unknown>;
+}
+
+export interface EventDefinition {
+  version: number;
+  owner: 'identity' | 'crm' | 'evidence' | 'execution' | 'integrations' | 'discovery' | 'research' | 'ai' | 'policy' | 'campaigns' | 'conversations' | 'sales' | 'meetings' | 'memory' | 'knowledge' | 'signals' | 'analytics';
+  aggregateType: AggregateType;
+  description: string;
+  pii: 'none' | 'low';
+  replaySafe: boolean;
+  routes: EventRoute[];
+}
+
+const executeExternalAction: EventRoute = {
+  consumer: 'outbound.execute-external-action',
+  queue: QUEUES.outbound,
+  job: JOBS.externalActionExecute,
+  priority: PRIORITY.NORMAL,
+  toJobData: (e) => ({ externalActionId: e.aggregateId, schemaVersion: 1 }),
+};
+
+/** Discovery work runs one bounded round per job; the job reloads the mission and continues from its DB state. */
+const advanceMission: EventRoute = {
+  consumer: 'discovery.advance-mission',
+  queue: QUEUES.discovery,
+  job: JOBS.discoveryAdvance,
+  priority: PRIORITY.BACKGROUND,
+  toJobData: (e) => ({ missionId: e.aggregateId, schemaVersion: 1 }),
+};
+
+/** Research of one company; the job reloads the company and decides whether a run is due (docs/11 §76 research dedupe). */
+const researchCompany: EventRoute = {
+  consumer: 'research.discovered-company',
+  queue: QUEUES.research,
+  job: JOBS.researchRun,
+  priority: PRIORITY.BACKGROUND,
+  toJobData: (e) => ({ companyId: e.payload.companyId, missionId: e.payload.missionId, trigger: 'DISCOVERY', schemaVersion: 1 }),
+};
+
+/** The company's AI agents run after research; each agent skips work it already did for the same input key. */
+const companyIntelligence: EventRoute = {
+  consumer: 'ai.after-research',
+  queue: QUEUES.ai,
+  job: JOBS.aiCompanyIntelligence,
+  priority: PRIORITY.BACKGROUND,
+  toJobData: (e) => ({ companyId: e.payload.companyId, inputKey: `research:${e.aggregateId}`, schemaVersion: 1 }),
+};
+
+/** Campaign bookkeeping after an outbound action changes state; ignores actions that aren't campaign messages. */
+const campaignActionSettled: EventRoute = {
+  consumer: 'campaign.action-settled',
+  queue: QUEUES.outbound,
+  job: JOBS.campaignActionSettled,
+  priority: PRIORITY.HIGH,
+  toJobData: (e) => ({ externalActionId: e.aggregateId, schemaVersion: 1 }),
+};
+const settles = (consumer: string): EventRoute => ({ ...campaignActionSettled, consumer: `campaign.action-${consumer}` });
+
+/** A prospect is waiting: classifying and answering their message runs ahead of background AI work. */
+const processConversationMessage: EventRoute = {
+  consumer: 'conversation.process-message',
+  queue: QUEUES.ai,
+  job: JOBS.conversationProcess,
+  priority: PRIORITY.HIGH,
+  toJobData: (e) => ({ conversationId: e.aggregateId, messageId: e.payload.messageId, schemaVersion: 1 }),
+};
+
+/** A published revision's chunks get vectors (only chunks whose text has no vector for the current model). */
+const embedKnowledge: EventRoute = {
+  consumer: 'knowledge.embed-published',
+  queue: QUEUES.ai,
+  job: JOBS.knowledgeEmbed,
+  priority: PRIORITY.BACKGROUND,
+  toJobData: (e) => ({ itemId: e.aggregateId, revisionId: e.payload.revisionId, schemaVersion: 1 }),
+};
+
+/** An uploaded document is parsed and mined for candidates — a source, never truth. */
+const processKnowledgeSource: EventRoute = {
+  consumer: 'knowledge.process-document',
+  queue: QUEUES.ai,
+  job: JOBS.knowledgeDocumentProcess,
+  priority: PRIORITY.NORMAL,
+  toJobData: (e) => ({ sourceId: e.aggregateId, schemaVersion: 1 }),
+};
+
+/** Signal detection from one source event; the job reloads current state and is idempotent (dedupe key per event). */
+const detectSignals = (consumer: string, source: string, toRef: (e: DispatchedEvent) => { companyId?: unknown; refId: unknown }): EventRoute => ({
+  consumer: `signals.detect-${consumer}`,
+  queue: QUEUES.ai,
+  job: JOBS.signalDetect,
+  priority: PRIORITY.BACKGROUND,
+  toJobData: (e) => ({ ...toRef(e), source, schemaVersion: 1 }),
+});
+
+/** A deal's acquisition chain is (re)built from the operational records; the WON revenue event is recorded once. */
+const attributeDeal = (consumer: string): EventRoute => ({
+  consumer: `analytics.attribute-${consumer}`,
+  queue: QUEUES.analytics,
+  job: JOBS.analyticsAttribute,
+  priority: PRIORITY.BACKGROUND,
+  toJobData: (e) => ({ opportunityId: e.payload.opportunityId ?? e.aggregateId, schemaVersion: 1 }),
+});
+
+/** The Signal Agent interprets a new signal (hedged, evidence-backed) — a proposal, never an action. */
+const analyzeSignal: EventRoute = {
+  consumer: 'signals.analyze',
+  queue: QUEUES.ai,
+  job: JOBS.signalAnalyze,
+  priority: PRIORITY.BACKGROUND,
+  toJobData: (e) => ({ signalId: e.aggregateId, schemaVersion: 1 }),
+};
+
+const entity = (owner: EventDefinition['owner'], aggregateType: AggregateType, description: string, pii: 'none' | 'low' = 'none'): EventDefinition => ({
+  version: 1,
+  owner,
+  aggregateType,
+  description,
+  pii,
+  replaySafe: true,
+  routes: [],
+});
+
+export const EVENTS: { [K in EventType]: EventDefinition } = {
+  WorkspaceCreated: entity('identity', 'WORKSPACE', 'A workspace was created with its owner'),
+  MemberAdded: entity('identity', 'WORKSPACE', 'A user joined a workspace with a role'),
+  CompanyCreated: entity('crm', 'COMPANY', 'A canonical company record was created', 'low'),
+  CompanyUpdated: entity('crm', 'COMPANY', 'Company fields changed (names of the fields, not values)'),
+  PersonCreated: entity('crm', 'PERSON', 'A person record was created'),
+  EmploymentAttached: { ...entity('crm', 'EMPLOYMENT', 'A person was linked to a company'), routes: [detectSignals('employment-attached', 'CRM', (e) => ({ companyId: e.payload.companyId, refId: e.aggregateId }))] },
+  ContactPointAdded: entity('crm', 'CONTACT_POINT', 'An email/phone/… was added to a person or company'),
+  CompanyArchived: entity('crm', 'COMPANY', 'A company was archived (kept for history, hidden from lists)'),
+  CompanyRestored: entity('crm', 'COMPANY', 'An archived company was restored'),
+  PersonUpdated: entity('crm', 'PERSON', 'Person fields changed (names of the fields, not values)'),
+  EmploymentEnded: { ...entity('crm', 'EMPLOYMENT', 'A person no longer works at a company (history kept)'), routes: [detectSignals('employment-ended', 'CRM', (e) => ({ companyId: e.payload.companyId, refId: e.aggregateId }))] },
+  ContactPointUpdated: entity('crm', 'CONTACT_POINT', 'A contact point changed (e.g. became primary)'),
+  ContactPointArchived: entity('crm', 'CONTACT_POINT', 'A contact point was removed from use (kept for history)'),
+  DuplicateCandidateDetected: entity('crm', 'ENTITY_MATCH_CANDIDATE', 'Two records may be the same business — review needed'),
+  DuplicateCandidateRejected: entity('crm', 'ENTITY_MATCH_CANDIDATE', 'A human said two records are different businesses'),
+  CompaniesMerged: entity('crm', 'COMPANY', 'Two company records were merged; source history preserved'),
+  MarketCreated: entity('discovery', 'MARKET', 'A market (territory + industry) was defined'),
+  DiscoveryMissionStarted: { ...entity('discovery', 'DISCOVERY_MISSION', 'A discovery mission was started'), routes: [advanceMission] },
+  DiscoveryRoundCompleted: {
+    ...entity('discovery', 'DISCOVERY_MISSION', 'A discovery round finished and coverage was assessed'),
+    routes: [{ ...advanceMission, consumer: 'discovery.next-round' }],
+  },
+  DiscoveryMissionPaused: entity('discovery', 'DISCOVERY_MISSION', 'A person paused a discovery mission'),
+  DiscoveryMissionResumed: { ...entity('discovery', 'DISCOVERY_MISSION', 'A paused, waiting or blocked mission continues'), routes: [{ ...advanceMission, consumer: 'discovery.resume-mission' }] },
+  DiscoveryMissionWaiting: entity('discovery', 'DISCOVERY_MISSION', 'A mission waits on a temporary dependency (e.g. rate limit)'),
+  DiscoveryMissionBlocked: entity('discovery', 'DISCOVERY_MISSION', 'A mission cannot continue until something changes (e.g. no lead source)'),
+  DiscoveryMissionCompleted: entity('discovery', 'DISCOVERY_MISSION', 'A mission finished by its stopping criteria (not a claim of 100% coverage)'),
+  DiscoveryMissionFailed: entity('discovery', 'DISCOVERY_MISSION', 'A mission failed unrecoverably'),
+  CompanyDiscovered: {
+    ...entity('discovery', 'COMPANY', 'A discovery mission found a business (new or already known)'),
+    routes: [researchCompany, detectSignals('discovered', 'DISCOVERY', (e) => ({ companyId: e.payload.companyId, refId: e.payload.missionId }))],
+  },
+  ResearchRequested: {
+    ...entity('research', 'RESEARCH_RUN', 'A person asked for a company to be researched'),
+    // A person is waiting for it: ahead of background research from discovery.
+    routes: [{ ...researchCompany, consumer: 'research.run-requested', priority: PRIORITY.NORMAL, toJobData: (e) => ({ runId: e.aggregateId, companyId: e.payload.companyId, trigger: 'MANUAL', schemaVersion: 1 }) }],
+  },
+  ResearchRunStarted: entity('research', 'RESEARCH_RUN', 'Research of a company started'),
+  ResearchRunCompleted: {
+    ...entity('research', 'RESEARCH_RUN', 'Research finished (COMPLETED, or PARTIAL with named gaps)'),
+    routes: [companyIntelligence, detectSignals('research', 'RESEARCH', (e) => ({ companyId: e.payload.companyId, refId: e.aggregateId }))],
+  },
+  ResearchRunFailed: entity('research', 'RESEARCH_RUN', 'Research of a company failed unrecoverably'),
+  WebsiteAudited: entity('research', 'WEBSITE', 'Deterministic website checks were recorded'),
+  OpportunityHypothesisProposed: entity('research', 'OPPORTUNITY_HYPOTHESIS', 'A possible need was proposed from observed facts (not verified)'),
+  OpportunityHypothesisInvalidated: entity('research', 'OPPORTUNITY_HYPOTHESIS', 'A later observation no longer supports a hypothesis'),
+  CompanyIntelligenceRequested: {
+    ...entity('ai', 'COMPANY', 'A person asked the AI agents to assess a company again'),
+    routes: [{ ...companyIntelligence, consumer: 'ai.requested', priority: PRIORITY.NORMAL, toJobData: (e) => ({ companyId: e.aggregateId, inputKey: `request:${e.payload.requestId}`, schemaVersion: 1 }) }],
+  },
+  AgentTaskCompleted: entity('ai', 'AGENT_TASK', 'An agent finished a task; its answer passed the validators'),
+  AgentTaskFailed: entity('ai', 'AGENT_TASK', 'An agent task failed (model, provider or validation)'),
+  AgentTaskBlocked: entity('ai', 'AGENT_TASK', 'An agent task could not run (disabled, budget, no model, tool not allowed)'),
+  CompanyAssessed: entity('ai', 'COMPANY', 'The Scoring Agent assessed a company (levels with reasons)'),
+  AgentDefinitionUpdated: entity('ai', 'WORKSPACE', 'An agent was turned on/off or its daily limit changed'),
+  CampaignCreated: entity('campaigns', 'CAMPAIGN', 'A draft campaign was created'),
+  CampaignUpdated: entity('campaigns', 'CAMPAIGN', 'A draft campaign changed (field names, not values)'),
+  CampaignChecked: entity('campaigns', 'CAMPAIGN', 'Pre-launch checks ran (audience, contacts, suppression, mailbox, policy)'),
+  CampaignStarted: entity('campaigns', 'CAMPAIGN', 'A person launched the campaign; the first cohort was enrolled'),
+  CampaignPaused: entity('campaigns', 'CAMPAIGN', 'The campaign stopped sending; inbound keeps being processed'),
+  CampaignResumed: entity('campaigns', 'CAMPAIGN', 'A paused campaign continues — every prospect is re-checked first'),
+  CampaignCompleted: entity('campaigns', 'CAMPAIGN', 'The campaign ended (audience exhausted or ended by a person)'),
+  CampaignArchived: entity('campaigns', 'CAMPAIGN', 'The campaign was archived (history kept)'),
+  ProspectsEnrolled: entity('campaigns', 'CAMPAIGN', 'Eligible prospects were enrolled into the campaign'),
+  EnrollmentReplied: entity('campaigns', 'CAMPAIGN_ENROLLMENT', 'The prospect replied — the cold sequence stopped'),
+  EnrollmentSuppressed: entity('campaigns', 'CAMPAIGN_ENROLLMENT', 'The prospect unsubscribed or is on the do-not-contact list'),
+  EnrollmentBlocked: entity('campaigns', 'CAMPAIGN_ENROLLMENT', 'The prospect can not be contacted right now (invalid email, policy, rejected draft)'),
+  EnrollmentCompleted: entity('campaigns', 'CAMPAIGN_ENROLLMENT', 'Every step of the sequence was sent'),
+  EnrollmentRemoved: entity('campaigns', 'CAMPAIGN_ENROLLMENT', 'A person removed the prospect from the campaign'),
+  CampaignMessageDrafted: entity('campaigns', 'CAMPAIGN_MESSAGE', 'The Campaign Agent drafted a message; the Policy Engine decided on it'),
+  MailboxMessageReceived: entity('campaigns', 'MAILBOX_MESSAGE', 'Mailbox sync saw an inbound email (reply, auto-reply, unsubscribe or bounce)', 'low'),
+  ConversationStarted: entity('conversations', 'CONVERSATION', 'A prospect replied and a conversation began (the cold sequence stopped)'),
+  ConversationMessageReceived: {
+    ...entity('conversations', 'CONVERSATION', 'An inbound message joined a conversation'),
+    routes: [processConversationMessage],
+  },
+  ConversationMessageClassified: {
+    ...entity('conversations', 'CONVERSATION', 'The message was read: intents, questions, objections, stated facts'),
+    routes: [detectSignals('conversation', 'CONVERSATION', (e) => ({ refId: e.payload.messageId }))],
+  },
+  ConversationEscalated: entity('conversations', 'CONVERSATION', 'A person must act on this conversation'),
+  ConversationReplyDrafted: entity('conversations', 'CONVERSATION', 'A reply was drafted (by the AI or a person)'),
+  ConversationReplySent: entity('conversations', 'CONVERSATION', 'A reply was sent through its external action'),
+  ConversationModeChanged: entity('conversations', 'CONVERSATION', 'AUTO / ASSIST / HUMAN changed (a takeover cancels pending AI replies)'),
+  ConversationResolved: entity('conversations', 'CONVERSATION', 'A person marked the conversation resolved'),
+  ConversationReopened: entity('conversations', 'CONVERSATION', 'A resolved conversation was reopened'),
+  ConversationSnoozed: entity('conversations', 'CONVERSATION', 'The conversation was snoozed until a date'),
+  ConversationAssigned: entity('conversations', 'CONVERSATION', 'The conversation was assigned to a person (or unassigned)'),
+  ConversationNoteAdded: entity('conversations', 'CONVERSATION', 'An internal note was added (never sent to the prospect)'),
+  ConversationContextCorrected: entity('conversations', 'CONVERSATION', 'A person rejected a fact taken from the conversation'),
+  OpportunityCreated: { ...entity('sales', 'OPPORTUNITY', 'A deal was created from commercial evidence (or by a person)'), routes: [attributeDeal('created')] },
+  OpportunityProposed: entity('sales', 'CONVERSATION', 'Commercial evidence was noticed in a conversation — a person may create a deal'),
+  OpportunityUpdated: entity('sales', 'OPPORTUNITY', 'Deal fields changed (field names, not values)'),
+  OpportunityStageChanged: entity('sales', 'OPPORTUNITY', 'The deal moved stage through the change-stage command'),
+  OpportunityWon: { ...entity('sales', 'OPPORTUNITY', 'The deal was won — the company became a customer and prospecting stopped'), routes: [attributeDeal('won')] },
+  OpportunityLost: { ...entity('sales', 'OPPORTUNITY', 'The deal was lost with a reason (maybe a revisit date)'), routes: [detectSignals('lost-deal', 'PIPELINE', (e) => ({ companyId: e.payload.companyId, refId: e.aggregateId }))] },
+  OpportunityReopened: entity('sales', 'OPPORTUNITY', 'A won or lost deal was reopened with a reason'),
+  OpportunityStakeholderAdded: entity('sales', 'OPPORTUNITY', 'Someone involved in the decision was added or suggested'),
+  QualificationUpdated: entity('sales', 'OPPORTUNITY', 'Known / unknown qualification changed'),
+  MeetingProposed: entity('meetings', 'MEETING', 'Meeting intent recorded with genuinely free slots (nothing booked yet)'),
+  MeetingSlotsOffered: entity('meetings', 'MEETING', 'Free times were offered to the prospect'),
+  MeetingBookingRequested: entity('meetings', 'MEETING', 'A booking was asked for through a calendar.book action (the Policy Engine decides)'),
+  MeetingBooked: entity('meetings', 'MEETING', 'The calendar confirmed the event (or a person recorded an external booking)'),
+  MeetingBookingFailed: entity('meetings', 'MEETING', 'The booking was not confirmed (slot taken, blocked, failed) — new times are needed'),
+  MeetingRescheduleRequested: entity('meetings', 'MEETING', 'A new time was asked for; the old time stands until the calendar confirms'),
+  MeetingRescheduled: entity('meetings', 'MEETING', 'The meeting moved (by us, or changed in the calendar)'),
+  MeetingCancelled: entity('meetings', 'MEETING', 'The meeting was cancelled, with who and why (not a lost deal)'),
+  MeetingCompleted: entity('meetings', 'MEETING', 'The meeting happened; outcome and next step recorded'),
+  MeetingNoShow: entity('meetings', 'MEETING', 'The prospect did not attend (not a lost deal)'),
+  MeetingBriefGenerated: entity('meetings', 'MEETING', 'A pre-meeting brief was prepared from current data'),
+  MeetingTypeUpdated: entity('meetings', 'MEETING_TYPE', 'A meeting type was created or changed (field names, not values)'),
+  MemoryCandidateCreated: entity('memory', 'MEMORY', 'Extraction proposed a memory (accepted automatically or waiting for a person)'),
+  MemoryCandidateRejected: entity('memory', 'MEMORY', 'A person rejected a proposed memory'),
+  MemoryAccepted: entity('memory', 'MEMORY', 'A memory became active (auto-accepted, confirmed by a person, or a note)'),
+  MemoryCorrected: entity('memory', 'MEMORY', 'A person corrected a memory — the old one is kept as history'),
+  MemorySuperseded: entity('memory', 'MEMORY', 'A newer statement replaced a memory (history kept)'),
+  MemoryInvalidated: entity('memory', 'MEMORY', 'A person marked a memory incorrect — the AI stops using it'),
+  MemoryVerified: entity('memory', 'MEMORY', 'A memory was confirmed again (fresh again)'),
+  MemoryExpired: entity('memory', 'MEMORY', 'A memory passed its re-check date (STALE) or its validity (ARCHIVED)'),
+  MemoryConflictDetected: entity('memory', 'MEMORY', 'Two memories disagree — kept visible until resolved'),
+  MemoryConflictResolved: entity('memory', 'MEMORY', 'A memory conflict was resolved (newer wins, keep one, or both valid)'),
+  CommitmentCreated: entity('memory', 'COMMITMENT', 'A promise was recorded (ours or theirs) with its due date'),
+  CommitmentDue: { ...entity('memory', 'COMMITMENT', 'A promise reached its due date'), routes: [detectSignals('commitment-due', 'COMMITMENT', (e) => ({ companyId: e.payload.companyId, refId: e.aggregateId }))] },
+  CommitmentCompleted: entity('memory', 'COMMITMENT', 'A promise was kept, with evidence'),
+  CommitmentBroken: entity('memory', 'COMMITMENT', 'A promise was not kept'),
+  CommitmentCancelled: entity('memory', 'COMMITMENT', 'A promise no longer applies'),
+  RelationshipCreated: entity('memory', 'RELATIONSHIP', 'A relationship edge was suggested or recorded (e.g. a referral)'),
+  RelationshipUpdated: entity('memory', 'RELATIONSHIP', 'A relationship was confirmed, ended or marked wrong'),
+  SignalDetected: { ...entity('signals', 'SIGNAL', 'A meaningful change about a company was detected (evidence of change, not intent)'), routes: [analyzeSignal] },
+  SignalEvidenceAdded: entity('signals', 'SIGNAL', 'Another source reported the same event — merged into the existing signal'),
+  SignalInterpreted: entity('signals', 'SIGNAL', 'A hedged interpretation and "why now" were recorded (rule or Signal Agent)'),
+  SignalStatusChanged: entity('signals', 'SIGNAL', 'A signal moved between detected / validated / actionable / monitor'),
+  SignalActedOn: entity('signals', 'SIGNAL', 'Someone acted on a signal (research, attach to deal, re-engage, campaign candidate)'),
+  SignalDismissed: entity('signals', 'SIGNAL', 'A person marked a signal not relevant, with a reason'),
+  SignalExpired: entity('signals', 'SIGNAL', 'A signal is too old to drive a "why now"'),
+  SignalWindowMissed: entity('signals', 'SIGNAL', 'The action window of a time-boxed signal passed without action'),
+  SignalRuleMatched: entity('signals', 'SIGNAL', 'A signal rule matched and its (non-sending) actions were applied'),
+  SignalRuleChanged: entity('signals', 'SIGNAL_RULE', 'A signal rule was created, changed or deleted'),
+  RevenueRecorded: entity('analytics', 'REVENUE_EVENT', 'Revenue was recorded (won amount, payment, expansion or refund)'),
+  AttributionUpdated: entity('analytics', 'OPPORTUNITY', 'A deal\u2019s acquisition chain (attribution touches) was built or refreshed'),
+  AnalyticsViewSaved: entity('analytics', 'ANALYTICS_VIEW', 'A saved analytics view was created, changed or deleted'),
+  WatchlistChanged: entity('signals', 'SIGNAL_WATCHLIST', 'A watchlist or its members changed'),
+  KnowledgeDraftCreated: entity('knowledge', 'KNOWLEDGE_ITEM', 'A knowledge draft was created (person, document, human answer, rollback) — not used by AI'),
+  KnowledgeReviewRequested: entity('knowledge', 'KNOWLEDGE_ITEM', 'A draft was submitted for approval'),
+  KnowledgeApproved: entity('knowledge', 'KNOWLEDGE_ITEM', 'A person approved a revision (live now or at its effective date)'),
+  KnowledgePublished: { ...entity('knowledge', 'KNOWLEDGE_ITEM', 'A revision became the current truth the AI may use'), routes: [embedKnowledge] },
+  KnowledgeRejected: entity('knowledge', 'KNOWLEDGE_ITEM', 'A revision was rejected'),
+  KnowledgeStale: entity('knowledge', 'KNOWLEDGE_ITEM', 'Knowledge passed its review date or was reported outdated'),
+  KnowledgeArchived: entity('knowledge', 'KNOWLEDGE_ITEM', 'Knowledge was archived (history keeps its references)'),
+  KnowledgeDisabled: entity('knowledge', 'KNOWLEDGE_ITEM', 'Emergency: the item is unavailable to the AI immediately'),
+  KnowledgeEnabled: entity('knowledge', 'KNOWLEDGE_ITEM', 'The item is available to the AI again'),
+  KnowledgeConflictDetected: entity('knowledge', 'KNOWLEDGE_ITEM', 'Two pieces of knowledge disagree — the AI does not answer from them'),
+  KnowledgeConflictResolved: entity('knowledge', 'KNOWLEDGE_ITEM', 'A knowledge conflict was resolved or dismissed'),
+  KnowledgeGapDetected: entity('knowledge', 'KNOWLEDGE_GAP', 'A question the AI could not answer from approved knowledge (new or asked again)'),
+  KnowledgeGapResolved: entity('knowledge', 'KNOWLEDGE_GAP', 'Approved knowledge now answers the gap (or it was dismissed)'),
+  KnowledgeSourceAdded: { ...entity('knowledge', 'KNOWLEDGE_SOURCE', 'A document was uploaded (a source, not truth)'), routes: [processKnowledgeSource] },
+  KnowledgeSourceProcessed: entity('knowledge', 'KNOWLEDGE_SOURCE', 'A document was parsed and its candidates extracted for review'),
+  KnowledgeControlsChanged: entity('knowledge', 'WORKSPACE', 'Granular knowledge kill rules changed (e.g. AI pricing answers off)'),
+  KnowledgeFeedbackRecorded: entity('knowledge', 'KNOWLEDGE_ITEM', 'Helpful / outdated / incorrect / incomplete feedback on an item'),
+  SchedulingProfileUpdated: entity('meetings', 'WORKSPACE', 'A team member changed when they can be booked'),
+  OutboundStateChanged: entity('policy', 'WORKSPACE', 'Outbound was paused, emergency-stopped or resumed (kill switch)'),
+  PolicyUpdated: entity('policy', 'WORKSPACE', 'The autonomy level or a configurable rule changed (new policy version)'),
+  SuppressionAdded: entity('policy', 'SUPPRESSION', 'A contact, domain, person or company was put on the do-not-contact list'),
+  SuppressionLifted: entity('policy', 'SUPPRESSION', 'A person lifted a liftable suppression (history kept)'),
+  ApprovalRequested: entity('policy', 'APPROVAL_REQUEST', 'The Policy Engine asked a person to approve an action'),
+  ApprovalGranted: entity('policy', 'APPROVAL_REQUEST', 'A person approved an action; it was revalidated'),
+  ApprovalRejected: entity('policy', 'APPROVAL_REQUEST', 'A person rejected an action; it was cancelled'),
+  ApprovalExpired: entity('policy', 'APPROVAL_REQUEST', 'Nobody decided in time; the action was cancelled'),
+  ApprovalInvalidated: entity('policy', 'APPROVAL_REQUEST', 'The action changed after approval was asked; the approval no longer applies'),
+  ContactPointVerified: entity('research', 'CONTACT_POINT', 'A verification provider checked an email (VALID/INVALID/RISKY/CATCH_ALL/UNKNOWN)', 'low'),
+  EvidenceRecorded: entity('evidence', 'EVIDENCE', 'Evidence from a source was stored'),
+  FactRecorded: entity('evidence', 'FACT', 'A fact was created or confirmed by new evidence'),
+  FactConflicted: entity('evidence', 'FACT', 'New evidence disagrees with an existing fact — needs resolution'),
+  FactSuperseded: entity('evidence', 'FACT', 'A fact explicitly replaced an older one'),
+  ExternalActionPrepared: entity('execution', 'EXTERNAL_ACTION', 'An external side effect was prepared with an idempotency key'),
+  ExternalActionQueued: {
+    ...entity('execution', 'EXTERNAL_ACTION', 'An external action is ready to execute'),
+    routes: [executeExternalAction, settles('queued')],
+  },
+  ExternalActionSucceeded: { ...entity('execution', 'EXTERNAL_ACTION', 'The provider confirmed the side effect'), routes: [settles('succeeded')] },
+  ExternalActionFailed: { ...entity('execution', 'EXTERNAL_ACTION', 'The side effect failed permanently or ran out of retries'), routes: [settles('failed')] },
+  ExternalActionBlocked: { ...entity('execution', 'EXTERNAL_ACTION', 'Revalidation before execution blocked the action'), routes: [settles('blocked')] },
+  ExternalActionCancelled: { ...entity('execution', 'EXTERNAL_ACTION', 'The action was cancelled before execution'), routes: [settles('cancelled')] },
+  ExternalActionWaiting: { ...entity('execution', 'EXTERNAL_ACTION', 'The action waits on a condition (e.g. provider re-auth)'), routes: [settles('waiting')] },
+  ExternalActionClaimExpired: {
+    ...entity('execution', 'EXTERNAL_ACTION', 'A worker died while executing; outcome must be reconciled'),
+    routes: [{ ...executeExternalAction, consumer: 'outbound.reconcile-external-action', priority: PRIORITY.HIGH }],
+  },
+  ExternalActionNeedsReview: entity('execution', 'EXTERNAL_ACTION', 'Outcome unknown after reconciliation — human review'),
+  IntegrationConnected: entity('integrations', 'INTEGRATION', 'A workspace connected (or reconnected) a provider'),
+  IntegrationDisconnected: entity('integrations', 'INTEGRATION', 'A provider was disconnected; history and mappings are kept'),
+  IntegrationDisabled: entity('integrations', 'INTEGRATION', 'New provider calls through this integration were stopped'),
+  IntegrationEnabled: entity('integrations', 'INTEGRATION', 'A disabled integration was turned back on'),
+  IntegrationDegraded: entity('integrations', 'INTEGRATION', 'A capability is failing intermittently'),
+  IntegrationAuthExpired: entity('integrations', 'INTEGRATION', 'The provider no longer accepts our credentials — reconnect needed'),
+  ProviderRateLimited: entity('integrations', 'INTEGRATION', 'The provider asked us to slow down for a capability'),
+  ProviderUnavailable: entity('integrations', 'INTEGRATION', 'A capability is down (circuit open)'),
+  ProviderRecovered: entity('integrations', 'INTEGRATION', 'A capability is healthy again'),
+};
+
+export function eventDefinition(type: string): EventDefinition | undefined {
+  return Object.hasOwn(EVENTS, type) ? EVENTS[type as EventType] : undefined;
+}

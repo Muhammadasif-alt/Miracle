@@ -1,0 +1,4197 @@
+// Revenue OS — master data model (docs/06-tech-spec-2-database.md).
+// Built incrementally in the locked order: Foundation → CRM Core → Discovery → … (§ Database Build Order).
+//
+// Conventions (docs/06 §3):
+// - UUID ids, UTC timestamps, `version` for optimistic concurrency, `archivedAt` instead of hard deletes.
+// - Every business row carries `workspaceId`. Child rows reference parents through composite
+//   (workspaceId, id) foreign keys, so a row can never point at another workspace's data — enforced by Postgres.
+// - Polymorphic references use (entityType, entityId) as the spec defines; services validate them.
+// - Facts, evidence and AI output stay separate. Money = amount_minor + currency (none yet).
+
+generator client {
+  provider               = "prisma-client"
+  output                 = "../src/generated/prisma"
+  moduleFormat           = "esm"
+  generatedFileExtension = "ts"
+  importFileExtension    = "js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ───────────────────────────── shared enums ─────────────────────────────
+
+enum ActorType {
+  HUMAN
+  AI_AGENT
+  SYSTEM
+  API_CLIENT
+  INTEGRATION
+}
+
+enum ConfidenceLevel {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+enum EntityType {
+  WORKSPACE
+  USER
+  COMPANY
+  PERSON
+  EMPLOYMENT
+  CONTACT_POINT
+  EVIDENCE
+  FACT
+  EXTERNAL_ACTION
+  INTEGRATION
+  ENTITY_MATCH_CANDIDATE
+  MARKET
+  DISCOVERY_MISSION
+  WEBSITE
+  RESEARCH_RUN
+  OPPORTUNITY_HYPOTHESIS
+  AGENT_TASK
+  AI_DECISION
+  SUPPRESSION
+  APPROVAL_REQUEST
+  POLICY_DECISION
+  CAMPAIGN
+  CAMPAIGN_ENROLLMENT
+  CAMPAIGN_MESSAGE
+  MAILBOX_MESSAGE
+  CONVERSATION
+  CONVERSATION_MESSAGE
+  CONVERSATION_REPLY
+  OPPORTUNITY
+  MEETING
+  MEETING_TYPE
+  MEMORY
+  COMMITMENT
+  RELATIONSHIP
+  KNOWLEDGE_ITEM
+  KNOWLEDGE_SOURCE
+  KNOWLEDGE_GAP
+  SIGNAL
+  SIGNAL_WATCHLIST
+  SIGNAL_RULE
+  REVENUE_EVENT
+  ANALYTICS_VIEW
+}
+
+// ───────────────────────── 01 Identity & Workspace ─────────────────────────
+
+enum WorkspaceStatus {
+  ACTIVE
+  SUSPENDED
+  ARCHIVED
+}
+
+model Workspace {
+  id                String          @id @default(uuid()) @db.Uuid
+  name              String
+  slug              String          @unique
+  defaultTimezone   String          @default("UTC")
+  currency          String          @default("USD") @db.Char(3)
+  language          String          @default("en")
+  status            WorkspaceStatus @default(ACTIVE)
+  /// Kill switch (docs/10 §93-102): PAUSED and EMERGENCY_STOP stop every outbound action; inbound and research continue.
+  outboundState     OutboundState   @default(ACTIVE)
+  outboundReason    String?
+  outboundChangedAt DateTime?       @db.Timestamptz(3)
+  outboundChangedBy String?         @db.Uuid
+  /// Workspace preset (docs/10 §20-30). An agent may be set lower, never higher than this.
+  autonomyLevel     AutonomyLevel   @default(L1)
+  /// Granular knowledge kill rules (screen #13 §92): { pricingAnswers: false } sends every pricing question to a person.
+  knowledgeControls Json            @default("{}")
+  createdAt         DateTime        @default(now()) @db.Timestamptz(3)
+  updatedAt         DateTime        @updatedAt @db.Timestamptz(3)
+  archivedAt        DateTime?       @db.Timestamptz(3)
+  version           Int             @default(1)
+
+  members                WorkspaceMember[]
+  sessions               Session[]
+  roles                  Role[]
+  authorityLimits        AuthorityLimit[]
+  companies              Company[]
+  companyAliases         CompanyAlias[]
+  externalEntityMappings ExternalEntityMapping[]
+  people                 Person[]
+  employments            Employment[]
+  contactPoints          ContactPoint[]
+  contactVerifications   ContactVerification[]
+  evidence               Evidence[]
+  facts                  Fact[]
+  factEvidence           FactEvidence[]
+  pipelines              Pipeline[]
+  pipelineStages         PipelineStage[]
+  policies               Policy[]
+  policyRules            PolicyRule[]
+  auditLogs              AuditLog[]
+  domainEvents           DomainEvent[]
+  outboxEvents           OutboxEvent[]
+  externalActions        ExternalAction[]
+  inboundEvents          InboundEvent[]
+  integrations           Integration[]
+  integrationHealth      IntegrationCapabilityHealth[]
+  matchCandidates        EntityMatchCandidate[]
+  entityMerges           EntityMerge[]
+  markets                Market[]
+  discoveryMissions      DiscoveryMission[]
+  discoveryQueries       DiscoveryQuery[]
+  discoveryObservations  DiscoveryObservation[]
+  coverageAssessments    CoverageAssessment[]
+  websites               Website[]
+  websiteSnapshots       WebsiteSnapshot[]
+  websiteAudits          WebsiteAudit[]
+  companyTechnologies    CompanyTechnology[]
+  socialProfiles         SocialProfile[]
+  hypotheses             OpportunityHypothesis[]
+  hypothesisEvidence     HypothesisEvidence[]
+  researchRuns           ResearchRun[]
+  agentDefinitions       AgentDefinition[]
+  agentTasks             AgentTask[]
+  aiRuns                 AiRun[]
+  aiDecisions            AiDecision[]
+  companyAssessments     CompanyAssessment[]
+  suppressions           Suppression[]
+  policyDecisions        PolicyDecision[]
+  approvalRequests       ApprovalRequest[]
+  campaigns              Campaign[]
+  campaignSteps          CampaignStep[]
+  campaignEnrollments    CampaignEnrollment[]
+  campaignMessages       CampaignMessage[]
+  mailboxMessages        MailboxMessage[]
+  mailboxCursors         MailboxCursor[]
+  integrationCredentials IntegrationCredential[]
+  oauthStates            OAuthState[]
+  conversations          Conversation[]
+  conversationMessages   ConversationMessage[]
+  messageClassifications MessageClassification[]
+  extractionCandidates   ExtractionCandidate[]
+  conversationReplies    ConversationReply[]
+  opportunities          Opportunity[]
+  opportunityHistory     OpportunityStageHistory[]
+  stakeholders           OpportunityStakeholder[]
+  opportunityLosses      OpportunityLoss[]
+  qualifications         Qualification[]
+  qualificationAnswers   QualificationAnswer[]
+  meetingTypes           MeetingType[]
+  schedulingProfiles     SchedulingProfile[]
+  meetings               Meeting[]
+  meetingAttendees       MeetingAttendee[]
+  meetingBriefs          MeetingBrief[]
+  meetingOutcomes        MeetingOutcome[]
+  meetingChanges         MeetingChange[]
+  memories               Memory[]
+  memoryCandidates       MemoryCandidate[]
+  memoryEvidence         MemoryEvidence[]
+  memoryConflicts        MemoryConflict[]
+  commitments            Commitment[]
+  relationships          Relationship[]
+  knowledgeItems         KnowledgeItem[]
+  knowledgeRevisions     KnowledgeRevision[]
+  knowledgeChunks        KnowledgeChunk[]
+  knowledgeSources       KnowledgeSource[]
+  knowledgeConflicts     KnowledgeConflict[]
+  knowledgeGaps          KnowledgeGap[]
+  knowledgeUsage         KnowledgeUsage[]
+  knowledgeFeedback      KnowledgeFeedback[]
+  signals                Signal[]
+  signalEvidence         SignalEvidence[]
+  signalWatchlists       SignalWatchlist[]
+  signalWatchlistMembers SignalWatchlistMember[]
+  signalRules            SignalRule[]
+  signalObservations     SignalObservation[]
+  attributionTouches     AttributionTouch[]
+  revenueEvents          RevenueEvent[]
+  dailyMetrics           DailyMetric[]
+  analyticsRuns          AnalyticsRun[]
+  analyticsViews         AnalyticsView[]
+}
+
+enum UserStatus {
+  INVITED
+  ACTIVE
+  SUSPENDED
+  DISABLED
+}
+
+/**
+ * A person who can sign in. Global across workspaces; access comes from WorkspaceMember. Never hard-deleted.
+ */
+model User {
+  id           String     @id @default(uuid()) @db.Uuid
+  email        String     @unique
+  name         String
+  status       UserStatus @default(INVITED)
+  timezone     String?
+  locale       String?
+  lastActiveAt DateTime?  @db.Timestamptz(3)
+  createdAt    DateTime   @default(now()) @db.Timestamptz(3)
+  updatedAt    DateTime   @updatedAt @db.Timestamptz(3)
+  version      Int        @default(1)
+
+  /// Argon2id PHC string. Never returned by the API, never logged.
+  passwordHash      String?
+  passwordUpdatedAt DateTime? @db.Timestamptz(3)
+  /// MFA-ready: enforcement for OWNER/ADMIN lands with Phase 22 hardening.
+  mfaEnabled        Boolean   @default(false)
+
+  memberships WorkspaceMember[]
+  sessions    Session[]
+}
+
+/**
+ * Server-side session (docs/15 §4-14). The browser holds only a random token in an HttpOnly cookie; the database
+ * stores its SHA-256, so a database leak doesn't leak usable sessions. Idle timeout + absolute lifetime; revocable.
+ */
+model Session {
+  id            String    @id @default(uuid()) @db.Uuid
+  userId        String    @db.Uuid
+  workspaceId   String    @db.Uuid
+  tokenHash     String    @unique
+  createdAt     DateTime  @default(now()) @db.Timestamptz(3)
+  lastUsedAt    DateTime  @default(now()) @db.Timestamptz(3)
+  idleExpiresAt DateTime  @db.Timestamptz(3)
+  expiresAt     DateTime  @db.Timestamptz(3)
+  revokedAt     DateTime? @db.Timestamptz(3)
+  revokedReason String?
+  ipAddress     String?
+  userAgent     String?
+
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@index([userId, revokedAt])
+}
+
+enum MemberStatus {
+  INVITED
+  ACTIVE
+  SUSPENDED
+  REMOVED
+}
+
+model WorkspaceMember {
+  id          String       @id @default(uuid()) @db.Uuid
+  workspaceId String       @db.Uuid
+  userId      String       @db.Uuid
+  status      MemberStatus @default(ACTIVE)
+  joinedAt    DateTime     @default(now()) @db.Timestamptz(3)
+  createdAt   DateTime     @default(now()) @db.Timestamptz(3)
+  updatedAt   DateTime     @updatedAt @db.Timestamptz(3)
+  version     Int          @default(1)
+
+  workspace       Workspace        @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+  user            User             @relation(fields: [userId], references: [id], onDelete: Restrict)
+  roles           UserRole[]
+  authorityLimits AuthorityLimit[]
+
+  @@unique([workspaceId, userId])
+  @@unique([workspaceId, id])
+  @@index([userId])
+}
+
+enum RoleKey {
+  OWNER
+  ADMIN
+  SALES
+  RESEARCHER
+  VIEWER
+}
+
+/**
+ * Roles are per workspace so each workspace can tune grants without touching others.
+ */
+model Role {
+  id          String   @id @default(uuid()) @db.Uuid
+  workspaceId String   @db.Uuid
+  key         RoleKey
+  name        String
+  description String?
+  isSystem    Boolean  @default(true)
+  createdAt   DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt   DateTime @updatedAt @db.Timestamptz(3)
+  version     Int      @default(1)
+
+  workspace       Workspace        @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+  permissions     RolePermission[]
+  userRoles       UserRole[]
+  authorityLimits AuthorityLimit[]
+
+  @@unique([workspaceId, key])
+  @@unique([workspaceId, id])
+}
+
+enum ActionClass {
+  A
+  B
+  C
+  D
+  E
+}
+
+/**
+ * Global permission catalog (keys mirror @revenue-os/shared PERMISSIONS).
+ */
+model Permission {
+  id          String      @id @default(uuid()) @db.Uuid
+  key         String      @unique
+  description String
+  actionClass ActionClass
+  createdAt   DateTime    @default(now()) @db.Timestamptz(3)
+
+  roles RolePermission[]
+}
+
+enum PermissionEffect {
+  ALLOW
+  DENY
+}
+
+enum PermissionScope {
+  OWN
+  ASSIGNED
+  TEAM
+  WORKSPACE
+}
+
+model RolePermission {
+  roleId       String           @db.Uuid
+  permissionId String           @db.Uuid
+  effect       PermissionEffect @default(ALLOW)
+  scope        PermissionScope  @default(WORKSPACE)
+  createdAt    DateTime         @default(now()) @db.Timestamptz(3)
+
+  role       Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission Permission @relation(fields: [permissionId], references: [id], onDelete: Restrict)
+
+  @@id([roleId, permissionId])
+}
+
+model UserRole {
+  id          String   @id @default(uuid()) @db.Uuid
+  workspaceId String   @db.Uuid
+  memberId    String   @db.Uuid
+  roleId      String   @db.Uuid
+  createdAt   DateTime @default(now()) @db.Timestamptz(3)
+  createdBy   String?  @db.Uuid
+
+  member WorkspaceMember @relation(fields: [workspaceId, memberId], references: [workspaceId, id], onDelete: Cascade)
+  role   Role            @relation(fields: [workspaceId, roleId], references: [workspaceId, id], onDelete: Restrict)
+
+  @@unique([memberId, roleId])
+  @@index([workspaceId])
+}
+
+enum AuthorityUnit {
+  PERCENT
+  COUNT
+  MINOR_CURRENCY
+}
+
+/**
+ * Authority ≠ permission (docs/10 §48-55): pricing.discount may be granted, but only up to max_discount_percent.
+ * Applies to a role, or overrides for one member. `maxValue = null` means unlimited.
+ */
+model AuthorityLimit {
+  id          String        @id @default(uuid()) @db.Uuid
+  workspaceId String        @db.Uuid
+  roleId      String?       @db.Uuid
+  memberId    String?       @db.Uuid
+  key         String
+  maxValue    Decimal?      @db.Decimal(18, 4)
+  unit        AuthorityUnit
+  createdAt   DateTime      @default(now()) @db.Timestamptz(3)
+  updatedAt   DateTime      @updatedAt @db.Timestamptz(3)
+  version     Int           @default(1)
+
+  // Prisma can't express a composite FK with a nullable part, so role/member use plain FKs here; a CHECK in the
+  // migration enforces exactly one of roleId/memberId, and the unique index is NULLS NOT DISTINCT.
+  workspace Workspace        @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+  role      Role?            @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  member    WorkspaceMember? @relation(fields: [memberId], references: [id], onDelete: Cascade)
+
+  @@unique([workspaceId, roleId, memberId, key])
+}
+
+// ───────────────────────────── 03 Company & People ─────────────────────────────
+
+enum CompanyStatus {
+  DISCOVERED
+  RESEARCHING
+  ACTIVE
+  CUSTOMER
+  FORMER_CUSTOMER
+  DISQUALIFIED
+  ARCHIVED
+}
+
+/**
+ * Canonical business entity. Status is lifecycle, never a deal stage (docs/06 §15-21).
+ */
+model Company {
+  id             String        @id @default(uuid()) @db.Uuid
+  workspaceId    String        @db.Uuid
+  displayName    String
+  legalName      String?
+  normalizedName String
+  websiteDomain  String?
+  phone          String?
+  status         CompanyStatus @default(DISCOVERED)
+  companyType    String?
+  addressLine    String?
+  city           String?
+  region         String?
+  country        String?       @db.Char(2)
+  postalCode     String?
+  latitude       Decimal?      @db.Decimal(9, 6)
+  longitude      Decimal?      @db.Decimal(9, 6)
+  industry       String?
+  employeeRange  String?
+  revenueRange   String?
+  foundedYear    Int?
+  createdAt      DateTime      @default(now()) @db.Timestamptz(3)
+  updatedAt      DateTime      @updatedAt @db.Timestamptz(3)
+  createdBy      String?       @db.Uuid
+  updatedBy      String?       @db.Uuid
+  archivedAt     DateTime?     @db.Timestamptz(3)
+  /// Set when this record was merged into another (it is then ARCHIVED). The row stays for history.
+  mergedIntoId   String?       @db.Uuid
+  mergedAt       DateTime?     @db.Timestamptz(3)
+  version        Int           @default(1)
+
+  workspace    Workspace               @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+  mergedInto   Company?                @relation("CompanyMerge", fields: [mergedIntoId], references: [id], onDelete: Restrict)
+  mergedFrom   Company[]               @relation("CompanyMerge")
+  aliases      CompanyAlias[]
+  employments  Employment[]
+  websites     Website[]
+  technologies CompanyTechnology[]
+  social       SocialProfile[]
+  hypotheses   OpportunityHypothesis[]
+  researchRuns ResearchRun[]
+  assessments  CompanyAssessment[]
+  signals      Signal[]
+  watchlists   SignalWatchlistMember[]
+  observations SignalObservation[]
+
+  @@unique([workspaceId, id])
+  @@index([workspaceId, normalizedName])
+  @@index([normalizedName(ops: raw("gin_trgm_ops"))], type: Gin, map: "Company_normalizedName_trgm_idx")
+  @@index([workspaceId, websiteDomain])
+  @@index([workspaceId, phone])
+  @@index([workspaceId, status, updatedAt])
+  @@index([workspaceId, mergedIntoId])
+}
+
+enum AliasType {
+  NAME
+  DOMAIN
+  PHONE
+}
+
+model CompanyAlias {
+  id              String    @id @default(uuid()) @db.Uuid
+  workspaceId     String    @db.Uuid
+  companyId       String    @db.Uuid
+  aliasType       AliasType
+  value           String
+  normalizedValue String
+  source          String?
+  createdAt       DateTime  @default(now()) @db.Timestamptz(3)
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+  company   Company   @relation(fields: [workspaceId, companyId], references: [workspaceId, id], onDelete: Cascade)
+
+  @@unique([companyId, aliasType, normalizedValue])
+  @@index([workspaceId, aliasType, normalizedValue])
+}
+
+/**
+ * Maps a canonical record to an id in a provider (Google Places, Apollo, …). One external id → one record.
+ */
+model ExternalEntityMapping {
+  id          String     @id @default(uuid()) @db.Uuid
+  workspaceId String     @db.Uuid
+  entityType  EntityType
+  entityId    String     @db.Uuid
+  provider    String
+  externalId  String
+  externalUrl String?
+  firstSeenAt DateTime   @default(now()) @db.Timestamptz(3)
+  lastSeenAt  DateTime   @default(now()) @db.Timestamptz(3)
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+
+  @@unique([workspaceId, provider, entityType, externalId])
+  @@index([workspaceId, entityType, entityId])
+}
+
+enum PersonStatus {
+  ACTIVE
+  ARCHIVED
+}
+
+/**
+ * A human. Deliberately has no company_id / job_title — that lives on Employment (docs/06 §22-26).
+ */
+model Person {
+  id              String       @id @default(uuid()) @db.Uuid
+  workspaceId     String       @db.Uuid
+  firstName       String?
+  lastName        String?
+  fullName        String
+  status          PersonStatus @default(ACTIVE)
+  linkedinUrl     String?
+  professionalUrl String?
+  timezone        String?
+  language        String?
+  createdAt       DateTime     @default(now()) @db.Timestamptz(3)
+  updatedAt       DateTime     @updatedAt @db.Timestamptz(3)
+  createdBy       String?      @db.Uuid
+  updatedBy       String?      @db.Uuid
+  archivedAt      DateTime?    @db.Timestamptz(3)
+  version         Int          @default(1)
+
+  workspace   Workspace    @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+  employments Employment[]
+
+  @@unique([workspaceId, id])
+  @@index([workspaceId, fullName])
+}
+
+model Employment {
+  id          String          @id @default(uuid()) @db.Uuid
+  workspaceId String          @db.Uuid
+  personId    String          @db.Uuid
+  companyId   String          @db.Uuid
+  title       String?
+  department  String?
+  seniority   String?
+  isCurrent   Boolean         @default(true)
+  startedAt   DateTime?       @db.Date
+  endedAt     DateTime?       @db.Date
+  confidence  ConfidenceLevel @default(MEDIUM)
+  verifiedAt  DateTime?       @db.Timestamptz(3)
+  createdAt   DateTime        @default(now()) @db.Timestamptz(3)
+  updatedAt   DateTime        @updatedAt @db.Timestamptz(3)
+  createdBy   String?         @db.Uuid
+  version     Int             @default(1)
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+  person    Person    @relation(fields: [workspaceId, personId], references: [workspaceId, id], onDelete: Restrict)
+  company   Company   @relation(fields: [workspaceId, companyId], references: [workspaceId, id], onDelete: Restrict)
+
+  @@index([workspaceId, companyId])
+  @@index([workspaceId, personId])
+}
+
+enum ContactPointType {
+  EMAIL
+  PHONE
+  MOBILE
+  BUSINESS_PHONE
+  OTHER
+}
+
+enum ContactPointStatus {
+  UNVERIFIED
+  VERIFIED
+  INVALID
+  STALE
+}
+
+/**
+ * Email/phone attached to a company or person. Unverified until a ContactVerification says otherwise.
+ */
+model ContactPoint {
+  id              String             @id @default(uuid()) @db.Uuid
+  workspaceId     String             @db.Uuid
+  entityType      EntityType
+  entityId        String             @db.Uuid
+  type            ContactPointType
+  value           String
+  normalizedValue String
+  label           String?
+  status          ContactPointStatus @default(UNVERIFIED)
+  confidence      ConfidenceLevel    @default(LOW)
+  isPrimary       Boolean            @default(false)
+  firstSeenAt     DateTime           @default(now()) @db.Timestamptz(3)
+  lastVerifiedAt  DateTime?          @db.Timestamptz(3)
+  createdAt       DateTime           @default(now()) @db.Timestamptz(3)
+  updatedAt       DateTime           @updatedAt @db.Timestamptz(3)
+  createdBy       String?            @db.Uuid
+  archivedAt      DateTime?          @db.Timestamptz(3)
+  version         Int                @default(1)
+
+  workspace     Workspace             @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+  verifications ContactVerification[]
+
+  @@unique([workspaceId, id])
+  @@unique([workspaceId, entityType, entityId, type, normalizedValue])
+  @@index([workspaceId, normalizedValue])
+}
+
+enum VerificationStatus {
+  VALID
+  INVALID
+  RISKY
+  UNKNOWN
+  CATCH_ALL
+  TEMPORARY
+}
+
+model ContactVerification {
+  id             String             @id @default(uuid()) @db.Uuid
+  workspaceId    String             @db.Uuid
+  contactPointId String             @db.Uuid
+  provider       String
+  status         VerificationStatus
+  verifiedAt     DateTime           @db.Timestamptz(3)
+  expiresAt      DateTime?          @db.Timestamptz(3)
+  providerResult Json?
+  createdAt      DateTime           @default(now()) @db.Timestamptz(3)
+
+  workspace    Workspace    @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+  contactPoint ContactPoint @relation(fields: [workspaceId, contactPointId], references: [workspaceId, id], onDelete: Cascade)
+
+  @@index([workspaceId, contactPointId, verifiedAt])
+}
+
+enum MatchCandidateStatus {
+  PENDING
+  NEEDS_REVIEW
+  AUTO_RESOLVED
+  MERGED
+  REJECTED
+}
+
+/**
+ * "These two records may be the same business" (docs/06 §15-21, docs/04 §76). Entity resolution proposes; it never
+ * blindly merges. leftId < rightId so a pair has exactly one row. A REJECTED pair is never proposed again.
+ * PENDING = low confidence, NEEDS_REVIEW = a human should decide.
+ */
+model EntityMatchCandidate {
+  id                 String               @id @default(uuid()) @db.Uuid
+  workspaceId        String               @db.Uuid
+  entityType         EntityType
+  leftId             String               @db.Uuid
+  rightId            String               @db.Uuid
+  score              Int
+  confidence         ConfidenceLevel
+  matchingSignals    Json
+  conflictingSignals Json
+  status             MatchCandidateStatus @default(NEEDS_REVIEW)
+  detectedAt         DateTime             @default(now()) @db.Timestamptz(3)
+  lastEvaluatedAt    DateTime             @default(now()) @db.Timestamptz(3)
+  resolvedAt         DateTime?            @db.Timestamptz(3)
+  resolvedByType     ActorType?
+  resolvedById       String?              @db.Uuid
+  resolution         String?
+  mergeId            String?              @db.Uuid
+  version            Int                  @default(1)
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+
+  @@unique([workspaceId, entityType, leftId, rightId])
+  @@index([workspaceId, entityType, status])
+  @@index([workspaceId, rightId])
+}
+
+enum MergeMode {
+  MANUAL
+  AUTO
+}
+
+/**
+ * A completed merge, append-only. Keeps the source row as it was and every id that moved, so the history of where
+ * data came from is never lost (docs/17 §40-45 "merge preserves source history").
+ */
+model EntityMerge {
+  id             String     @id @default(uuid()) @db.Uuid
+  workspaceId    String     @db.Uuid
+  entityType     EntityType
+  sourceId       String     @db.Uuid
+  targetId       String     @db.Uuid
+  candidateId    String?    @db.Uuid
+  mode           MergeMode
+  reason         String?
+  actorType      ActorType
+  actorId        String?    @db.Uuid
+  sourceSnapshot Json
+  moved          Json
+  filledFields   String[]
+  mergedAt       DateTime   @default(now()) @db.Timestamptz(3)
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+
+  @@index([workspaceId, targetId])
+  @@index([workspaceId, sourceId])
+}
+
+// ──────────────────────────── 04 Intelligence & Evidence ────────────────────────────
+
+enum FreshnessStatus {
+  FRESH
+  AGING
+  STALE
+}
+
+/**
+ * Where a piece of information came from and when it was observed (docs/06 §31-40).
+ */
+model Evidence {
+  id              String          @id @default(uuid()) @db.Uuid
+  workspaceId     String          @db.Uuid
+  entityType      EntityType
+  entityId        String          @db.Uuid
+  evidenceType    String
+  sourceType      String
+  sourceName      String?
+  sourceUrl       String?
+  provider        String?
+  observedAt      DateTime        @db.Timestamptz(3)
+  retrievedAt     DateTime        @default(now()) @db.Timestamptz(3)
+  contentExcerpt  String?
+  contentHash     String?
+  storageRef      String?
+  confidence      ConfidenceLevel @default(MEDIUM)
+  freshnessStatus FreshnessStatus @default(FRESH)
+  createdAt       DateTime        @default(now()) @db.Timestamptz(3)
+  createdBy       String?         @db.Uuid
+
+  workspace  Workspace            @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+  facts      FactEvidence[]
+  hypotheses HypothesisEvidence[]
+  signals    SignalEvidence[]
+
+  @@unique([workspaceId, id])
+  @@index([workspaceId, entityType, entityId])
+}
+
+enum FactStatus {
+  ACTIVE
+  CONFLICTED
+  SUPERSEDED
+  INVALIDATED
+}
+
+/**
+ * A structured claim about an entity, supported by evidence. Never blindly overwritten — superseded instead.
+ */
+model Fact {
+  id              String          @id @default(uuid()) @db.Uuid
+  workspaceId     String          @db.Uuid
+  entityType      EntityType
+  entityId        String          @db.Uuid
+  factType        String
+  field           String
+  valueJson       Json
+  status          FactStatus      @default(ACTIVE)
+  confidence      ConfidenceLevel @default(MEDIUM)
+  validFrom       DateTime?       @db.Timestamptz(3)
+  validUntil      DateTime?       @db.Timestamptz(3)
+  firstObservedAt DateTime        @db.Timestamptz(3)
+  lastConfirmedAt DateTime        @db.Timestamptz(3)
+  supersededById  String?         @db.Uuid
+  createdAt       DateTime        @default(now()) @db.Timestamptz(3)
+  updatedAt       DateTime        @updatedAt @db.Timestamptz(3)
+  createdBy       String?         @db.Uuid
+  version         Int             @default(1)
+
+  workspace    Workspace      @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+  evidence     FactEvidence[]
+  supersededBy Fact?          @relation("FactSupersession", fields: [supersededById], references: [id], onDelete: Restrict)
+  supersedes   Fact[]         @relation("FactSupersession")
+
+  @@unique([workspaceId, id])
+  @@index([workspaceId, entityType, entityId, field, status])
+}
+
+model FactEvidence {
+  workspaceId String   @db.Uuid
+  factId      String   @db.Uuid
+  evidenceId  String   @db.Uuid
+  createdAt   DateTime @default(now()) @db.Timestamptz(3)
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+  fact      Fact      @relation(fields: [workspaceId, factId], references: [workspaceId, id], onDelete: Cascade)
+  evidence  Evidence  @relation(fields: [workspaceId, evidenceId], references: [workspaceId, id], onDelete: Restrict)
+
+  @@id([factId, evidenceId])
+  @@index([workspaceId, evidenceId])
+}
+
+// ───────────────────────── 06 Sales skeleton (seeded default pipeline) ─────────────────────────
+
+model Pipeline {
+  id          String    @id @default(uuid()) @db.Uuid
+  workspaceId String    @db.Uuid
+  name        String
+  isDefault   Boolean   @default(false)
+  createdAt   DateTime  @default(now()) @db.Timestamptz(3)
+  updatedAt   DateTime  @updatedAt @db.Timestamptz(3)
+  archivedAt  DateTime? @db.Timestamptz(3)
+  version     Int       @default(1)
+
+  workspace Workspace       @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+  stages    PipelineStage[]
+
+  @@unique([workspaceId, id])
+  @@unique([workspaceId, name])
+}
+
+enum StageType {
+  OPEN
+  WON
+  LOST
+}
+
+model PipelineStage {
+  id          String        @id @default(uuid()) @db.Uuid
+  workspaceId String        @db.Uuid
+  pipelineId  String        @db.Uuid
+  name        String
+  position    Int
+  stageType   StageType     @default(OPEN)
+  semantic    StageSemantic
+  isClosed    Boolean       @default(false)
+  isWon       Boolean       @default(false)
+  isLost      Boolean       @default(false)
+  createdAt   DateTime      @default(now()) @db.Timestamptz(3)
+  updatedAt   DateTime      @updatedAt @db.Timestamptz(3)
+
+  workspace     Workspace     @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+  pipeline      Pipeline      @relation(fields: [workspaceId, pipelineId], references: [workspaceId, id], onDelete: Cascade)
+  opportunities Opportunity[]
+
+  @@unique([pipelineId, position])
+  @@unique([pipelineId, name])
+}
+
+// ───────────────────────── 08 System · Policy · Audit ─────────────────────────
+
+enum PolicyStatus {
+  DRAFT
+  ACTIVE
+  ARCHIVED
+}
+
+/**
+ * Hard safety rules (read-only) and the workspace's configurable rules ("Workspace rules", one PolicyRule per setting,
+ * versioned by `version`). Evaluated by @revenue-os/policy.
+ */
+model Policy {
+  id             String       @id @default(uuid()) @db.Uuid
+  workspaceId    String       @db.Uuid
+  name           String
+  policyType     String
+  scopeType      String       @default("WORKSPACE")
+  scopeId        String?      @db.Uuid
+  status         PolicyStatus @default(DRAFT)
+  priority       Int          @default(100)
+  effectiveFrom  DateTime?    @db.Timestamptz(3)
+  effectiveUntil DateTime?    @db.Timestamptz(3)
+  createdAt      DateTime     @default(now()) @db.Timestamptz(3)
+  updatedAt      DateTime     @updatedAt @db.Timestamptz(3)
+  version        Int          @default(1)
+
+  workspace Workspace    @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+  rules     PolicyRule[]
+
+  @@unique([workspaceId, id])
+  @@unique([workspaceId, name])
+}
+
+enum PolicyEffect {
+  ALLOW
+  REQUIRE_APPROVAL
+  WAIT
+  BLOCK
+  ESCALATE
+}
+
+model PolicyRule {
+  id            String       @id @default(uuid()) @db.Uuid
+  workspaceId   String       @db.Uuid
+  policyId      String       @db.Uuid
+  ruleType      String
+  conditionJson Json
+  effect        PolicyEffect
+  isHardRule    Boolean      @default(false)
+  priority      Int          @default(100)
+  description   String?
+  createdAt     DateTime     @default(now()) @db.Timestamptz(3)
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+  policy    Policy    @relation(fields: [workspaceId, policyId], references: [workspaceId, id], onDelete: Cascade)
+
+  @@unique([policyId, ruleType])
+}
+
+/**
+ * Append-only (UPDATE/DELETE blocked by a trigger in the migration).
+ */
+model AuditLog {
+  id            String     @id @default(uuid()) @db.Uuid
+  workspaceId   String?    @db.Uuid
+  actorType     ActorType
+  actorId       String?
+  action        String
+  entityType    EntityType
+  entityId      String     @db.Uuid
+  beforeJson    Json?
+  afterJson     Json?
+  reason        String?
+  requestId     String?
+  correlationId String?
+  createdAt     DateTime   @default(now()) @db.Timestamptz(3)
+
+  workspace Workspace? @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+
+  @@index([workspaceId, entityType, entityId, createdAt])
+  @@index([correlationId])
+}
+
+/**
+ * Business fact that something happened. Written in the same transaction as the mutation (Phase 4 writer).
+ */
+model DomainEvent {
+  id            String    @id @default(uuid()) @db.Uuid
+  workspaceId   String?   @db.Uuid
+  eventType     String
+  eventVersion  Int       @default(1)
+  aggregateType String
+  aggregateId   String    @db.Uuid
+  payload       Json
+  actorType     ActorType
+  actorId       String?
+  correlationId String?
+  causationId   String?
+  occurredAt    DateTime  @default(now()) @db.Timestamptz(3)
+
+  workspace Workspace?    @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+  outbox    OutboxEvent[]
+
+  @@index([workspaceId, aggregateType, aggregateId, occurredAt])
+  @@index([eventType, occurredAt])
+}
+
+enum OutboxStatus {
+  PENDING
+  PUBLISHED
+  FAILED
+  DEAD
+}
+
+model OutboxEvent {
+  id            String       @id @default(uuid()) @db.Uuid
+  workspaceId   String?      @db.Uuid
+  domainEventId String?      @db.Uuid
+  eventType     String
+  eventVersion  Int          @default(1)
+  aggregateType String
+  aggregateId   String       @db.Uuid
+  payload       Json
+  correlationId String?
+  causationId   String?
+  status        OutboxStatus @default(PENDING)
+  attemptCount  Int          @default(0)
+  availableAt   DateTime     @default(now()) @db.Timestamptz(3)
+  lastError     String?
+  createdAt     DateTime     @default(now()) @db.Timestamptz(3)
+  publishedAt   DateTime?    @db.Timestamptz(3)
+
+  workspace   Workspace?   @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+  domainEvent DomainEvent? @relation(fields: [domainEventId], references: [id], onDelete: Restrict)
+
+  @@index([status, availableAt])
+}
+
+enum ExternalActionStatus {
+  PREPARED
+  WAITING_APPROVAL
+  APPROVED
+  QUEUED
+  EXECUTING
+  SUCCEEDED
+  WAITING
+  BLOCKED
+  FAILED
+  CANCELLED
+  UNKNOWN_OUTCOME
+}
+
+/**
+ * Every external side effect (email, booking, …). The idempotency key makes retries safe (docs/06 §121-132).
+ * State machine and execution rules: packages/events/src/external-action.ts (docs/11 §18-29).
+ */
+model ExternalAction {
+  id                String               @id @default(uuid()) @db.Uuid
+  workspaceId       String               @db.Uuid
+  actionType        String
+  entityType        EntityType
+  entityId          String               @db.Uuid
+  status            ExternalActionStatus @default(PREPARED)
+  idempotencyKey    String
+  policyDecisionId  String?              @db.Uuid
+  approvalRequestId String?              @db.Uuid
+  provider          String
+  providerAccountId String?
+  /// Who asked for it — policy is re-evaluated for this actor right before execution (docs/10 §5-6).
+  requestedByType   ActorType            @default(SYSTEM)
+  requestedById     String?
+  requestedByAgent  String?
+  /// WAITING actions with a resume time are re-queued by the policy sweep and revalidated.
+  resumeAt          DateTime?            @db.Timestamptz(3)
+  /// What will be sent, frozen at prepare time. A changed payload needs a new action (and a new approval).
+  payload           Json                 @default("{}")
+  payloadHash       String               @default("")
+  correlationId     String?
+  causationId       String?
+  requestRef        String?
+  responseRef       String?
+  /// Extra provider identifiers from the result (e.g. the email thread id) — never secrets.
+  responseMeta      Json?
+  attemptCount      Int                  @default(0)
+  lastError         String?
+  statusReason      String?
+  createdAt         DateTime             @default(now()) @db.Timestamptz(3)
+  updatedAt         DateTime             @updatedAt @db.Timestamptz(3)
+  /// Set when a worker claims the action (QUEUED → EXECUTING); a stale claim means the worker died mid-call.
+  claimedAt         DateTime?            @db.Timestamptz(3)
+  executedAt        DateTime?            @db.Timestamptz(3)
+  version           Int                  @default(1)
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+
+  @@unique([workspaceId, idempotencyKey])
+  @@index([workspaceId, status])
+  @@index([status, claimedAt])
+  @@index([status, resumeAt])
+}
+
+enum InboundEventStatus {
+  RECEIVED
+  PROCESSING
+  PROCESSED
+  FAILED
+  IGNORED
+}
+
+/**
+ * Webhooks/provider callbacks. Unique (provider, externalEventId) de-duplicates redeliveries.
+ */
+model InboundEvent {
+  id              String             @id @default(uuid()) @db.Uuid
+  workspaceId     String?            @db.Uuid
+  provider        String
+  externalEventId String
+  eventType       String
+  payloadRef      String?
+  payload         Json?
+  status          InboundEventStatus @default(RECEIVED)
+  lastError       String?
+  receivedAt      DateTime           @default(now()) @db.Timestamptz(3)
+  processedAt     DateTime?          @db.Timestamptz(3)
+
+  workspace Workspace? @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+
+  @@unique([provider, externalEventId])
+  @@index([status, receivedAt])
+}
+
+enum DeadLetterStatus {
+  OPEN
+  RETRY_SCHEDULED
+  RESOLVED
+  IGNORED
+}
+
+/**
+ * A job that exhausted its retries or failed permanently (docs/11 §44-47). Postgres keeps it after Redis
+ * cleans up, so an admin can see what failed, why, how often and for which entity — and retry safely.
+ * workspaceId is plain (no FK): system jobs have none, and DLQ rows must never block workspace changes.
+ */
+model DeadLetterRecord {
+  id              String           @id @default(uuid()) @db.Uuid
+  workspaceId     String?          @db.Uuid
+  queue           String
+  jobName         String
+  jobId           String?
+  jobData         Json
+  entityType      String?
+  entityId        String?
+  correlationId   String?
+  failureCategory String
+  lastError       String
+  attempts        Int
+  retryCount      Int              @default(0)
+  status          DeadLetterStatus @default(OPEN)
+  firstFailedAt   DateTime         @default(now()) @db.Timestamptz(3)
+  lastFailedAt    DateTime         @default(now()) @db.Timestamptz(3)
+  resolvedAt      DateTime?        @db.Timestamptz(3)
+  resolvedBy      String?          @db.Uuid
+  resolutionNote  String?
+
+  @@index([status, lastFailedAt])
+  @@index([workspaceId, status])
+  @@index([correlationId])
+}
+
+/**
+ * Consumer-side idempotency (docs/11 §15-17): a consumer records each event it handled, in the same
+ * transaction as its effect, so an at-least-once redelivery is acknowledged without running twice.
+ */
+model InboxReceipt {
+  consumer    String
+  eventId     String
+  processedAt DateTime @default(now()) @db.Timestamptz(3)
+
+  @@id([consumer, eventId])
+}
+
+// ───────────────────────── 05 Integrations & providers ─────────────────────────
+// docs/12-tech-spec-8-provider-architecture.md. A provider is code (catalog in packages/providers); an Integration is
+// one workspace's connection to it. Credentials are referenced, never stored in `configuration` (§4-5, §23).
+
+enum IntegrationStatus {
+  DISCONNECTED
+  CONNECTING
+  ACTIVE
+  DEGRADED
+  AUTH_EXPIRED
+  RATE_LIMITED
+  ERROR
+  DISABLED
+}
+
+enum ProviderHealthState {
+  HEALTHY
+  DEGRADED
+  RATE_LIMITED
+  AUTH_REQUIRED
+  UNAVAILABLE
+}
+
+enum ProviderCallStatus {
+  SUCCEEDED
+  FAILED
+}
+
+model Integration {
+  id                String            @id @default(uuid()) @db.Uuid
+  workspaceId       String            @db.Uuid
+  provider          String
+  category          String
+  name              String
+  /// Provider-side account identity (e.g. mailbox address). Reconnecting the same account reuses this row (docs/12 §120).
+  accountRef        String            @default("default")
+  status            IntegrationStatus @default(ACTIVE)
+  capabilities      String[]
+  /// Router preference among integrations with the same capability — lower first (docs/12 §130).
+  priority          Int               @default(100)
+  configuration     Json              @default("{}")
+  credentialRef     String?
+  connectedBy       String?           @db.Uuid
+  connectedAt       DateTime?         @db.Timestamptz(3)
+  disconnectedAt    DateTime?         @db.Timestamptz(3)
+  lastHealthCheckAt DateTime?         @db.Timestamptz(3)
+  lastSuccessAt     DateTime?         @db.Timestamptz(3)
+  lastErrorAt       DateTime?         @db.Timestamptz(3)
+  lastError         String?
+  createdAt         DateTime          @default(now()) @db.Timestamptz(3)
+  updatedAt         DateTime          @updatedAt @db.Timestamptz(3)
+  version           Int               @default(1)
+
+  workspace Workspace                     @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+  health    IntegrationCapabilityHealth[]
+
+  @@unique([workspaceId, id])
+  @@unique([workspaceId, provider, accountRef])
+  @@index([workspaceId, status])
+}
+
+/**
+ * Health per capability (docs/12 §5, §81-82): Gmail can read fine while sending is rate-limited.
+ */
+model IntegrationCapabilityHealth {
+  workspaceId   String              @db.Uuid
+  integrationId String              @db.Uuid
+  capability    String
+  state         ProviderHealthState
+  reason        String?
+  lastSuccessAt DateTime?           @db.Timestamptz(3)
+  lastFailureAt DateTime?           @db.Timestamptz(3)
+  checkedAt     DateTime            @default(now()) @db.Timestamptz(3)
+
+  workspace   Workspace   @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+  integration Integration @relation(fields: [workspaceId, integrationId], references: [workspaceId, id], onDelete: Cascade)
+
+  @@id([integrationId, capability])
+  @@index([workspaceId])
+}
+
+/**
+ * One provider call: usage, latency, cost (docs/12 §42, §110-111). Telemetry, not audit — plain ids without foreign
+ * keys, so history survives a disconnected or removed integration. Unknown cost stays null, never invented.
+ */
+model ProviderCallRecord {
+  id             String             @id @default(uuid()) @db.Uuid
+  workspaceId    String             @db.Uuid
+  integrationId  String?            @db.Uuid
+  provider       String
+  capability     String
+  operation      String
+  status         ProviderCallStatus
+  errorKind      String?
+  durationMs     Int
+  units          Int?
+  costMinor      Int?
+  costIsEstimate Boolean            @default(false)
+  currency       String             @default("USD") @db.Char(3)
+  entityType     String?
+  entityId       String?
+  correlationId  String?
+  startedAt      DateTime           @db.Timestamptz(3)
+
+  @@index([workspaceId, startedAt])
+  @@index([integrationId, startedAt])
+}
+
+// ───────────────────────────── 02 Market & Discovery ─────────────────────────────
+
+enum MarketStatus {
+  ACTIVE
+  ARCHIVED
+}
+
+/**
+ * A territory + industry the workspace hunts in (docs/06 §10-14). Market ≠ search: one market has many missions over
+ * time. `marketKey` (country|region|city|industry root, lower-case) keeps one market per place + industry.
+ */
+model Market {
+  id                String       @id @default(uuid()) @db.Uuid
+  workspaceId       String       @db.Uuid
+  name              String
+  marketKey         String
+  country           String       @db.Char(2)
+  region            String?
+  city              String?
+  industry          String
+  relatedCategories String[]
+  status            MarketStatus @default(ACTIVE)
+  lastDiscoveryAt   DateTime?    @db.Timestamptz(3)
+  createdAt         DateTime     @default(now()) @db.Timestamptz(3)
+  updatedAt         DateTime     @updatedAt @db.Timestamptz(3)
+  createdBy         String?      @db.Uuid
+  archivedAt        DateTime?    @db.Timestamptz(3)
+  version           Int          @default(1)
+
+  workspace Workspace          @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+  missions  DiscoveryMission[]
+
+  @@unique([workspaceId, id])
+  @@unique([workspaceId, marketKey])
+}
+
+enum DiscoveryMode {
+  QUICK
+  DEEP
+  MARKET_EXHAUST
+  REFRESH
+  MONITOR
+}
+
+/// docs/09 §16 mission state machine. PAUSED = intentional, WAITING = temporary dependency, BLOCKED = needs a change.
+enum DiscoveryMissionStatus {
+  DRAFT
+  READY
+  PLANNING
+  DISCOVERING
+  RESOLVING
+  ENRICHING
+  ASSESSING_COVERAGE
+  COMPLETED
+  PAUSED
+  WAITING
+  BLOCKED
+  FAILED
+  CANCELLED
+}
+
+enum DiscoveryStopReason {
+  SATURATED
+  STRATEGIES_EXHAUSTED
+  ROUND_LIMIT
+  QUERY_BUDGET
+  CALL_BUDGET
+  STOPPED_BY_USER
+  /// The person asked for N leads and the hunt found them — the market was not searched to the end.
+  TARGET_REACHED
+}
+
+/**
+ * One run of discovery over a market (docs/06 §10-14, docs/17 §46-51). Counters are a projection refreshed by the
+ * worker; the truth is in DiscoveryQuery / DiscoveryObservation. Completion stores why it stopped and the coverage
+ * confidence — never a claim that every business was found.
+ */
+model DiscoveryMission {
+  id                    String                  @id @default(uuid()) @db.Uuid
+  workspaceId           String                  @db.Uuid
+  marketId              String                  @db.Uuid
+  mode                  DiscoveryMode
+  status                DiscoveryMissionStatus  @default(PLANNING)
+  /// The typed request, if any, and how it was understood (confirmed by the person before starting).
+  request               String?
+  interpretation        Json?
+  categories            String[]
+  maxRounds             Int
+  maxQueries            Int
+  maxProviderCalls      Int
+  /// How many unique businesses the person wants; null = search the market as deep as the mode allows.
+  targetCount           Int?
+  currentRound          Int                     @default(0)
+  queriesExecuted       Int                     @default(0)
+  providerCalls         Int                     @default(0)
+  failedQueries         Int                     @default(0)
+  observationsCount     Int                     @default(0)
+  uniqueCompanies       Int                     @default(0)
+  newCompanies          Int                     @default(0)
+  matchedExisting       Int                     @default(0)
+  duplicateObservations Int                     @default(0)
+  reviewCandidates      Int                     @default(0)
+  rejectedObservations  Int                     @default(0)
+  withWebsite           Int                     @default(0)
+  withoutWebsite        Int                     @default(0)
+  withPhone             Int                     @default(0)
+  sourcesUsed           String[]
+  coverageConfidence    ConfidenceLevel?
+  stopReason            DiscoveryStopReason?
+  /// Why the mission is WAITING / BLOCKED / FAILED / PAUSED, in words.
+  statusReason          String?
+  /// PAUSED remembers which phase to continue; WAITING retries at retryAt.
+  resumeStatus          DiscoveryMissionStatus?
+  retryAt               DateTime?               @db.Timestamptz(3)
+  /// Lease so only one worker advances a mission at a time (docs/11 §55). Not business truth.
+  leaseOwner            String?
+  leaseUntil            DateTime?               @db.Timestamptz(3)
+  createdBy             String?                 @db.Uuid
+  startedAt             DateTime?               @db.Timestamptz(3)
+  completedAt           DateTime?               @db.Timestamptz(3)
+  createdAt             DateTime                @default(now()) @db.Timestamptz(3)
+  updatedAt             DateTime                @updatedAt @db.Timestamptz(3)
+  version               Int                     @default(1)
+
+  workspace    Workspace              @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+  market       Market                 @relation(fields: [workspaceId, marketId], references: [workspaceId, id], onDelete: Restrict)
+  queries      DiscoveryQuery[]
+  observations DiscoveryObservation[]
+  assessments  CoverageAssessment[]
+
+  @@unique([workspaceId, id])
+  @@index([workspaceId, createdAt])
+  @@index([workspaceId, marketId, status])
+  @@index([status, leaseUntil])
+}
+
+enum QueryStrategyType {
+  PRIMARY_CATEGORY
+  RELATED_CATEGORY
+  KEYWORD_VARIANT
+  GEO_VARIANT
+}
+
+enum DiscoveryQueryStatus {
+  PLANNED
+  RUNNING
+  COMPLETED
+  FAILED
+  SKIPPED
+}
+
+/// One strategy run against one source. A strategy is never repeated on a source within a mission.
+model DiscoveryQuery {
+  id             String               @id @default(uuid()) @db.Uuid
+  workspaceId    String               @db.Uuid
+  missionId      String               @db.Uuid
+  round          Int
+  queryType      QueryStrategyType
+  strategyKey    String
+  queryText      String
+  category       String
+  keyword        String?
+  provider       String
+  integrationId  String?              @db.Uuid
+  status         DiscoveryQueryStatus @default(PLANNED)
+  cursor         String?
+  pagesFetched   Int                  @default(0)
+  pageLimit      Int
+  exhausted      Boolean              @default(false)
+  resultCount    Int                  @default(0)
+  newUniqueCount Int                  @default(0)
+  error          String?
+  errorKind      String?
+  startedAt      DateTime?            @db.Timestamptz(3)
+  completedAt    DateTime?            @db.Timestamptz(3)
+  createdAt      DateTime             @default(now()) @db.Timestamptz(3)
+
+  workspace    Workspace              @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+  mission      DiscoveryMission       @relation(fields: [workspaceId, missionId], references: [workspaceId, id], onDelete: Cascade)
+  observations DiscoveryObservation[]
+
+  @@unique([workspaceId, id])
+  @@unique([missionId, provider, strategyKey])
+  @@index([missionId, round, status])
+}
+
+enum ObservationStatus {
+  PENDING
+  RESOLVED
+  REJECTED
+}
+
+enum ObservationOutcome {
+  /// A new canonical company was created.
+  CREATED
+  /// Attached to a company that existed before this mission.
+  MATCHED_EXISTING
+  /// Another listing of a business this mission already found.
+  DUPLICATE_LISTING
+}
+
+/**
+ * What one source said about one business, as received (docs/06 §10-14, docs/12 §16). An observation, not a fact —
+ * entity resolution decides which company it describes; it then becomes Evidence on that company.
+ */
+model DiscoveryObservation {
+  id               String              @id @default(uuid()) @db.Uuid
+  workspaceId      String              @db.Uuid
+  missionId        String              @db.Uuid
+  queryId          String              @db.Uuid
+  round            Int
+  provider         String
+  integrationId    String?             @db.Uuid
+  sourceRecordId   String
+  name             String
+  domain           String?
+  phone            String?
+  addressLine      String?
+  city             String?
+  region           String?
+  postalCode       String?
+  country          String?             @db.Char(2)
+  category         String?
+  rawPayload       Json
+  observedAt       DateTime            @db.Timestamptz(3)
+  status           ObservationStatus   @default(PENDING)
+  outcome          ObservationOutcome?
+  companyId        String?             @db.Uuid
+  evidenceId       String?             @db.Uuid
+  matchScore       Int?
+  matchConfidence  ConfidenceLevel?
+  flaggedForReview Boolean             @default(false)
+  rejectReason     String?
+  resolvedAt       DateTime?           @db.Timestamptz(3)
+  createdAt        DateTime            @default(now()) @db.Timestamptz(3)
+
+  workspace Workspace        @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+  mission   DiscoveryMission @relation(fields: [workspaceId, missionId], references: [workspaceId, id], onDelete: Cascade)
+  query     DiscoveryQuery   @relation(fields: [workspaceId, queryId], references: [workspaceId, id], onDelete: Cascade)
+
+  @@unique([missionId, provider, sourceRecordId])
+  @@index([missionId, status])
+  @@index([missionId, companyId])
+  @@index([workspaceId, companyId])
+}
+
+enum CoverageDecision {
+  CONTINUE
+  COMPLETE
+}
+
+/// Coverage measured after each round (docs/04 §20): yield, duplicates, decision and its reasons.
+model CoverageAssessment {
+  id                  String               @id @default(uuid()) @db.Uuid
+  workspaceId         String               @db.Uuid
+  missionId           String               @db.Uuid
+  round               Int
+  queries             Int
+  observations        Int
+  newUnique           Int
+  cumulativeUnique    Int
+  marginalYield       Float
+  duplicateRate       Float
+  confidence          ConfidenceLevel
+  decision            CoverageDecision
+  stopReason          DiscoveryStopReason?
+  reasons             String[]
+  strategiesRemaining Int
+  assessedAt          DateTime             @default(now()) @db.Timestamptz(3)
+
+  workspace Workspace        @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+  mission   DiscoveryMission @relation(fields: [workspaceId, missionId], references: [workspaceId, id], onDelete: Cascade)
+
+  @@unique([missionId, round])
+}
+
+// ───────────────────────────── Research & website intelligence (Phase 8) ─────────────────────────────
+
+enum ResearchTrigger {
+  DISCOVERY
+  MANUAL
+  /// Scheduled re-check of a watched company or saved market (Phase 16) — change detection, not first research.
+  MONITOR
+}
+
+/// docs/09 §83-87 agent-task shape: PARTIAL keeps what was found and names the gaps; WAITING = a provider said "not now".
+enum ResearchRunStatus {
+  QUEUED
+  RUNNING
+  COMPLETED
+  PARTIAL
+  WAITING
+  FAILED
+}
+
+/**
+ * One research pass over one company (docs/17 §52-57): website → snapshots → deterministic audit → technology,
+ * social, contacts → verification → opportunity hypotheses. Steps and gaps say what was done and what is missing.
+ */
+model ResearchRun {
+  id          String            @id @default(uuid()) @db.Uuid
+  workspaceId String            @db.Uuid
+  companyId   String            @db.Uuid
+  trigger     ResearchTrigger
+  missionId   String?           @db.Uuid
+  status      ResearchRunStatus @default(QUEUED)
+  /// [{ key, status: DONE|SKIPPED|FAILED, detail }] in the order they ran.
+  steps       Json              @default("[]")
+  /// What we still don't know, in words ("No email verifier connected").
+  gaps        String[]
+  summary     String?
+  error       String?
+  retryAt     DateTime?         @db.Timestamptz(3)
+  leaseOwner  String?
+  leaseUntil  DateTime?         @db.Timestamptz(3)
+  requestedBy String?           @db.Uuid
+  startedAt   DateTime?         @db.Timestamptz(3)
+  completedAt DateTime?         @db.Timestamptz(3)
+  createdAt   DateTime          @default(now()) @db.Timestamptz(3)
+  updatedAt   DateTime          @updatedAt @db.Timestamptz(3)
+  version     Int               @default(1)
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+  company   Company   @relation(fields: [workspaceId, companyId], references: [workspaceId, id], onDelete: Restrict)
+
+  @@unique([workspaceId, id])
+  @@index([workspaceId, companyId, createdAt])
+  @@index([status, leaseUntil])
+  @@index([workspaceId, missionId])
+}
+
+enum WebsiteStatus {
+  LIVE
+  UNREACHABLE
+  UNKNOWN
+}
+
+/// A company's website (docs/06 §22-26). Only the official site is audited; the domain comes from evidence.
+model Website {
+  id              String          @id @default(uuid()) @db.Uuid
+  workspaceId     String          @db.Uuid
+  companyId       String          @db.Uuid
+  domain          String
+  url             String
+  finalUrl        String?
+  status          WebsiteStatus   @default(UNKNOWN)
+  statusReason    String?
+  isOfficial      Boolean         @default(true)
+  matchConfidence ConfidenceLevel @default(MEDIUM)
+  firstSeenAt     DateTime        @default(now()) @db.Timestamptz(3)
+  lastCheckedAt   DateTime?       @db.Timestamptz(3)
+  createdAt       DateTime        @default(now()) @db.Timestamptz(3)
+  updatedAt       DateTime        @updatedAt @db.Timestamptz(3)
+
+  workspace Workspace         @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+  company   Company           @relation(fields: [workspaceId, companyId], references: [workspaceId, id], onDelete: Restrict)
+  snapshots WebsiteSnapshot[]
+  audits    WebsiteAudit[]
+
+  @@unique([workspaceId, id])
+  @@unique([workspaceId, companyId, domain])
+}
+
+/// One fetched page, as evidence (docs/12 §52): URL, when, content hash and the relevant extracted text — not the whole page.
+model WebsiteSnapshot {
+  id            String   @id @default(uuid()) @db.Uuid
+  workspaceId   String   @db.Uuid
+  websiteId     String   @db.Uuid
+  researchRunId String?  @db.Uuid
+  evidenceId    String?  @db.Uuid
+  pageType      String
+  url           String
+  finalUrl      String
+  httpStatus    Int
+  contentType   String?
+  contentHash   String
+  byteSize      Int
+  truncated     Boolean  @default(false)
+  title         String?
+  metadata      Json
+  textExcerpt   String?
+  auditVersion  Int
+  fetchedAt     DateTime @db.Timestamptz(3)
+  createdAt     DateTime @default(now()) @db.Timestamptz(3)
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+  website   Website   @relation(fields: [workspaceId, websiteId], references: [workspaceId, id], onDelete: Cascade)
+
+  @@index([workspaceId, websiteId, fetchedAt])
+}
+
+enum WebsiteAuditStatus {
+  COMPLETE
+  PARTIAL
+  FAILED
+}
+
+/**
+ * Deterministic website checks (docs/08 §25-27): machine-readable facts first, AI interprets later. A null flag
+ * means "could not tell", never "no".
+ */
+model WebsiteAudit {
+  id                String             @id @default(uuid()) @db.Uuid
+  workspaceId       String             @db.Uuid
+  websiteId         String             @db.Uuid
+  companyId         String             @db.Uuid
+  researchRunId     String?            @db.Uuid
+  auditVersion      Int
+  status            WebsiteAuditStatus
+  performedAt       DateTime           @db.Timestamptz(3)
+  hasSsl            Boolean?
+  mobileReady       Boolean?
+  hasContactForm    Boolean?
+  hasBooking        Boolean?
+  hasChat           Boolean?
+  hasClearCta       Boolean?
+  copyrightYear     Int?
+  technologySummary String[]
+  /// [{ key, label, observed, detail, url }]
+  findings          Json
+  overallConfidence ConfidenceLevel
+  createdAt         DateTime           @default(now()) @db.Timestamptz(3)
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+  website   Website   @relation(fields: [workspaceId, websiteId], references: [workspaceId, id], onDelete: Cascade)
+
+  @@index([workspaceId, companyId, performedAt])
+}
+
+/// Global catalog of detectable technologies (WordPress, Calendly, Google Analytics…).
+model Technology {
+  id        String   @id @default(uuid()) @db.Uuid
+  key       String   @unique
+  name      String
+  category  String
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+
+  companies CompanyTechnology[]
+}
+
+model CompanyTechnology {
+  id              String          @id @default(uuid()) @db.Uuid
+  workspaceId     String          @db.Uuid
+  companyId       String          @db.Uuid
+  technologyId    String          @db.Uuid
+  evidenceId      String?         @db.Uuid
+  confidence      ConfidenceLevel @default(MEDIUM)
+  firstDetectedAt DateTime        @db.Timestamptz(3)
+  lastDetectedAt  DateTime        @db.Timestamptz(3)
+  /// Set when a later scan no longer saw it (kept for history, e.g. a migration away from a platform).
+  goneAt          DateTime?       @db.Timestamptz(3)
+
+  workspace  Workspace  @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+  company    Company    @relation(fields: [workspaceId, companyId], references: [workspaceId, id], onDelete: Restrict)
+  technology Technology @relation(fields: [technologyId], references: [id], onDelete: Restrict)
+
+  @@unique([workspaceId, companyId, technologyId])
+}
+
+enum SocialProfileStatus {
+  ACTIVE
+  GONE
+}
+
+/// A public profile linked from the official website. A profile does not identify the owner (docs/12 §53).
+model SocialProfile {
+  id              String              @id @default(uuid()) @db.Uuid
+  workspaceId     String              @db.Uuid
+  companyId       String              @db.Uuid
+  platform        String
+  profileUrl      String
+  handle          String?
+  status          SocialProfileStatus @default(ACTIVE)
+  matchConfidence ConfidenceLevel     @default(MEDIUM)
+  evidenceId      String?             @db.Uuid
+  firstSeenAt     DateTime            @db.Timestamptz(3)
+  lastCheckedAt   DateTime            @db.Timestamptz(3)
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+  company   Company   @relation(fields: [workspaceId, companyId], references: [workspaceId, id], onDelete: Restrict)
+
+  @@unique([workspaceId, companyId, platform, profileUrl])
+}
+
+/// docs/09 §67-76. A hypothesis is never a verified pain — it says "may", cites evidence and can be invalidated.
+enum HypothesisStatus {
+  CANDIDATE
+  ACTIVE
+  SUPPORTED
+  WEAKENED
+  INVALIDATED
+  EXPIRED
+  CONVERTED
+}
+
+enum HypothesisSource {
+  RULE
+  AI
+}
+
+/**
+ * "Why this company might need us" (docs/06 §31-40, docs/17 §52-57). One row per company + kind; a later scan that
+ * no longer sees the reason invalidates it instead of deleting it.
+ */
+model OpportunityHypothesis {
+  id              String           @id @default(uuid()) @db.Uuid
+  workspaceId     String           @db.Uuid
+  companyId       String           @db.Uuid
+  key             String
+  hypothesis      String
+  reasonSummary   String
+  status          HypothesisStatus @default(ACTIVE)
+  confidence      ConfidenceLevel
+  source          HypothesisSource @default(RULE)
+  researchRunId   String?          @db.Uuid
+  generatedAt     DateTime         @db.Timestamptz(3)
+  lastSupportedAt DateTime         @db.Timestamptz(3)
+  expiresAt       DateTime?        @db.Timestamptz(3)
+  createdAt       DateTime         @default(now()) @db.Timestamptz(3)
+  updatedAt       DateTime         @updatedAt @db.Timestamptz(3)
+  version         Int              @default(1)
+
+  workspace Workspace            @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+  company   Company              @relation(fields: [workspaceId, companyId], references: [workspaceId, id], onDelete: Restrict)
+  evidence  HypothesisEvidence[]
+
+  @@unique([workspaceId, id])
+  @@unique([workspaceId, companyId, key])
+  @@index([workspaceId, status])
+}
+
+model HypothesisEvidence {
+  workspaceId  String   @db.Uuid
+  hypothesisId String   @db.Uuid
+  evidenceId   String   @db.Uuid
+  createdAt    DateTime @default(now()) @db.Timestamptz(3)
+
+  workspace  Workspace             @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+  hypothesis OpportunityHypothesis @relation(fields: [workspaceId, hypothesisId], references: [workspaceId, id], onDelete: Cascade)
+  evidence   Evidence              @relation(fields: [workspaceId, evidenceId], references: [workspaceId, id], onDelete: Restrict)
+
+  @@id([hypothesisId, evidenceId])
+  @@index([workspaceId, evidenceId])
+}
+
+// ───────────────────────────── AI runtime & agents (Phase 9) ─────────────────────────────
+
+enum AgentType {
+  RESEARCH
+  WEB_AUDIT
+  CONTACT
+  SCORING
+  CAMPAIGN
+  INBOX
+  CONVERSATION
+  SCHEDULING
+  SIGNAL
+}
+
+/**
+ * One agent's configuration in a workspace (docs/08 §12-13): which version runs, its model class, what it may use and
+ * how much it may spend. The tool allowlist is enforced server-side, never by the prompt.
+ */
+model AgentDefinition {
+  id                  String         @id @default(uuid()) @db.Uuid
+  workspaceId         String         @db.Uuid
+  agentType           AgentType
+  version             Int
+  enabled             Boolean        @default(true)
+  modelClass          String
+  allowedTools        String[]
+  maxConcurrency      Int            @default(4)
+  timeoutMs           Int            @default(60000)
+  /// Runs per UTC day; null = unlimited.
+  dailyRunLimit       Int?
+  /// Cost per UTC day in minor units; null = unlimited. Unknown costs count as zero but are labelled unknown.
+  dailyCostLimitMinor Int?
+  riskClass           String         @default("LOW")
+  /// null = the workspace level. A value above the workspace level is capped by the Policy Engine.
+  autonomyLevel       AutonomyLevel?
+  createdAt           DateTime       @default(now()) @db.Timestamptz(3)
+  updatedAt           DateTime       @updatedAt @db.Timestamptz(3)
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+
+  @@unique([workspaceId, agentType])
+}
+
+enum PromptStatus {
+  DRAFT
+  ACTIVE
+  RETIRED
+}
+
+/**
+ * Prompt registry (docs/08 §64-68). Prompts live in code with a version; this table records exactly which text each
+ * version had (checksum), so a decision can name its prompt and a silent edit without a version bump is refused.
+ */
+model PromptDefinition {
+  id            String       @id @default(uuid()) @db.Uuid
+  agentType     AgentType
+  taskType      String
+  version       Int
+  status        PromptStatus @default(ACTIVE)
+  system        String
+  template      String
+  schemaName    String
+  schemaVersion Int
+  checksum      String
+  createdAt     DateTime     @default(now()) @db.Timestamptz(3)
+
+  @@unique([agentType, taskType, version])
+}
+
+/// docs/09 §83-87. PARTIAL keeps useful output with named gaps; BLOCKED = budget, disabled agent or no model.
+enum AgentTaskStatus {
+  PENDING
+  QUEUED
+  RUNNING
+  WAITING_TOOL
+  WAITING_HUMAN
+  COMPLETED
+  PARTIAL
+  BLOCKED
+  FAILED
+  CANCELLED
+}
+
+enum AiFailureCategory {
+  MODEL_FAILURE
+  TOOL_FAILURE
+  PROVIDER_FAILURE
+  VALIDATION_FAILURE
+  POLICY_BLOCK
+  BUDGET_BLOCK
+  MISSING_CONTEXT
+  TIMEOUT
+  UNKNOWN
+}
+
+/**
+ * What one agent was asked to do about one entity (docs/08 §60-63). Not a giant essay: refs in, structured out.
+ */
+model AgentTask {
+  id              String             @id @default(uuid()) @db.Uuid
+  workspaceId     String             @db.Uuid
+  agentType       AgentType
+  taskType        String
+  status          AgentTaskStatus    @default(PENDING)
+  priority        Int                @default(4)
+  entityType      EntityType
+  entityId        String             @db.Uuid
+  objective       String
+  /// Deduplication: the same agent never runs the same task twice on the same input (e.g. one research run).
+  inputKey        String
+  inputRefs       Json               @default("{}")
+  output          Json?
+  confidence      ConfidenceLevel?
+  uncertainties   String[]
+  reasonSummary   String?
+  failureCategory AiFailureCategory?
+  error           String?
+  attempts        Int                @default(0)
+  researchRunId   String?            @db.Uuid
+  startedAt       DateTime?          @db.Timestamptz(3)
+  completedAt     DateTime?          @db.Timestamptz(3)
+  createdAt       DateTime           @default(now()) @db.Timestamptz(3)
+  updatedAt       DateTime           @updatedAt @db.Timestamptz(3)
+
+  workspace Workspace    @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+  runs      AiRun[]
+  decisions AiDecision[]
+
+  @@unique([workspaceId, id])
+  @@unique([workspaceId, agentType, taskType, inputKey])
+  @@index([workspaceId, entityType, entityId, createdAt])
+  @@index([workspaceId, agentType, createdAt])
+}
+
+enum AiRunStatus {
+  SUCCEEDED
+  FAILED
+  /// The model answered but validators rejected the answer.
+  REJECTED
+}
+
+/**
+ * One model call (docs/08 §60-63: AIRun ≠ AgentTask) — model, prompt version, tokens, cost, latency. No chain of thought.
+ */
+model AiRun {
+  id              String             @id @default(uuid()) @db.Uuid
+  workspaceId     String             @db.Uuid
+  agentTaskId     String             @db.Uuid
+  agentType       AgentType
+  provider        String?
+  model           String?
+  modelClass      String
+  promptVersion   Int
+  toolsetVersion  Int
+  schemaName      String
+  status          AiRunStatus
+  inputHash       String
+  inputTokens     Int?
+  outputTokens    Int?
+  /// Minor units; null = unknown (never invented).
+  costMinor       Int?
+  costIsEstimate  Boolean            @default(true)
+  latencyMs       Int?
+  output          Json?
+  error           String?
+  failureCategory AiFailureCategory?
+  startedAt       DateTime           @db.Timestamptz(3)
+  completedAt     DateTime?          @db.Timestamptz(3)
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+  task      AgentTask @relation(fields: [workspaceId, agentTaskId], references: [workspaceId, id], onDelete: Cascade)
+
+  @@unique([workspaceId, id])
+  @@index([workspaceId, startedAt])
+  @@index([workspaceId, agentType, startedAt])
+}
+
+enum AiDecisionKind {
+  PROPOSE
+  ACT
+  ASK
+  WAIT
+  BLOCK
+  ESCALATE
+}
+
+enum RiskLevel {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+/**
+ * "Why did the AI do this?" (docs/08 §99-101): a concise operational reason with evidence, prompt version and model —
+ * plus what the deterministic validators said. Append-only.
+ */
+model AiDecision {
+  id            String           @id @default(uuid()) @db.Uuid
+  workspaceId   String           @db.Uuid
+  agentTaskId   String           @db.Uuid
+  aiRunId       String?          @db.Uuid
+  agentType     AgentType
+  actionType    String
+  entityType    EntityType
+  entityId      String           @db.Uuid
+  decision      AiDecisionKind
+  confidence    ConfidenceLevel?
+  risk          RiskLevel        @default(LOW)
+  reasonSummary String
+  evidenceRefs  String[]
+  promptVersion Int?
+  model         String?
+  /// [{ validator, ok, detail }]
+  validation    Json             @default("[]")
+  createdAt     DateTime         @default(now()) @db.Timestamptz(3)
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+  task      AgentTask @relation(fields: [workspaceId, agentTaskId], references: [workspaceId, id], onDelete: Cascade)
+
+  @@index([workspaceId, entityType, entityId, createdAt])
+}
+
+enum AssessmentDimension {
+  ICP_FIT
+  OPPORTUNITY
+  CONTACTABILITY
+  DATA_CONFIDENCE
+  PRIORITY
+}
+
+enum AssessmentLevel {
+  HIGH
+  MEDIUM
+  LOW
+  UNKNOWN
+}
+
+/**
+ * Scoring Agent output (docs/08 §31-32): a level with reasons per dimension, not "Score = 87". History kept — the
+ * current row has supersededAt = null.
+ */
+model CompanyAssessment {
+  id           String              @id @default(uuid()) @db.Uuid
+  workspaceId  String              @db.Uuid
+  companyId    String              @db.Uuid
+  dimension    AssessmentDimension
+  level        AssessmentLevel
+  reasons      String[]
+  evidenceIds  String[]
+  agentTaskId  String?             @db.Uuid
+  aiDecisionId String?             @db.Uuid
+  assessedAt   DateTime            @db.Timestamptz(3)
+  supersededAt DateTime?           @db.Timestamptz(3)
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+  company   Company   @relation(fields: [workspaceId, companyId], references: [workspaceId, id], onDelete: Restrict)
+
+  @@index([workspaceId, companyId, dimension, supersededAt])
+}
+
+// ───────────────────────────── Policy Engine (Phase 10) ─────────────────────────────
+
+enum OutboundState {
+  ACTIVE
+  PAUSED
+  EMERGENCY_STOP
+}
+
+/// docs/10 §20-30: L0 manual · L1 assisted · L2 semi-autonomous · L3 autonomous · L4 goal-driven.
+enum AutonomyLevel {
+  L0
+  L1
+  L2
+  L3
+  L4
+}
+
+enum PolicyOutcome {
+  ACT
+  ASK
+  WAIT
+  BLOCK
+}
+
+enum PolicyStage {
+  PREPARE
+  APPROVAL
+  EXECUTION
+}
+
+enum SuppressionScope {
+  EMAIL
+  PHONE
+  PERSON
+  COMPANY
+  DOMAIN
+}
+
+enum SuppressionReason {
+  UNSUBSCRIBED
+  DO_NOT_CONTACT
+  COMPLAINT
+  LEGAL
+  MANUAL
+  INVALID_CONTACT
+  BOUNCE_POLICY
+}
+
+enum SuppressionStatus {
+  ACTIVE
+  LIFTED
+}
+
+/**
+ * Do-not-contact list (docs/10 §37-47). Suppression always wins — over campaigns, autonomy and approvals. Lifting is
+ * allowed only for reasons a person chose (manual, do-not-contact, invalid, bounce); an unsubscribe, complaint or legal
+ * hold stays. One ACTIVE row per scope + value (partial unique index in the migration). Rows are never deleted.
+ */
+model Suppression {
+  id            String            @id @default(uuid()) @db.Uuid
+  workspaceId   String            @db.Uuid
+  scope         SuppressionScope
+  /// Normalized: lower-case email/domain, digits-only phone, or the person/company id.
+  value         String
+  reason        SuppressionReason
+  status        SuppressionStatus @default(ACTIVE)
+  note          String?
+  source        String            @default("MANUAL")
+  createdByType ActorType
+  createdById   String?
+  createdAt     DateTime          @default(now()) @db.Timestamptz(3)
+  liftedAt      DateTime?         @db.Timestamptz(3)
+  liftedById    String?           @db.Uuid
+  liftReason    String?
+  version       Int               @default(1)
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+
+  @@index([workspaceId, scope, value, status])
+  @@index([workspaceId, status, createdAt])
+}
+
+/**
+ * One Policy Engine evaluation (docs/10 §32-34, §110-118): the outcome, machine-readable reasons, which rules matched,
+ * the policy version, and the normalized input — so the simulator can replay it against a draft policy.
+ */
+model PolicyDecision {
+  id               String        @id @default(uuid()) @db.Uuid
+  workspaceId      String        @db.Uuid
+  stage            PolicyStage
+  actionType       String
+  actionClass      ActionClass
+  actorType        ActorType
+  actorId          String?
+  agentType        String?
+  entityType       EntityType
+  entityId         String        @db.Uuid
+  externalActionId String?       @db.Uuid
+  decision         PolicyOutcome
+  reasonCodes      String[]
+  reasonSummary    String
+  matchedRules     String[]
+  policyVersion    Int
+  riskLevel        RiskLevel
+  resumeAt         DateTime?     @db.Timestamptz(3)
+  /// Material fields of the action; an approval is valid only for the same fingerprint.
+  fingerprint      String
+  /// Hash of the evaluated context — a different hash later means the situation changed.
+  contextHash      String
+  input            Json
+  evaluatedAt      DateTime      @default(now()) @db.Timestamptz(3)
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+
+  @@index([workspaceId, evaluatedAt])
+  @@index([workspaceId, externalActionId])
+  @@index([workspaceId, decision, evaluatedAt])
+}
+
+enum ApprovalStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  EXPIRED
+  INVALIDATED
+  CANCELLED
+}
+
+/**
+ * A human decision the Policy Engine asked for (docs/10 §76-92). Bound to the action's fingerprint and an expiry: a
+ * changed payload invalidates it, an old one expires, and execution still revalidates everything (approval ≠ execution).
+ * The first terminal decision wins (conditional update).
+ */
+model ApprovalRequest {
+  id                 String         @id @default(uuid()) @db.Uuid
+  workspaceId        String         @db.Uuid
+  externalActionId   String         @db.Uuid
+  policyDecisionId   String?        @db.Uuid
+  actionType         String
+  entityType         EntityType
+  entityId           String         @db.Uuid
+  requestedByType    ActorType
+  requestedById      String?
+  requestedByAgent   String?
+  payloadSnapshot    Json
+  fingerprint        String
+  riskLevel          RiskLevel
+  reasonCodes        String[]
+  reason             String
+  requiredPermission String
+  status             ApprovalStatus @default(PENDING)
+  expiresAt          DateTime       @db.Timestamptz(3)
+  decidedById        String?        @db.Uuid
+  decidedAt          DateTime?      @db.Timestamptz(3)
+  decisionNote       String?
+  createdAt          DateTime       @default(now()) @db.Timestamptz(3)
+  updatedAt          DateTime       @updatedAt @db.Timestamptz(3)
+  version            Int            @default(1)
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+
+  @@index([workspaceId, status, createdAt])
+  @@index([workspaceId, externalActionId])
+  @@index([status, expiresAt])
+}
+
+// ───────────────────────────── Campaigns + outreach (Phase 11) ─────────────────────────────
+
+enum CampaignStatus {
+  DRAFT
+  READY
+  ACTIVE
+  PAUSED
+  BLOCKED
+  COMPLETED
+  ARCHIVED
+}
+
+enum CampaignObjective {
+  START_CONVERSATIONS
+  BOOK_MEETINGS
+  QUOTE_REQUESTS
+  REENGAGE
+  VALIDATE_MARKET
+}
+
+/**
+ * An outreach campaign (docs/06 §46-56, docs/09 §21-27, screen #6). DRAFT is freely editable and can't send; READY
+ * means the pre-launch checks passed; only an explicit launch makes it ACTIVE. A completed campaign never becomes
+ * active again — clone it instead.
+ */
+model Campaign {
+  id                   String            @id @default(uuid()) @db.Uuid
+  workspaceId          String            @db.Uuid
+  name                 String
+  objective            CampaignObjective @default(START_CONVERSATIONS)
+  status               CampaignStatus    @default(DRAFT)
+  statusReason         String?
+  /// What we offer, in plain words (the AI picks what is relevant per prospect).
+  offer                String            @default("")
+  /// Who: market, industries, opportunity keys, priority (see @revenue-os/outreach AudienceFilter).
+  audience             Json              @default("{}")
+  /// How: call to action, tone, things to avoid.
+  strategy             Json              @default("{}")
+  /// The mailbox (EMAIL_SEND integration) every message of this campaign is sent from.
+  mailboxIntegrationId String?           @db.Uuid
+  senderName           String            @default("")
+  /// Prospects enrolled at launch (the first cohort); more are added explicitly.
+  cohortSize           Int               @default(25)
+  /// First messages per day for this campaign (follow-ups are not counted).
+  dailyNewLimit        Int               @default(20)
+  checks               Json?
+  checkedAt            DateTime?         @db.Timestamptz(3)
+  launchedAt           DateTime?         @db.Timestamptz(3)
+  pausedAt             DateTime?         @db.Timestamptz(3)
+  completedAt          DateTime?         @db.Timestamptz(3)
+  createdBy            String?           @db.Uuid
+  createdAt            DateTime          @default(now()) @db.Timestamptz(3)
+  updatedAt            DateTime          @updatedAt @db.Timestamptz(3)
+  version              Int               @default(1)
+
+  workspace   Workspace            @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+  steps       CampaignStep[]
+  enrollments CampaignEnrollment[]
+  messages    CampaignMessage[]
+
+  @@unique([workspaceId, id])
+  @@index([workspaceId, status])
+}
+
+enum CampaignStepKind {
+  FIRST_TOUCH
+  FOLLOW_UP
+}
+
+/**
+ * One touch of the sequence. Before every step the prospect is re-checked — a follow-up never fires blindly.
+ */
+model CampaignStep {
+  id          String           @id @default(uuid()) @db.Uuid
+  workspaceId String           @db.Uuid
+  campaignId  String           @db.Uuid
+  position    Int
+  kind        CampaignStepKind
+  /// Days after the previous message was sent (0 for the first touch).
+  delayDays   Int
+  /// What a follow-up adds: CLARIFY_VALUE, NEW_OBSERVATION, CLOSE_THE_LOOP — never "just following up".
+  angle       String           @default("FIRST_TOUCH")
+  createdAt   DateTime         @default(now()) @db.Timestamptz(3)
+
+  workspace Workspace         @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+  campaign  Campaign          @relation(fields: [workspaceId, campaignId], references: [workspaceId, id], onDelete: Cascade)
+  messages  CampaignMessage[]
+
+  @@unique([workspaceId, id])
+  @@unique([campaignId, position])
+}
+
+enum EnrollmentStatus {
+  ELIGIBLE
+  ENROLLED
+  ACTIVE
+  REPLIED
+  PAUSED
+  COMPLETED
+  REMOVED
+  SUPPRESSED
+  BLOCKED
+}
+
+/**
+ * One prospect in one campaign (docs/09 §28-33). One company per campaign (account protection). REPLIED ends the cold
+ * sequence for good; SUPPRESSED never resumes.
+ */
+model CampaignEnrollment {
+  id                  String           @id @default(uuid()) @db.Uuid
+  workspaceId         String           @db.Uuid
+  campaignId          String           @db.Uuid
+  companyId           String           @db.Uuid
+  personId            String?          @db.Uuid
+  contactPointId      String?          @db.Uuid
+  email               String
+  firstName           String?
+  status              EnrollmentStatus @default(ENROLLED)
+  statusReason        String?
+  nextStepPosition    Int              @default(1)
+  nextStepDueAt       DateTime?        @db.Timestamptz(3)
+  threadRef           String?
+  lastSentAt          DateTime?        @db.Timestamptz(3)
+  repliedAt           DateTime?        @db.Timestamptz(3)
+  completedAt         DateTime?        @db.Timestamptz(3)
+  /// Why they qualified at enrollment time (facts as of then).
+  eligibilitySnapshot Json             @default("{}")
+  /// Opaque token for the one-click unsubscribe link (RFC 8058).
+  unsubscribeToken    String           @unique
+  enrolledAt          DateTime         @default(now()) @db.Timestamptz(3)
+  updatedAt           DateTime         @updatedAt @db.Timestamptz(3)
+  version             Int              @default(1)
+
+  workspace Workspace         @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+  campaign  Campaign          @relation(fields: [workspaceId, campaignId], references: [workspaceId, id], onDelete: Cascade)
+  messages  CampaignMessage[]
+
+  @@unique([workspaceId, id])
+  @@unique([campaignId, companyId])
+  @@index([workspaceId, status, nextStepDueAt])
+  @@index([workspaceId, email])
+  @@index([threadRef])
+}
+
+enum CampaignMessageStatus {
+  DRAFT_REJECTED
+  PENDING_APPROVAL
+  WAITING
+  QUEUED
+  SENT
+  BLOCKED
+  CANCELLED
+  FAILED
+}
+
+/**
+ * One drafted message for one step of one enrollment; sent only through its ExternalAction.
+ */
+model CampaignMessage {
+  id                String                @id @default(uuid()) @db.Uuid
+  workspaceId       String                @db.Uuid
+  campaignId        String                @db.Uuid
+  enrollmentId      String                @db.Uuid
+  stepId            String                @db.Uuid
+  position          Int
+  agentTaskId       String?               @db.Uuid
+  externalActionId  String?               @unique @db.Uuid
+  subject           String
+  body              String
+  /// Personalization claims with the evidence each rests on.
+  claims            Json                  @default("[]")
+  status            CampaignMessageStatus
+  statusReason      String?
+  providerMessageId String?
+  threadRef         String?
+  sentAt            DateTime?             @db.Timestamptz(3)
+  createdAt         DateTime              @default(now()) @db.Timestamptz(3)
+  updatedAt         DateTime              @updatedAt @db.Timestamptz(3)
+
+  workspace  Workspace          @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+  campaign   Campaign           @relation(fields: [workspaceId, campaignId], references: [workspaceId, id], onDelete: Cascade)
+  enrollment CampaignEnrollment @relation(fields: [workspaceId, enrollmentId], references: [workspaceId, id], onDelete: Cascade)
+  step       CampaignStep       @relation(fields: [workspaceId, stepId], references: [workspaceId, id], onDelete: Cascade)
+
+  @@unique([enrollmentId, stepId])
+  @@index([workspaceId, campaignId, createdAt])
+}
+
+enum MailboxMessageKind {
+  REPLY
+  AUTO_REPLY
+  UNSUBSCRIBE
+  BOUNCE
+  UNMATCHED
+}
+
+/**
+ * An inbound email seen by mailbox sync (docs/11 §61). Deduplicated per mailbox; Phase 12 builds conversations on
+ * these. A genuine reply stops the cold sequence; "unsubscribe" suppresses; a bounce marks the address invalid.
+ */
+model MailboxMessage {
+  id                String             @id @default(uuid()) @db.Uuid
+  workspaceId       String             @db.Uuid
+  integrationId     String             @db.Uuid
+  providerMessageId String
+  threadRef         String?
+  fromEmail         String
+  toEmails          String[]
+  subject           String
+  snippet           String
+  occurredAt        DateTime           @db.Timestamptz(3)
+  kind              MailboxMessageKind
+  campaignId        String?            @db.Uuid
+  enrollmentId      String?            @db.Uuid
+  createdAt         DateTime           @default(now()) @db.Timestamptz(3)
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+
+  @@unique([integrationId, providerMessageId])
+  @@index([workspaceId, enrollmentId])
+  @@index([workspaceId, occurredAt])
+}
+
+/**
+ * Where mailbox sync continues (provider history cursor).
+ */
+model MailboxCursor {
+  integrationId String   @id @db.Uuid
+  workspaceId   String   @db.Uuid
+  cursor        String
+  updatedAt     DateTime @updatedAt @db.Timestamptz(3)
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+}
+
+/**
+ * Encrypted provider credentials (docs/12 §19-30): AES-256-GCM with ENCRYPTION_KEY. Never returned by the API, never
+ * logged, never in AI context.
+ */
+model IntegrationCredential {
+  id            String   @id @default(uuid()) @db.Uuid
+  workspaceId   String   @db.Uuid
+  integrationId String   @unique @db.Uuid
+  ciphertext    String
+  iv            String
+  authTag       String
+  keyVersion    Int      @default(1)
+  createdAt     DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt     DateTime @updatedAt @db.Timestamptz(3)
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+}
+
+/**
+ * One OAuth attempt: bound to workspace + user, short-lived, single use, PKCE (docs/12 §19-30 OAuth state protection).
+ */
+model OAuthState {
+  id           String    @id @default(uuid()) @db.Uuid
+  workspaceId  String    @db.Uuid
+  userId       String    @db.Uuid
+  provider     String
+  stateHash    String    @unique
+  codeVerifier String
+  expiresAt    DateTime  @db.Timestamptz(3)
+  usedAt       DateTime? @db.Timestamptz(3)
+  createdAt    DateTime  @default(now()) @db.Timestamptz(3)
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+}
+
+// ───────────────────────────── Conversations + AI Inbox (Phase 12) ─────────────────────────────
+
+/// docs/09 + screen #5 §48: where the relationship stands. Qualification stages arrive with Phase 13.
+enum ConversationStage {
+  REPLIED
+  ENGAGED
+  MEETING_REQUESTED
+  MEETING_BOOKED
+  NURTURE
+  CLOSED
+  SUPPRESSED
+}
+
+/// screen #5 §15: AUTO sends within policy · ASSIST drafts for a person · HUMAN = AI never replies (suggestions only).
+enum ConversationMode {
+  AUTO
+  ASSIST
+  HUMAN
+}
+
+/// docs/17 §77-86 inbox categories — derived by rules from stage, intent and who has to act, never by the AI.
+enum InboxCategory {
+  HIGH_INTENT
+  NEEDS_HUMAN
+  AI_HANDLING
+  MEETING
+  NURTURE
+  CLOSED
+}
+
+enum WaitingOn {
+  US
+  PROSPECT
+  NOBODY
+}
+
+/**
+ * One relationship thread with one prospect (screen #5). Always tied to a company we know — unknown senders stay in
+ * mailbox sync as UNMATCHED. One conversation per mailbox thread (duplicate prevention); the cold sequence that led
+ * here is linked, and stopped the moment a genuine reply arrived.
+ */
+model Conversation {
+  id                   String            @id @default(uuid()) @db.Uuid
+  workspaceId          String            @db.Uuid
+  companyId            String            @db.Uuid
+  personId             String?           @db.Uuid
+  /// The prospect's address (normalized).
+  email                String
+  contactName          String?
+  mailboxIntegrationId String            @db.Uuid
+  threadRef            String?
+  subject              String
+  campaignId           String?           @db.Uuid
+  enrollmentId         String?           @db.Uuid
+  stage                ConversationStage @default(REPLIED)
+  mode                 ConversationMode  @default(ASSIST)
+  category             InboxCategory     @default(AI_HANDLING)
+  waitingOn            WaitingOn         @default(US)
+  /// Higher = act sooner. Intent + human requirement + risk; waiting time is added when listing.
+  priority             Int               @default(0)
+  priorityReasons      String[]
+  needsHuman           Boolean           @default(false)
+  escalationReason     String?
+  primaryIntent        String?
+  sentiment            String?
+  /// The latest short summary ("catch me up").
+  summary              String?
+  nextAction           String?
+  /// Structured context from the conversation (need, timeline, budget, referral, return date…) — each value with the
+  /// message it came from. History lives in ExtractionCandidate; the latest statement wins.
+  context              Json              @default("{}")
+  /// The deal this conversation belongs to (Phase 13), once one exists.
+  opportunityId        String?           @db.Uuid
+  /// Commercial evidence the rules noticed but did not act on: { strength, reason, quote, messageId, at }.
+  commercialSignal     Json?
+  assignedToId         String?           @db.Uuid
+  takenOverById        String?           @db.Uuid
+  takenOverAt          DateTime?         @db.Timestamptz(3)
+  snoozedUntil         DateTime?         @db.Timestamptz(3)
+  resolvedAt           DateTime?         @db.Timestamptz(3)
+  lastInboundAt        DateTime?         @db.Timestamptz(3)
+  lastOutboundAt       DateTime?         @db.Timestamptz(3)
+  lastMessageAt        DateTime          @default(now()) @db.Timestamptz(3)
+  lastReadAt           DateTime?         @db.Timestamptz(3)
+  createdAt            DateTime          @default(now()) @db.Timestamptz(3)
+  updatedAt            DateTime          @updatedAt @db.Timestamptz(3)
+  version              Int               @default(1)
+
+  workspace       Workspace               @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+  messages        ConversationMessage[]
+  classifications MessageClassification[]
+  extractions     ExtractionCandidate[]
+  replies         ConversationReply[]
+
+  @@unique([workspaceId, id])
+  @@unique([mailboxIntegrationId, threadRef])
+  @@index([workspaceId, category, priority])
+  @@index([workspaceId, lastMessageAt])
+  @@index([workspaceId, email])
+  @@index([workspaceId, companyId])
+}
+
+enum MessageDirection {
+  INBOUND
+  OUTBOUND
+  INTERNAL
+}
+
+enum MessageAuthor {
+  PROSPECT
+  AI
+  HUMAN
+  SYSTEM
+}
+
+/**
+ * One message in a conversation: an email in either direction, or an internal note (never sent, screen #5 §43).
+ * Inbound rows come from mailbox sync (deduplicated there); outbound rows from a sent campaign step or a sent reply.
+ */
+model ConversationMessage {
+  id                String           @id @default(uuid()) @db.Uuid
+  workspaceId       String           @db.Uuid
+  conversationId    String           @db.Uuid
+  direction         MessageDirection
+  author            MessageAuthor
+  authorUserId      String?          @db.Uuid
+  fromEmail         String?
+  toEmails          String[]
+  subject           String           @default("")
+  /// What the person wrote (quoted history cut off).
+  text              String
+  /// The mailbox kind for inbound (REPLY, AUTO_REPLY, UNSUBSCRIBE).
+  kind              String?
+  mailboxMessageId  String?          @unique @db.Uuid
+  campaignMessageId String?          @unique @db.Uuid
+  replyId           String?          @unique @db.Uuid
+  internetMessageId String?
+  occurredAt        DateTime         @db.Timestamptz(3)
+  createdAt         DateTime         @default(now()) @db.Timestamptz(3)
+
+  workspace      Workspace              @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+  conversation   Conversation           @relation(fields: [workspaceId, conversationId], references: [workspaceId, id], onDelete: Cascade)
+  classification MessageClassification?
+
+  @@unique([workspaceId, id])
+  @@index([conversationId, occurredAt])
+}
+
+/**
+ * What an inbound message means (screen #5 §6-7): a primary intent plus secondary ones, tone, the questions and
+ * objections in it, and whether a person must look. RULES = deterministic (unsubscribe, auto-reply); AI = Inbox Agent.
+ */
+model MessageClassification {
+  id               String          @id @default(uuid()) @db.Uuid
+  workspaceId      String          @db.Uuid
+  conversationId   String          @db.Uuid
+  messageId        String          @unique @db.Uuid
+  primaryIntent    String
+  secondaryIntents String[]
+  sentiment        String
+  questions        String[]
+  /// [{ type, text }]
+  objections       Json            @default("[]")
+  riskFlags        String[]
+  needsHuman       Boolean         @default(false)
+  confidence       ConfidenceLevel
+  summary          String          @default("")
+  method           String
+  agentTaskId      String?         @db.Uuid
+  createdAt        DateTime        @default(now()) @db.Timestamptz(3)
+
+  workspace    Workspace           @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+  conversation Conversation        @relation(fields: [workspaceId, conversationId], references: [workspaceId, id], onDelete: Cascade)
+  message      ConversationMessage @relation(fields: [workspaceId, messageId], references: [workspaceId, id], onDelete: Cascade)
+
+  @@unique([workspaceId, messageId])
+  @@index([workspaceId, primaryIntent, createdAt])
+}
+
+enum ExtractionStatus {
+  APPLIED
+  SUPERSEDED
+  REJECTED
+}
+
+/**
+ * A fact the prospect stated (screen #5 §23, §30-32): field, value and the exact words it came from (provenance).
+ * Only quotes found verbatim in the message are kept. A newer statement supersedes an older one; history stays.
+ */
+model ExtractionCandidate {
+  id             String           @id @default(uuid()) @db.Uuid
+  workspaceId    String           @db.Uuid
+  conversationId String           @db.Uuid
+  messageId      String           @db.Uuid
+  field          String
+  value          String
+  quote          String
+  confidence     ConfidenceLevel
+  status         ExtractionStatus @default(APPLIED)
+  decidedById    String?          @db.Uuid
+  createdAt      DateTime         @default(now()) @db.Timestamptz(3)
+  updatedAt      DateTime         @updatedAt @db.Timestamptz(3)
+
+  workspace    Workspace    @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+  conversation Conversation @relation(fields: [workspaceId, conversationId], references: [workspaceId, id], onDelete: Cascade)
+
+  @@index([conversationId, field, createdAt])
+}
+
+enum ReplyStatus {
+  DRAFT
+  REJECTED
+  PENDING_APPROVAL
+  WAITING
+  QUEUED
+  SENT
+  BLOCKED
+  CANCELLED
+  FAILED
+  DISCARDED
+  SUPERSEDED
+}
+
+/**
+ * A reply in a conversation: an AI draft (with its grounding — what it answered from approved knowledge and what it
+ * could not), or what a person wrote. Sent only through its ExternalAction (email.reply), which the Policy Engine
+ * decides on and the worker revalidates — a takeover or a newer message makes an AI reply obsolete.
+ */
+model ConversationReply {
+  id                 String           @id @default(uuid()) @db.Uuid
+  workspaceId        String           @db.Uuid
+  conversationId     String           @db.Uuid
+  /// The inbound message this answers (a newer one makes an unsent AI draft obsolete).
+  inReplyToMessageId String?          @db.Uuid
+  author             MessageAuthor
+  authorUserId       String?          @db.Uuid
+  agentTaskId        String?          @db.Uuid
+  subject            String
+  body               String
+  /// [{ question, answer, source }] and the questions it could not answer from approved knowledge.
+  answered           Json             @default("[]")
+  unanswered         String[]
+  claims             Json             @default("[]")
+  /// [{ validator, ok, detail }]
+  validation         Json             @default("[]")
+  confidence         ConfidenceLevel?
+  status             ReplyStatus
+  statusReason       String?
+  externalActionId   String?          @unique @db.Uuid
+  /// [{ itemId, revisionId, code, version, title }] — the approved knowledge revisions this reply rests on (docs/13 §83-94).
+  knowledge          Json             @default("[]")
+  /// 👍/👎 + why (screen #5 §46) — controlled learning data, never auto-applied.
+  feedback           Json?
+  sentAt             DateTime?        @db.Timestamptz(3)
+  createdAt          DateTime         @default(now()) @db.Timestamptz(3)
+  updatedAt          DateTime         @updatedAt @db.Timestamptz(3)
+
+  workspace    Workspace    @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+  conversation Conversation @relation(fields: [workspaceId, conversationId], references: [workspaceId, id], onDelete: Cascade)
+
+  @@unique([workspaceId, id])
+  @@index([conversationId, createdAt])
+}
+
+// ───────────────────────────── Qualification + Opportunities (Phase 13) ─────────────────────────────
+
+/// What a stage means to the system, whatever its label (screen #7 §1). Guards and health use this, never the name.
+enum StageSemantic {
+  NEW
+  DISCOVERY
+  QUALIFIED
+  MEETING
+  PROPOSAL
+  NEGOTIATION
+  WON
+  LOST
+  NURTURE
+}
+
+enum OpportunityStatus {
+  OPEN
+  WON
+  LOST
+  ARCHIVED
+}
+
+/**
+ * A specific potential commercial outcome with one company (screen #7 §2: Company = account, Opportunity = deal). Born
+ * from commercial evidence, not from every positive reply. Stage changes only through commands that check the stage's
+ * requirements and write history; WON and LOST are explicit, with evidence and a reason.
+ */
+model Opportunity {
+  id                 String            @id @default(uuid()) @db.Uuid
+  workspaceId        String            @db.Uuid
+  companyId          String            @db.Uuid
+  primaryPersonId    String?           @db.Uuid
+  name               String
+  /// What they would buy (service / offer), in plain words.
+  service            String?
+  pipelineId         String            @db.Uuid
+  stageId            String            @db.Uuid
+  status             OpportunityStatus @default(OPEN)
+  /// Estimated value in minor units; null = not known yet (never invented).
+  amountMinor        Int?
+  currency           String            @default("USD") @db.Char(3)
+  ownerUserId        String?           @db.Uuid
+  /// CONVERSATION / MANUAL / REFERRAL
+  source             String            @default("MANUAL")
+  conversationId     String?           @db.Uuid
+  campaignId         String?           @db.Uuid
+  /// Why it exists: the commercial evidence it was created from.
+  originReason       String?
+  originQuote        String?
+  createdByType      ActorType
+  createdById        String?
+  /// A person's own next step; otherwise the rules suggest one.
+  nextActionOverride String?
+  nextActionDueAt    DateTime?         @db.Timestamptz(3)
+  stageEnteredAt     DateTime          @default(now()) @db.Timestamptz(3)
+  lastActivityAt     DateTime          @default(now()) @db.Timestamptz(3)
+  closedAt           DateTime?         @db.Timestamptz(3)
+  wonAmountMinor     Int?
+  wonNote            String?
+  createdAt          DateTime          @default(now()) @db.Timestamptz(3)
+  updatedAt          DateTime          @updatedAt @db.Timestamptz(3)
+  version            Int               @default(1)
+
+  workspace     Workspace                 @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+  stage         PipelineStage             @relation(fields: [stageId], references: [id], onDelete: Restrict)
+  history       OpportunityStageHistory[]
+  stakeholders  OpportunityStakeholder[]
+  losses        OpportunityLoss[]
+  qualification Qualification?
+
+  @@unique([workspaceId, id])
+  @@index([workspaceId, status, stageId])
+  @@index([workspaceId, companyId])
+  @@index([workspaceId, ownerUserId])
+}
+
+/**
+ * Every stage change, with who and why (docs/06 §63-72: mandatory for cycle time and bottleneck analysis).
+ */
+model OpportunityStageHistory {
+  id            String         @id @default(uuid()) @db.Uuid
+  workspaceId   String         @db.Uuid
+  opportunityId String         @db.Uuid
+  fromStageId   String?        @db.Uuid
+  toStageId     String         @db.Uuid
+  fromSemantic  StageSemantic?
+  toSemantic    StageSemantic
+  actorType     ActorType
+  actorId       String?
+  reason        String?
+  changedAt     DateTime       @default(now()) @db.Timestamptz(3)
+
+  workspace   Workspace   @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+  opportunity Opportunity @relation(fields: [workspaceId, opportunityId], references: [workspaceId, id], onDelete: Cascade)
+
+  @@index([opportunityId, changedAt])
+  @@index([workspaceId, toSemantic, changedAt])
+}
+
+enum StakeholderRole {
+  DECISION_MAKER
+  INFLUENCER
+  USER
+  CHAMPION
+  UNKNOWN
+}
+
+enum StakeholderStatus {
+  SUGGESTED
+  KNOWN
+  ENGAGED
+  NOT_CONTACTED
+}
+
+/**
+ * Who is involved (screen #7 §9-10). A stakeholder the prospect mentioned ("my partner") may have no person record yet.
+ */
+model OpportunityStakeholder {
+  id            String            @id @default(uuid()) @db.Uuid
+  workspaceId   String            @db.Uuid
+  opportunityId String            @db.Uuid
+  personId      String?           @db.Uuid
+  name          String
+  title         String?
+  role          StakeholderRole   @default(UNKNOWN)
+  influence     String            @default("UNKNOWN")
+  status        StakeholderStatus @default(KNOWN)
+  /// PRIMARY / CONVERSATION / MANUAL
+  source        String            @default("MANUAL")
+  quote         String?
+  messageId     String?           @db.Uuid
+  createdAt     DateTime          @default(now()) @db.Timestamptz(3)
+  updatedAt     DateTime          @updatedAt @db.Timestamptz(3)
+
+  workspace   Workspace   @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+  opportunity Opportunity @relation(fields: [workspaceId, opportunityId], references: [workspaceId, id], onDelete: Cascade)
+
+  @@unique([opportunityId, personId])
+  @@index([opportunityId])
+}
+
+enum LossReason {
+  PRICE
+  TIMING
+  COMPETITOR
+  NO_BUDGET
+  NO_NEED
+  INTERNAL_DECISION
+  NO_RESPONSE
+  TECHNICAL_FIT
+  WRONG_PROSPECT
+  OTHER
+}
+
+/**
+ * Why a deal was lost (screen #7 §36-37) — a reason is required; a revisit date turns "lost" into "later".
+ */
+model OpportunityLoss {
+  id            String     @id @default(uuid()) @db.Uuid
+  workspaceId   String     @db.Uuid
+  opportunityId String     @db.Uuid
+  reasonCode    LossReason
+  details       String?
+  competitor    String?
+  revisitAt     DateTime?  @db.Timestamptz(3)
+  evidenceQuote String?
+  /// The reason the rules suggested (from the conversation), if a person confirmed it.
+  suggested     Boolean    @default(false)
+  decidedById   String?    @db.Uuid
+  lostAt        DateTime   @default(now()) @db.Timestamptz(3)
+  /// Set when the deal was reopened (history kept).
+  reopenedAt    DateTime?  @db.Timestamptz(3)
+
+  workspace   Workspace   @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+  opportunity Opportunity @relation(fields: [workspaceId, opportunityId], references: [workspaceId, id], onDelete: Cascade)
+
+  @@index([opportunityId, lostAt])
+  @@index([workspaceId, reasonCode])
+}
+
+enum QualificationStatus {
+  UNQUALIFIED
+  PARTIAL
+  QUALIFIED
+}
+
+/**
+ * One qualification per opportunity (screen #7 §6-8): known vs unknown, every answer with its source.
+ */
+model Qualification {
+  id            String              @id @default(uuid()) @db.Uuid
+  workspaceId   String              @db.Uuid
+  opportunityId String              @unique @db.Uuid
+  status        QualificationStatus @default(UNQUALIFIED)
+  updatedAt     DateTime            @updatedAt @db.Timestamptz(3)
+  createdAt     DateTime            @default(now()) @db.Timestamptz(3)
+
+  workspace   Workspace             @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+  opportunity Opportunity           @relation(fields: [workspaceId, opportunityId], references: [workspaceId, id], onDelete: Cascade)
+  answers     QualificationAnswer[]
+
+  @@unique([workspaceId, id])
+  @@unique([workspaceId, opportunityId])
+}
+
+/**
+ * One answer (need, timeline, budget, authority, current solution, decision process, project). From the conversation
+ * (with the prospect's exact words) or entered by a person. The current answer has supersededAt = null; nothing is
+ * overwritten. An AI-read answer counts as known but stays unverified until a person confirms it.
+ */
+model QualificationAnswer {
+  id              String          @id @default(uuid()) @db.Uuid
+  workspaceId     String          @db.Uuid
+  qualificationId String          @db.Uuid
+  key             String
+  value           String
+  confidence      ConfidenceLevel @default(MEDIUM)
+  /// CONVERSATION / MANUAL
+  source          String
+  sourceMessageId String?         @db.Uuid
+  quote           String?
+  verified        Boolean         @default(false)
+  verifiedById    String?         @db.Uuid
+  createdById     String?
+  supersededAt    DateTime?       @db.Timestamptz(3)
+  createdAt       DateTime        @default(now()) @db.Timestamptz(3)
+
+  workspace     Workspace     @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+  qualification Qualification @relation(fields: [workspaceId, qualificationId], references: [workspaceId, id], onDelete: Cascade)
+
+  @@index([qualificationId, key, supersededAt])
+}
+
+// ───────────────────────────── Calendar + Meetings (Phase 14) ─────────────────────────────
+
+/// docs/09 §59-64. PROPOSED = meeting intent with real slots found; PENDING_CONFIRMATION = times offered to the prospect,
+/// or a booking waiting on the calendar / an approval; BOOKED only after the calendar confirmed (or a person recorded a
+/// meeting booked elsewhere). RESCHEDULING keeps the confirmed time until the new one is confirmed.
+enum MeetingStatus {
+  PROPOSED
+  PENDING_CONFIRMATION
+  BOOKED
+  RESCHEDULING
+  COMPLETED
+  NO_SHOW
+  CANCELLED
+}
+
+/// What a meeting type needs from the deal before it may be booked (screen #8 §9) — protects the team's calendars.
+enum MeetingQualificationRule {
+  NONE
+  NEED
+  QUALIFIED
+}
+
+/// screen #8 §28. NO_SHOW is recorded as an outcome too, so the meeting journey reads the same everywhere.
+enum MeetingOutcomeType {
+  ADVANCED
+  NO_CHANGE
+  FOLLOW_UP
+  NURTURE
+  DISQUALIFIED
+  LOST
+  NO_SHOW
+}
+
+/**
+ * Admin-configurable meeting types (screen #8 §2): duration, buffer, what the deal must show first, whether the AI may
+ * book it, and whether a brief is prepared.
+ */
+model MeetingType {
+  id                    String                   @id @default(uuid()) @db.Uuid
+  workspaceId           String                   @db.Uuid
+  key                   String
+  name                  String
+  description           String?
+  durationMinutes       Int
+  bufferMinutes         Int                      @default(15)
+  requiredQualification MeetingQualificationRule @default(NONE)
+  aiBookingAllowed      Boolean                  @default(true)
+  briefEnabled          Boolean                  @default(true)
+  /// VIDEO / PHONE / IN_PERSON
+  locationType          String                   @default("VIDEO")
+  active                Boolean                  @default(true)
+  position              Int                      @default(0)
+  createdAt             DateTime                 @default(now()) @db.Timestamptz(3)
+  updatedAt             DateTime                 @updatedAt @db.Timestamptz(3)
+  version               Int                      @default(1)
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+  meetings  Meeting[]
+
+  @@unique([workspaceId, key])
+  @@unique([workspaceId, id])
+}
+
+/**
+ * One team member's bookable time (screen #8 §5, §41): local working days and meeting hours, lunch, buffer, daily cap,
+ * minimum notice, and which calendar is checked. Availability itself is always read fresh from that calendar.
+ */
+model SchedulingProfile {
+  id                    String    @id @default(uuid()) @db.Uuid
+  workspaceId           String    @db.Uuid
+  userId                String    @db.Uuid
+  timezone              String
+  /// 0 = Sunday … 6 = Saturday
+  workingDays           Int[]
+  /// Minutes after local midnight.
+  meetingStartMinute    Int       @default(600)
+  meetingEndMinute      Int       @default(960)
+  lunchStartMinute      Int?
+  lunchEndMinute        Int?
+  bufferMinutes         Int       @default(15)
+  maxMeetingsPerDay     Int       @default(5)
+  minNoticeMinutes      Int       @default(240)
+  calendarIntegrationId String?   @db.Uuid
+  calendarId            String    @default("primary")
+  acceptsMeetings       Boolean   @default(true)
+  /// Away (holiday, leave): no slots before this time (screen #8 §42).
+  unavailableUntil      DateTime? @db.Timestamptz(3)
+  createdAt             DateTime  @default(now()) @db.Timestamptz(3)
+  updatedAt             DateTime  @updatedAt @db.Timestamptz(3)
+  version               Int       @default(1)
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+
+  @@unique([workspaceId, userId])
+}
+
+/**
+ * One meeting (docs/06 §63-72, screen #8). Ours is canonical; the calendar event is mapped onto it (provider event id,
+ * etag, last sync). Never BOOKED before the calendar confirmed the event or a person recorded an external booking.
+ */
+model Meeting {
+  id                    String          @id @default(uuid()) @db.Uuid
+  workspaceId           String          @db.Uuid
+  companyId             String          @db.Uuid
+  opportunityId         String?         @db.Uuid
+  conversationId        String?         @db.Uuid
+  meetingTypeId         String          @db.Uuid
+  ownerUserId           String?         @db.Uuid
+  primaryPersonId       String?         @db.Uuid
+  title                 String
+  status                MeetingStatus   @default(PROPOSED)
+  /// The confirmed time (set when BOOKED).
+  startAt               DateTime?       @db.Timestamptz(3)
+  endAt                 DateTime?       @db.Timestamptz(3)
+  /// A time waiting for the calendar (booking or reschedule) — the confirmed time above stays until it is confirmed.
+  pendingStartAt        DateTime?       @db.Timestamptz(3)
+  pendingEndAt          DateTime?       @db.Timestamptz(3)
+  /// The prospect's timezone, where it came from and how sure we are (screen #8 §4) — never a silent guess.
+  timezone              String
+  timezoneSource        String
+  timezoneConfidence    ConfidenceLevel
+  ownerTimezone         String
+  routingReason         String?
+  /// What they asked for, in their words ("Thursday afternoon works"), and the message it came from.
+  requestText           String?
+  requestMessageId      String?         @db.Uuid
+  /// { days: [4], part: 'AFTERNOON', label } read from their words.
+  preference            Json?
+  /// [{ start, end }] — free in the calendar at slotsCheckedAt; checked again before booking.
+  offeredSlots          Json            @default("[]")
+  slotsCheckedAt        DateTime?       @db.Timestamptz(3)
+  offeredAt             DateTime?       @db.Timestamptz(3)
+  calendarIntegrationId String?         @db.Uuid
+  calendarId            String?
+  providerEventId       String?
+  providerEtag          String?
+  lastSyncedAt          DateTime?       @db.Timestamptz(3)
+  /// PROVIDER / MANUAL
+  bookedVia             String?
+  bookedAt              DateTime?       @db.Timestamptz(3)
+  /// The latest calendar action (book / move / cancel).
+  externalActionId      String?         @db.Uuid
+  locationType          String          @default("VIDEO")
+  meetingUrl            String?
+  statusReason          String?
+  /// PROSPECT / TEAM / SYSTEM / PROVIDER / MANUAL — a cancellation is not a lost deal (docs/09 §59-64).
+  cancelSource          String?
+  cancelReason          String?
+  cancelledAt           DateTime?       @db.Timestamptz(3)
+  completedAt           DateTime?       @db.Timestamptz(3)
+  createdByType         ActorType
+  createdById           String?
+  createdAt             DateTime        @default(now()) @db.Timestamptz(3)
+  updatedAt             DateTime        @updatedAt @db.Timestamptz(3)
+  version               Int             @default(1)
+
+  workspace   Workspace         @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+  meetingType MeetingType       @relation(fields: [workspaceId, meetingTypeId], references: [workspaceId, id], onDelete: Restrict)
+  attendees   MeetingAttendee[]
+  briefs      MeetingBrief[]
+  outcome     MeetingOutcome?
+  changes     MeetingChange[]
+
+  @@unique([workspaceId, id])
+  @@unique([calendarIntegrationId, providerEventId])
+  @@index([workspaceId, status, startAt])
+  @@index([workspaceId, ownerUserId, startAt])
+  @@index([workspaceId, companyId])
+  @@index([workspaceId, opportunityId])
+  @@index([workspaceId, conversationId])
+}
+
+/**
+ * Who takes part (screen #8 §33-34): prospects and colleagues; expected vs actually attended (null = unknown).
+ */
+model MeetingAttendee {
+  id          String   @id @default(uuid()) @db.Uuid
+  workspaceId String   @db.Uuid
+  meetingId   String   @db.Uuid
+  /// INTERNAL / EXTERNAL
+  side        String
+  personId    String?  @db.Uuid
+  userId      String?  @db.Uuid
+  name        String
+  email       String?
+  role        String?
+  expected    Boolean  @default(true)
+  attended    Boolean?
+  createdAt   DateTime @default(now()) @db.Timestamptz(3)
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+  meeting   Meeting   @relation(fields: [workspaceId, meetingId], references: [workspaceId, id], onDelete: Cascade)
+
+  @@index([meetingId])
+}
+
+/**
+ * The pre-meeting brief (screen #8 §20-23), versioned: who, why they engaged, what is known and unknown, what they
+ * asked and objected to, suggested questions with reasons, what not to ask again — and the gaps, said plainly.
+ */
+model MeetingBrief {
+  id          String   @id @default(uuid()) @db.Uuid
+  workspaceId String   @db.Uuid
+  meetingId   String   @db.Uuid
+  version     Int
+  content     Json
+  gaps        String[]
+  /// RULES now; an AI brief arrives with memory (Phase 15) and must cite the same sources.
+  method      String   @default("RULES")
+  generatedAt DateTime @default(now()) @db.Timestamptz(3)
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+  meeting   Meeting   @relation(fields: [workspaceId, meetingId], references: [workspaceId, id], onDelete: Cascade)
+
+  @@unique([meetingId, version])
+}
+
+/**
+ * What happened (screen #8 §28-29): a structured outcome, a person's notes, the next step, and the stage the rules
+ * recommend — applied only when a person accepts it.
+ */
+model MeetingOutcome {
+  id               String             @id @default(uuid()) @db.Uuid
+  workspaceId      String             @db.Uuid
+  meetingId        String             @unique @db.Uuid
+  outcome          MeetingOutcomeType
+  summary          String?
+  notes            String?
+  nextStep         String?
+  recommendedStage StageSemantic?
+  stageApplied     Boolean            @default(false)
+  recordedById     String?            @db.Uuid
+  recordedAt       DateTime           @default(now()) @db.Timestamptz(3)
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+  meeting   Meeting   @relation(fields: [workspaceId, meetingId], references: [workspaceId, id], onDelete: Cascade)
+
+  @@unique([workspaceId, meetingId])
+}
+
+/**
+ * The meeting's journey (docs/09 §59-64: "old meeting historical"): every booking, move, cancellation, no-show and
+ * calendar-side change, with who or what caused it.
+ */
+model MeetingChange {
+  id          String    @id @default(uuid()) @db.Uuid
+  workspaceId String    @db.Uuid
+  meetingId   String    @db.Uuid
+  /// PROPOSED / OFFERED / BOOKING_REQUESTED / BOOKED / BOOKING_FAILED / RESCHEDULED / CANCELLED / COMPLETED / NO_SHOW / CALENDAR_CHANGED / CALENDAR_DELETED
+  kind        String
+  fromStartAt DateTime? @db.Timestamptz(3)
+  toStartAt   DateTime? @db.Timestamptz(3)
+  toEndAt     DateTime? @db.Timestamptz(3)
+  /// PROSPECT / TEAM / SYSTEM / PROVIDER / AI
+  source      String
+  actorType   ActorType
+  actorId     String?
+  reason      String?
+  at          DateTime  @default(now()) @db.Timestamptz(3)
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+  meeting   Meeting   @relation(fields: [workspaceId, meetingId], references: [workspaceId, id], onDelete: Cascade)
+
+  @@index([meetingId, at])
+}
+
+// ───────────────────────────── Memory (Phase 15, docs/13 §4-29) ─────────────────────────────
+
+/// Which record a memory belongs to (screen #12 §2): a person's preference never becomes a company fact, a deal's
+/// budget never becomes the person's.
+enum MemoryScope {
+  COMPANY
+  PERSON
+  CONVERSATION
+  OPPORTUNITY
+}
+
+/// docs/13 §7-14. Commitments have their own table.
+enum MemoryType {
+  COMPANY
+  PERSON
+  CONVERSATION
+  RELATIONSHIP
+  OPPORTUNITY
+  PREFERENCE
+}
+
+/// Where a memory came from (screen #12 §6-7): the UI keeps a prospect's own words apart from a colleague's note and an
+/// AI inference.
+enum MemoryOrigin {
+  DIRECT_STATEMENT
+  MEETING_NOTE
+  HUMAN_NOTE
+  HUMAN_CORRECTION
+  AI_INFERENCE
+}
+
+/// docs/13 §15-17. Never overwritten: a newer value supersedes, a wrong one is invalidated with a reason.
+enum MemoryStatus {
+  ACTIVE
+  STALE
+  CONFLICTED
+  SUPERSEDED
+  INVALIDATED
+  ARCHIVED
+}
+
+/// docs/13 §4-6. Low-risk obvious statements are accepted automatically; budget, authority and anything unsure waits for a person.
+enum MemoryCandidateStatus {
+  PENDING
+  AUTO_ACCEPTED
+  ACCEPTED
+  NEEDS_REVIEW
+  REJECTED
+  SUPERSEDED
+}
+
+/**
+ * What we know about one company, person, conversation or deal (docs/13 §15-17, screen #12 §4-5): subject + key +
+ * value with where it came from, when it was observed, how sure we are and how long it stays true. Messages are the
+ * evidence; this is the extracted, scoped, time-aware memory. Facts (Fact table) and suppression never live here.
+ */
+model Memory {
+  id              String          @id @default(uuid()) @db.Uuid
+  workspaceId     String          @db.Uuid
+  /// Always set — every memory is reachable from its company and never leaks to another one.
+  companyId       String          @db.Uuid
+  entityType      MemoryScope
+  entityId        String          @db.Uuid
+  memoryType      MemoryType
+  /// CURRENT_SOLUTION, ROLE, BUDGET, TIMELINE, NEED, OBJECTION, QUESTION, PREFERRED_CHANNEL, MEETING_PREFERENCE, CONTACT_LATER, NOTE …
+  key             String
+  value           String
+  summary         String
+  origin          MemoryOrigin
+  confidence      ConfidenceLevel
+  status          MemoryStatus    @default(ACTIVE)
+  /// RESTRICTED = internal reasoning only (screen #12 §27-28).
+  sensitivity     String          @default("NORMAL")
+  /// False = never used to personalise outreach (inferred or sensitive).
+  useInOutreach   Boolean         @default(true)
+  observedAt      DateTime        @db.Timestamptz(3)
+  validFrom       DateTime        @default(now()) @db.Timestamptz(3)
+  /// Temporal memory: "busy this week" stops mattering (docs/13 §23, §77-82).
+  validUntil      DateTime?       @db.Timestamptz(3)
+  lastConfirmedAt DateTime        @db.Timestamptz(3)
+  /// After this the memory is STALE until re-confirmed (screen #12 §12-13).
+  recheckAfter    DateTime?       @db.Timestamptz(3)
+  /// MESSAGE / MEETING / HUMAN
+  sourceType      String
+  sourceId        String?
+  supersededById  String?         @db.Uuid
+  statusReason    String?
+  createdByType   ActorType
+  createdById     String?
+  createdAt       DateTime        @default(now()) @db.Timestamptz(3)
+  updatedAt       DateTime        @updatedAt @db.Timestamptz(3)
+  version         Int             @default(1)
+
+  workspace Workspace        @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+  evidence  MemoryEvidence[]
+
+  @@unique([workspaceId, id])
+  @@index([workspaceId, companyId, status])
+  @@index([workspaceId, entityType, entityId, key])
+  @@index([workspaceId, status, recheckAfter])
+}
+
+/// "Why do we know this?" (docs/13 §15-17): the message, meeting or note behind a memory, with the exact words.
+model MemoryEvidence {
+  id          String   @id @default(uuid()) @db.Uuid
+  workspaceId String   @db.Uuid
+  memoryId    String   @db.Uuid
+  sourceType  String
+  sourceId    String?
+  quote       String?
+  observedAt  DateTime @db.Timestamptz(3)
+  createdAt   DateTime @default(now()) @db.Timestamptz(3)
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+  memory    Memory    @relation(fields: [workspaceId, memoryId], references: [workspaceId, id], onDelete: Cascade)
+
+  @@index([memoryId])
+}
+
+/**
+ * A proposed memory (docs/13 §4-6): extraction never writes truth directly. Validation decides — auto-accept a
+ * low-risk direct statement, send budget/authority/unsure ones to a person, reject what doesn't fit.
+ */
+model MemoryCandidate {
+  id             String                @id @default(uuid()) @db.Uuid
+  workspaceId    String                @db.Uuid
+  companyId      String                @db.Uuid
+  entityType     MemoryScope
+  entityId       String                @db.Uuid
+  memoryType     MemoryType
+  key            String
+  value          String
+  summary        String
+  quote          String?
+  origin         MemoryOrigin
+  confidence     ConfidenceLevel
+  sourceType     String
+  sourceId       String
+  conversationId String?               @db.Uuid
+  meetingId      String?               @db.Uuid
+  status         MemoryCandidateStatus @default(PENDING)
+  reason         String?
+  memoryId       String?               @db.Uuid
+  decidedById    String?               @db.Uuid
+  decidedAt      DateTime?             @db.Timestamptz(3)
+  createdAt      DateTime              @default(now()) @db.Timestamptz(3)
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+
+  /// One candidate per source + record + key: a retried job never proposes twice.
+  @@unique([workspaceId, sourceId, entityId, key])
+  @@index([workspaceId, status, createdAt])
+}
+
+/// Two memories that disagree (docs/13 §18-22). Never summarised into fake certainty — kept visible until resolved.
+model MemoryConflict {
+  id           String    @id @default(uuid()) @db.Uuid
+  workspaceId  String    @db.Uuid
+  companyId    String    @db.Uuid
+  memoryAId    String    @db.Uuid
+  memoryBId    String    @db.Uuid
+  key          String
+  /// VALUE / TEMPORAL / SCOPE
+  conflictType String
+  /// OPEN / RESOLVED
+  status       String    @default("OPEN")
+  /// NEWER_WINS / KEEP_A / KEEP_B / BOTH_VALID
+  resolution   String?
+  note         String?
+  resolvedById String?   @db.Uuid
+  resolvedAt   DateTime? @db.Timestamptz(3)
+  detectedAt   DateTime  @default(now()) @db.Timestamptz(3)
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+
+  @@index([workspaceId, status])
+  @@index([memoryAId])
+  @@index([memoryBId])
+}
+
+/// docs/13 §23-27: a promise is operational, not a memory line.
+enum CommitmentDirection {
+  WE_PROMISED
+  PROSPECT_PROMISED
+  MUTUAL
+}
+
+enum CommitmentStatus {
+  OPEN
+  WAITING
+  DUE
+  COMPLETED
+  BROKEN
+  CANCELLED
+}
+
+/**
+ * A promise with its own lifecycle (docs/13 §23-27, screen #12 §23-25): who promised what, by when, from which words,
+ * and the evidence it was kept. The Context Builder hands open ones to the AI so it never promises twice or forgets.
+ */
+model Commitment {
+  id                 String              @id @default(uuid()) @db.Uuid
+  workspaceId        String              @db.Uuid
+  companyId          String              @db.Uuid
+  conversationId     String?             @db.Uuid
+  opportunityId      String?             @db.Uuid
+  meetingId          String?             @db.Uuid
+  personId           String?             @db.Uuid
+  direction          CommitmentDirection
+  title              String
+  detail             String?
+  dueAt              DateTime?           @db.Timestamptz(3)
+  status             CommitmentStatus    @default(OPEN)
+  ownerUserId        String?             @db.Uuid
+  /// EXTRACTED (from their words or ours) / AI_REPLY (the AI said a colleague will come back) / HUMAN
+  origin             String
+  sourceType         String
+  sourceId           String?
+  quote              String?
+  /// Stable key so the same promise is recorded once.
+  dedupeKey          String?
+  completedAt        DateTime?           @db.Timestamptz(3)
+  completionEvidence String?
+  statusReason       String?
+  createdByType      ActorType
+  createdById        String?
+  createdAt          DateTime            @default(now()) @db.Timestamptz(3)
+  updatedAt          DateTime            @updatedAt @db.Timestamptz(3)
+  version            Int                 @default(1)
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+
+  @@unique([workspaceId, dedupeKey])
+  @@index([workspaceId, status, dueAt])
+  @@index([workspaceId, companyId])
+  @@index([workspaceId, conversationId])
+}
+
+/// docs/13 §28-29. Employment stays its own table; this graph supplements it.
+enum RelationshipType {
+  WORKS_AT
+  FORMERLY_WORKED_AT
+  REFERRED_BY
+  INTRODUCED_BY
+  REPORTS_TO
+  DECISION_MAKER_FOR
+  INFLUENCER_FOR
+  PARTNER_OF
+  RELATED_COMPANY
+}
+
+/**
+ * A structured edge (screen #12 §18-19): "John referred us to Sarah", with the words it came from. The other end may
+ * not be a record yet (just a name or an email) — then `toLabel` holds it until a person links it.
+ */
+model Relationship {
+  id            String           @id @default(uuid()) @db.Uuid
+  workspaceId   String           @db.Uuid
+  companyId     String           @db.Uuid
+  /// PERSON / COMPANY
+  fromType      String
+  fromId        String           @db.Uuid
+  type          RelationshipType
+  toType        String
+  toId          String?          @db.Uuid
+  toLabel       String
+  context       String?
+  /// SUGGESTED / ACTIVE / ENDED / INVALIDATED
+  status        String           @default("SUGGESTED")
+  confidence    ConfidenceLevel
+  sourceType    String
+  sourceId      String?
+  quote         String?
+  confirmedById String?          @db.Uuid
+  createdAt     DateTime         @default(now()) @db.Timestamptz(3)
+  updatedAt     DateTime         @updatedAt @db.Timestamptz(3)
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+
+  @@unique([workspaceId, fromId, type, toLabel])
+  @@index([workspaceId, companyId])
+}
+
+// ───────────────────────────── Knowledge Base (Phase 15, docs/13 §30-65) ─────────────────────────────
+
+/// docs/13 §30-42 (+ the business profile, screen #13 §1).
+enum KnowledgeType {
+  PROFILE
+  SERVICE
+  PRICING
+  FAQ
+  POLICY
+  INTEGRATION
+  CASE_STUDY
+  COMPETITOR
+  CLAIM
+  DOCUMENT
+  PROPOSAL_BLOCK
+}
+
+/// docs/13 §30-42. Only APPROVED (current, not disabled) knowledge carries answer authority.
+enum KnowledgeStatus {
+  DRAFT
+  IN_REVIEW
+  APPROVED
+  STALE
+  CONFLICT
+  REJECTED
+  ARCHIVED
+}
+
+enum KnowledgeRevisionStatus {
+  DRAFT
+  IN_REVIEW
+  APPROVED
+  SUPERSEDED
+  REJECTED
+}
+
+/// Where a revision came from: typed by a person, extracted from a document, a person's answer in a conversation, an
+/// AI draft (never authority until approved), or a restore of an older version.
+enum KnowledgeOrigin {
+  HUMAN
+  DOCUMENT
+  HUMAN_ANSWER
+  AI_DRAFT
+  ROLLBACK
+}
+
+/**
+ * One piece of our business truth (docs/13 §30-42, screen #13): a service, a price, an FAQ, a policy… Its content
+ * lives in versioned revisions; `currentRevisionId` is the one the AI may use. Disabling it removes it from the AI
+ * immediately without touching history.
+ */
+model KnowledgeItem {
+  id                 String          @id @default(uuid()) @db.Uuid
+  workspaceId        String          @db.Uuid
+  /// KB-FAQ-003 — stable, human-readable, cited in audits.
+  code               String
+  type               KnowledgeType
+  title              String
+  status             KnowledgeStatus @default(DRAFT)
+  /// 1 = approved policy … 6 = historical response (screen #13 §21). Lower wins.
+  authorityLevel     Int
+  currentRevisionId  String?         @db.Uuid
+  /// The service this pricing / FAQ / integration belongs to (screen #13 §61, §78).
+  serviceItemId      String?         @db.Uuid
+  ownerUserId        String?         @db.Uuid
+  reviewIntervalDays Int?
+  lastReviewedAt     DateTime?       @db.Timestamptz(3)
+  nextReviewAt       DateTime?       @db.Timestamptz(3)
+  aiDisabled         Boolean         @default(false)
+  aiDisabledReason   String?
+  aiDisabledAt       DateTime?       @db.Timestamptz(3)
+  aiDisabledById     String?         @db.Uuid
+  /// Repeated "outdated / incorrect" feedback (screen #13 §56).
+  needsReview        Boolean         @default(false)
+  needsReviewReason  String?
+  usageCount         Int             @default(0)
+  createdById        String?         @db.Uuid
+  createdAt          DateTime        @default(now()) @db.Timestamptz(3)
+  updatedAt          DateTime        @updatedAt @db.Timestamptz(3)
+  archivedAt         DateTime?       @db.Timestamptz(3)
+  version            Int             @default(1)
+
+  workspace Workspace           @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+  revisions KnowledgeRevision[]
+
+  @@unique([workspaceId, code])
+  @@unique([workspaceId, id])
+  @@index([workspaceId, type, status])
+}
+
+/**
+ * One version of a knowledge item (docs/13 §30-42): structured content per type, never edited once approved. A future
+ * `effectiveFrom` schedules it (the current one stays until then); rollback creates a new version from an old one.
+ */
+model KnowledgeRevision {
+  id             String                  @id @default(uuid()) @db.Uuid
+  workspaceId    String                  @db.Uuid
+  itemId         String                  @db.Uuid
+  version        Int
+  title          String
+  content        Json
+  /// Plain-text rendering (search, chunks, the AI's view).
+  text           String
+  contentHash    String
+  status         KnowledgeRevisionStatus @default(DRAFT)
+  origin         KnowledgeOrigin
+  effectiveFrom  DateTime?               @db.Timestamptz(3)
+  /// KnowledgeSource ids (documents) this was extracted from.
+  sourceIds      String[]
+  gapId          String?                 @db.Uuid
+  changeNote     String?
+  createdByType  ActorType
+  createdById    String?
+  submittedAt    DateTime?               @db.Timestamptz(3)
+  approvedById   String?                 @db.Uuid
+  approvedAt     DateTime?               @db.Timestamptz(3)
+  rejectedReason String?
+  publishedAt    DateTime?               @db.Timestamptz(3)
+  supersededAt   DateTime?               @db.Timestamptz(3)
+  createdAt      DateTime                @default(now()) @db.Timestamptz(3)
+
+  workspace Workspace        @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+  item      KnowledgeItem    @relation(fields: [workspaceId, itemId], references: [workspaceId, id], onDelete: Cascade)
+  chunks    KnowledgeChunk[]
+
+  @@unique([itemId, version])
+  @@unique([workspaceId, id])
+  @@index([workspaceId, status])
+}
+
+/**
+ * A retrievable piece of an approved revision (docs/13 §58-65), cut on semantic boundaries (an FAQ, a section, a
+ * clause). The vector points back to the exact revision; it is support for retrieval, never truth.
+ */
+model KnowledgeChunk {
+  id             String                 @id @default(uuid()) @db.Uuid
+  workspaceId    String                 @db.Uuid
+  itemId         String                 @db.Uuid
+  revisionId     String                 @db.Uuid
+  chunkIndex     Int
+  heading        String?
+  content        String
+  contentHash    String
+  embedding      Unsupported("vector")?
+  /// provider/model/dimensions — vectors of different models are never compared (docs/13 §58-65).
+  embeddingModel String?
+  embeddedAt     DateTime?              @db.Timestamptz(3)
+  createdAt      DateTime               @default(now()) @db.Timestamptz(3)
+
+  workspace Workspace         @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+  revision  KnowledgeRevision @relation(fields: [workspaceId, revisionId], references: [workspaceId, id], onDelete: Cascade)
+
+  @@unique([revisionId, chunkIndex])
+  @@index([workspaceId, itemId])
+}
+
+/**
+ * An uploaded document (docs/13 §47-57): a source, never truth. The file is in object storage; the database keeps its
+ * metadata and the candidates extracted from it — which a person reviews before anything is approved.
+ */
+model KnowledgeSource {
+  id                   String    @id @default(uuid()) @db.Uuid
+  workspaceId          String    @db.Uuid
+  fileName             String
+  contentType          String
+  sizeBytes            Int
+  sha256               String
+  storageKey           String
+  storageIntegrationId String?   @db.Uuid
+  /// UPLOADED / PROCESSING / EXTRACTED / FAILED / ARCHIVED
+  status               String    @default("UPLOADED")
+  statusReason         String?
+  textLength           Int?
+  candidates           Int       @default(0)
+  conflicts            Int       @default(0)
+  uploadedById         String?   @db.Uuid
+  uploadedAt           DateTime  @default(now()) @db.Timestamptz(3)
+  processedAt          DateTime? @db.Timestamptz(3)
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+
+  @@unique([workspaceId, sha256])
+  @@index([workspaceId, uploadedAt])
+}
+
+/**
+ * Two pieces of knowledge that disagree (docs/13 §47-57, screen #13 §22): "Pricing.pdf says $2,000, the approved price
+ * says $1,500". Until resolved, the AI does not answer from either.
+ */
+model KnowledgeConflict {
+  id              String    @id @default(uuid()) @db.Uuid
+  workspaceId     String    @db.Uuid
+  itemId          String    @db.Uuid
+  revisionId      String?   @db.Uuid
+  otherItemId     String?   @db.Uuid
+  otherRevisionId String?   @db.Uuid
+  sourceId        String?   @db.Uuid
+  topic           String
+  /// VALUE_CONFLICT / TEMPORAL_CONFLICT / SCOPE_CONFLICT / POLICY_CONFLICT / DUPLICATE / AMBIGUOUS
+  conflictType    String
+  detail          String
+  /// OPEN / RESOLVED / DISMISSED
+  status          String    @default("OPEN")
+  resolution      String?
+  resolvedById    String?   @db.Uuid
+  resolvedAt      DateTime? @db.Timestamptz(3)
+  detectedAt      DateTime  @default(now()) @db.Timestamptz(3)
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+
+  @@index([workspaceId, status])
+  @@index([itemId])
+}
+
+/**
+ * A question the AI could not answer from approved knowledge (docs/13 §47-57, screen #13 §47-50): how often, in
+ * which conversations, how much pipeline it touches. A person's answer becomes a draft; approval resolves the gap.
+ */
+model KnowledgeGap {
+  id              String    @id @default(uuid()) @db.Uuid
+  workspaceId     String    @db.Uuid
+  /// Normalised question — "how long does setup take" and "How long does the setup take?" are one gap.
+  key             String
+  question        String
+  topic           String
+  occurrences     Int       @default(1)
+  conversationIds String[]
+  companyIds      String[]
+  /// OPEN / DRAFTED / IN_REVIEW / RESOLVED / DISMISSED
+  status          String    @default("OPEN")
+  priority        Int       @default(0)
+  priorityReasons String[]
+  draftItemId     String?   @db.Uuid
+  resolvedItemId  String?   @db.Uuid
+  resolvedAt      DateTime? @db.Timestamptz(3)
+  firstSeenAt     DateTime  @default(now()) @db.Timestamptz(3)
+  lastSeenAt      DateTime  @default(now()) @db.Timestamptz(3)
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+
+  @@unique([workspaceId, key])
+  @@index([workspaceId, status, priority])
+}
+
+/// "Message 123 used Pricing v7" (docs/13 §83-94): which revision supported which answer — history stays linked to v7.
+model KnowledgeUsage {
+  id             String   @id @default(uuid()) @db.Uuid
+  workspaceId    String   @db.Uuid
+  itemId         String   @db.Uuid
+  revisionId     String   @db.Uuid
+  version        Int
+  /// REPLY / SIMULATION / BRIEF
+  usedByType     String
+  usedById       String?
+  conversationId String?  @db.Uuid
+  question       String?
+  at             DateTime @default(now()) @db.Timestamptz(3)
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+
+  @@unique([workspaceId, usedByType, usedById, revisionId])
+  @@index([workspaceId, itemId, at])
+}
+
+/// [Helpful] [Outdated] [Incorrect] [Incomplete] (screen #13 §56).
+model KnowledgeFeedback {
+  id          String   @id @default(uuid()) @db.Uuid
+  workspaceId String   @db.Uuid
+  itemId      String   @db.Uuid
+  revisionId  String?  @db.Uuid
+  kind        String
+  note        String?
+  userId      String?  @db.Uuid
+  createdAt   DateTime @default(now()) @db.Timestamptz(3)
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+
+  @@index([workspaceId, itemId])
+}
+
+// ───────────────────────────── Signals + Intent (Phase 16) ─────────────────────────────
+
+/// docs/09 §67-76. DETECTED = a possible change from a source we do not fully trust yet; VALIDATED = credible change
+/// (not intent); ACTIONABLE = relevant to a current business objective — still not "definitely buying"; MONITOR = real
+/// but not worth acting on now; EXPIRED = no longer drives a "why now".
+enum SignalStatus {
+  CANDIDATE
+  DETECTED
+  VALIDATED
+  ACTIONABLE
+  MONITOR
+  DISMISSED
+  EXPIRED
+  ACTED_ON
+}
+
+enum SignalStrength {
+  STRONG
+  MEDIUM
+  WEAK
+}
+
+enum WatchlistPriority {
+  HIGH
+  NORMAL
+  LOW
+}
+
+/**
+ * One meaningful change about a company (screen #9, docs/04 §44, docs/06 §31-40): the observed FACT kept apart from the
+ * interpretation. Several sources reporting the same event share one signal (dedupeKey) with many evidence rows. A
+ * signal is evidence of change, never of purchase intent: it authorises no outreach by itself.
+ */
+model Signal {
+  id                   String            @id @default(uuid()) @db.Uuid
+  workspaceId          String            @db.Uuid
+  companyId            String            @db.Uuid
+  personId             String?           @db.Uuid
+  /// Taxonomy key from @revenue-os/shared SIGNAL_TYPES (NEW_SERVICE, WEBSITE_CHANGE, CONTACT_LATER_DUE…).
+  type                 String
+  /// GROWTH / DIGITAL / COMMERCIAL / PEOPLE / MARKETING / RELATIONSHIP / CONVERSATION / NEGATIVE
+  category             String
+  /// What the event is about (a service name, "home page", a person) — the dedupe subject.
+  subject              String
+  title                String
+  /// What was observed, in plain words, with its source — a fact, not an interpretation.
+  fact                 String
+  /// company:type:subject:date — the same event from more sources merges into this row instead of a new one.
+  dedupeKey            String
+  status               SignalStatus      @default(DETECTED)
+  statusReason         String?
+  strength             SignalStrength
+  /// Explainable components (screen #9 §13): { freshness, sourceReliability, icpRelevance, commercialRelevance, relationshipContext, score, reasons[] }.
+  relevance            Json
+  confidence           ConfidenceLevel
+  /// Evidence comparison (screen #9 §5): { label, previous, current } — exactly why the signal was created.
+  change               Json?
+  /// WEBSITE / CONVERSATION / COMMITMENT / PIPELINE / CRM / DISCOVERY / HUMAN
+  sourceKind           String
+  /// COLD / IN_CONVERSATION / OPEN_DEAL / CUSTOMER / FORMER_CUSTOMER / LOST_DEAL / DORMANT — at detection (screen #9 §26-27).
+  relationship         String
+  /// Hedged interpretation ("may be expanding…") — AI or rule; never shown as fact.
+  interpretation       String?
+  interpretationSource HypothesisSource?
+  /// Evidence-backed reason to contact now (screen #9 §18). Null = no signal-based outreach; the company stays in the normal pool.
+  whyNow               String?
+  hypothesisId         String?           @db.Uuid
+  opportunityId        String?           @db.Uuid
+  conversationId       String?           @db.Uuid
+  commitmentId         String?           @db.Uuid
+  marketId             String?           @db.Uuid
+  /// RESEARCH / NOTIFY_OWNER / ATTACH_TO_DEAL / RE_ENGAGE / CAMPAIGN_CANDIDATE / RECHECK / RECORD
+  recommendedAction    String
+  /// Rule actions applied automatically on detection (RESEARCH, PRIORITY, CAMPAIGN_CANDIDATE, NOTIFY_OWNER).
+  autoActions          String[]
+  ruleIds              String[]          @db.Uuid
+  /// A candidate for signal-based campaigns (person or rule). Enrollment still passes every campaign check and the Policy Engine.
+  campaignCandidate    Boolean           @default(false)
+  priority             Boolean           @default(false)
+  evidenceCount        Int               @default(0)
+  sourceCount          Int               @default(0)
+  detectedAt           DateTime          @db.Timestamptz(3)
+  /// When the change happened, if known (a follow-up date, a lost deal's revisit date); else = detectedAt.
+  effectiveAt          DateTime          @db.Timestamptz(3)
+  lastSeenAt           DateTime          @db.Timestamptz(3)
+  expiresAt            DateTime          @db.Timestamptz(3)
+  /// Action window for time-boxed signals ("reach back out Oct 1–7", screen #9 §35).
+  windowEndsAt         DateTime?         @db.Timestamptz(3)
+  actedAction          String?
+  actedAt              DateTime?         @db.Timestamptz(3)
+  actedById            String?           @db.Uuid
+  /// WRONG_COMPANY / WRONG_SIGNAL / NOT_RELEVANT / OLD_INFORMATION / WRONG_INTERPRETATION / DUPLICATE (screen #9 §40)
+  feedback             String?
+  feedbackNote         String?
+  dismissedById        String?           @db.Uuid
+  createdAt            DateTime          @default(now()) @db.Timestamptz(3)
+  updatedAt            DateTime          @updatedAt @db.Timestamptz(3)
+  version              Int               @default(1)
+
+  workspace Workspace        @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+  company   Company          @relation(fields: [workspaceId, companyId], references: [workspaceId, id], onDelete: Restrict)
+  evidence  SignalEvidence[]
+
+  @@unique([workspaceId, id])
+  @@unique([workspaceId, dedupeKey])
+  @@index([workspaceId, status, strength, detectedAt])
+  @@index([workspaceId, companyId, detectedAt])
+  @@index([workspaceId, companyId, type, subject, status])
+  @@index([workspaceId, type, detectedAt])
+  @@index([workspaceId, expiresAt])
+}
+
+/// Many sources, one signal (screen #9 §15, §32): each row is one observation with its own provenance.
+model SignalEvidence {
+  workspaceId String   @db.Uuid
+  signalId    String   @db.Uuid
+  evidenceId  String   @db.Uuid
+  /// Independent source name (official website, a conversation, a lead source) — distinct values count as sourceCount.
+  source      String
+  note        String?
+  observedAt  DateTime @db.Timestamptz(3)
+  createdAt   DateTime @default(now()) @db.Timestamptz(3)
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+  signal    Signal    @relation(fields: [workspaceId, signalId], references: [workspaceId, id], onDelete: Cascade)
+  evidence  Evidence  @relation(fields: [workspaceId, evidenceId], references: [workspaceId, id], onDelete: Restrict)
+
+  @@id([signalId, evidenceId])
+  @@index([workspaceId, evidenceId])
+}
+
+/**
+ * Which companies to watch how closely (screen #9 §29-31): a named list with a monitoring priority that sets the
+ * re-check cadence. MARKET lists follow a saved market; OPEN_DEALS / LOST_DEALS / CUSTOMERS are kept in sync by the
+ * sweep; MANUAL lists are a person's picks.
+ */
+model SignalWatchlist {
+  id          String            @id @default(uuid()) @db.Uuid
+  workspaceId String            @db.Uuid
+  name        String
+  description String?
+  /// MANUAL / MARKET / OPEN_DEALS / LOST_DEALS / CUSTOMERS
+  kind        String            @default("MANUAL")
+  priority    WatchlistPriority @default(NORMAL)
+  marketId    String?           @db.Uuid
+  /// { website: boolean, people: boolean, relationship: boolean } — what the sweep re-checks for members.
+  monitors    Json              @default("{}")
+  lastSweepAt DateTime?         @db.Timestamptz(3)
+  createdBy   String?           @db.Uuid
+  archivedAt  DateTime?         @db.Timestamptz(3)
+  createdAt   DateTime          @default(now()) @db.Timestamptz(3)
+  updatedAt   DateTime          @updatedAt @db.Timestamptz(3)
+  version     Int               @default(1)
+
+  workspace Workspace               @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+  members   SignalWatchlistMember[]
+
+  @@unique([workspaceId, id])
+  @@unique([workspaceId, name])
+  @@index([workspaceId, kind])
+}
+
+model SignalWatchlistMember {
+  workspaceId   String    @db.Uuid
+  watchlistId   String    @db.Uuid
+  companyId     String    @db.Uuid
+  reason        String?
+  addedBy       String?   @db.Uuid
+  addedAt       DateTime  @default(now()) @db.Timestamptz(3)
+  lastCheckedAt DateTime? @db.Timestamptz(3)
+  nextCheckAt   DateTime? @db.Timestamptz(3)
+
+  workspace Workspace       @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+  watchlist SignalWatchlist @relation(fields: [workspaceId, watchlistId], references: [workspaceId, id], onDelete: Cascade)
+  company   Company         @relation(fields: [workspaceId, companyId], references: [workspaceId, id], onDelete: Restrict)
+
+  @@id([watchlistId, companyId])
+  @@index([workspaceId, companyId])
+  @@index([workspaceId, nextCheckAt])
+}
+
+/**
+ * IF a signal matches THEN … (screen #9 §22-24, §41). Actions never send anything: RECORD / RESEARCH / PRIORITY /
+ * CAMPAIGN_CANDIDATE / NOTIFY_OWNER, or IGNORE to keep noise down. Outreach still goes through campaigns and policy.
+ */
+model SignalRule {
+  id            String    @id @default(uuid()) @db.Uuid
+  workspaceId   String    @db.Uuid
+  name          String
+  enabled       Boolean   @default(true)
+  /// { types[], categories[], minStrength, icpLevels[], industries[], marketIds[], relationships[] } — all optional, AND-ed.
+  conditions    Json
+  actions       String[]
+  position      Int       @default(0)
+  matches       Int       @default(0)
+  lastMatchedAt DateTime? @db.Timestamptz(3)
+  createdBy     String?   @db.Uuid
+  createdAt     DateTime  @default(now()) @db.Timestamptz(3)
+  updatedAt     DateTime  @updatedAt @db.Timestamptz(3)
+  version       Int       @default(1)
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+
+  @@unique([workspaceId, id])
+  @@index([workspaceId, enabled, position])
+}
+
+/**
+ * One comparison the detectors made (screen #9 §36 funnel: raw observations → meaningful changes → signals). Most
+ * checks find nothing or only cosmetic change; those are counted here, not shown as signals.
+ */
+model SignalObservation {
+  id          String   @id @default(uuid()) @db.Uuid
+  workspaceId String   @db.Uuid
+  companyId   String   @db.Uuid
+  /// WEBSITE / CONVERSATION / COMMITMENT / PIPELINE / CRM / DISCOVERY
+  sourceKind  String
+  /// What was compared, e.g. "website:home".
+  subject     String
+  /// NONE / LOW / MEDIUM / HIGH — how meaningful the change was judged (screen #9 §6).
+  changeLevel String
+  detail      String?
+  signalId    String?  @db.Uuid
+  observedAt  DateTime @db.Timestamptz(3)
+  createdAt   DateTime @default(now()) @db.Timestamptz(3)
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+  company   Company   @relation(fields: [workspaceId, companyId], references: [workspaceId, id], onDelete: Restrict)
+
+  @@index([workspaceId, observedAt])
+  @@index([workspaceId, companyId, observedAt])
+}
+
+// ───────────────────────────── Analytics + Attribution (Phase 17) ─────────────────────────────
+
+/// One step of a deal's acquisition chain (docs/04 §46, docs/06 §133-146, screen #10 §3): market → source → signal →
+/// campaign → message → conversation → meeting → opportunity. Built from the operational records when a deal is
+/// created / won; re-running is idempotent. Revenue is never attributed to one salesperson alone.
+enum TouchType {
+  MARKET
+  DISCOVERY
+  SIGNAL
+  HYPOTHESIS
+  CAMPAIGN
+  MESSAGE
+  CONVERSATION
+  MEETING
+  REFERRAL
+  HUMAN
+}
+
+model AttributionTouch {
+  id            String    @id @default(uuid()) @db.Uuid
+  workspaceId   String    @db.Uuid
+  opportunityId String    @db.Uuid
+  companyId     String    @db.Uuid
+  touchType     TouchType
+  /// The record the touch points at (Market, DiscoveryMission, Signal, Campaign, CampaignMessage, Conversation, Meeting…).
+  sourceType    String
+  sourceId      String    @db.Uuid
+  /// Human label shown in the lineage ("Austin landscapers", "Campaign #17", "Discovery meeting").
+  label         String
+  /// Extra dimension values for slicing (provider, signal type, industry, persona title, variant…).
+  detail        Json      @default("{}")
+  occurredAt    DateTime  @db.Timestamptz(3)
+  /// 1 = first touch; order by occurredAt.
+  position      Int
+  createdAt     DateTime  @default(now()) @db.Timestamptz(3)
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+
+  @@unique([opportunityId, touchType, sourceId])
+  @@index([workspaceId, touchType, sourceId])
+  @@index([workspaceId, opportunityId, position])
+}
+
+/// docs/06 §133-146: WON / PAYMENT / EXPANSION / REFUND. The won amount is recorded once per deal; refunds are negative events, never edits.
+enum RevenueEventType {
+  WON
+  PAYMENT
+  EXPANSION
+  REFUND
+}
+
+model RevenueEvent {
+  id            String           @id @default(uuid()) @db.Uuid
+  workspaceId   String           @db.Uuid
+  opportunityId String           @db.Uuid
+  companyId     String           @db.Uuid
+  type          RevenueEventType
+  /// Minor units, always positive; REFUND subtracts.
+  amountMinor   Int
+  currency      String           @db.Char(3)
+  occurredAt    DateTime         @db.Timestamptz(3)
+  note          String?
+  /// Idempotency: "won:<opportunityId>" for the automatic WON event; null for manual entries.
+  dedupeKey     String?
+  createdByType ActorType
+  createdById   String?
+  createdAt     DateTime         @default(now()) @db.Timestamptz(3)
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+
+  @@unique([workspaceId, dedupeKey])
+  @@index([workspaceId, occurredAt])
+  @@index([workspaceId, opportunityId])
+}
+
+/**
+ * Derived daily projection (docs/04 §45, docs/06 §133-146): NOT the source of truth — rebuilt from operational tables
+ * by the analytics job (idempotent upsert). dimension ALL / MARKET / CAMPAIGN / SOURCE / SIGNAL_TYPE / AGENT / PROVIDER /
+ * OWNER; dimensionId '' for ALL.
+ */
+model DailyMetric {
+  id          String   @id @default(uuid()) @db.Uuid
+  workspaceId String   @db.Uuid
+  day         DateTime @db.Date
+  metric      String
+  dimension   String   @default("ALL")
+  dimensionId String   @default("")
+  value       Float
+  computedAt  DateTime @default(now()) @db.Timestamptz(3)
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+
+  @@unique([workspaceId, day, metric, dimension, dimensionId])
+  @@index([workspaceId, metric, day])
+}
+
+/// One projection / attribution pass, for data freshness (screen #10 §51): never present stale analytics as live.
+model AnalyticsRun {
+  id          String    @id @default(uuid()) @db.Uuid
+  workspaceId String    @db.Uuid
+  /// ROLLUP / ATTRIBUTION / BACKFILL
+  kind        String
+  status      String
+  fromDay     DateTime? @db.Date
+  toDay       DateTime? @db.Date
+  rows        Int       @default(0)
+  error       String?
+  startedAt   DateTime  @db.Timestamptz(3)
+  finishedAt  DateTime? @db.Timestamptz(3)
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+
+  @@index([workspaceId, kind, startedAt])
+}
+
+/// Saved analytics views (screen #10 §53): a person's filters and tab, private unless shared.
+model AnalyticsView {
+  id          String   @id @default(uuid()) @db.Uuid
+  workspaceId String   @db.Uuid
+  userId      String   @db.Uuid
+  name        String
+  tab         String
+  filters     Json     @default("{}")
+  shared      Boolean  @default(false)
+  createdAt   DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt   DateTime @updatedAt @db.Timestamptz(3)
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+
+  @@unique([workspaceId, userId, name])
+}

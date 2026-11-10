@@ -1,0 +1,47 @@
+# dependencies
+node_modules/
+
+# build output
+dist/
+.next/
+out/
+build/
+*.tsbuildinfo
+next-env.d.ts
+
+# generated
+packages/database/src/generated/
+
+# env — only .env.example is committed
+.env
+.env.*
+!.env.example
+
+# credentials & persistent browser session directories
+token.json
+tokens.json
+*credentials*.json
+miracle-blackbird-credentials.json
+cookies.txt
+*.cookies
+browser_data/
+*/browser_data/
+google_credentials.json
+
+# logs / os
+*.log
+.DS_Store
+Thumbs.db
+
+# editors
+.vscode/*
+!.vscode/extensions.json
+.idea/
+# runtime files (STORAGE_LOCAL_PATH) — root only, never source dirs like packages/providers/src/storage
+/storage/
+
+# local tool state
+.claude/settings.local.json
+
+# local runtime data of the web app (leads, settings, meetings) — never public
+apps/web/.data/
