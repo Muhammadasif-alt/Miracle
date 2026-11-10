@@ -30,6 +30,7 @@ import {
 } from "lucide-react";
 import { SearchableSelect } from "@/components/ui/SearchableSelect";
 import { COUNTRIES_DATA, NICHES_DATA, type CountryOption } from "@/lib/geo-data";
+import { ContactChannelsPanel } from "@/components/leads/ContactChannelsPanel";
 import { BrandEmailWriter } from "@/lib/brand-email-writer";
 
 interface AnalyticsData {
@@ -982,6 +983,15 @@ export function PitchStudioView() {
                   </p>
                 </div>
               </div>
+            )}
+            {selectedLead && (
+              <ContactChannelsPanel
+                lead={selectedLead}
+                onLeadUpdate={(l) => {
+                  setSelectedLead(l);
+                  setLeads((prev) => prev.map((x) => (x.id === l.id ? l : x)));
+                }}
+              />
             )}
             {/* Contact Deliverability & Quality Gate */}
             {selectedLead && (

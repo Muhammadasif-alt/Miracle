@@ -123,6 +123,17 @@ export function WebAuditView() {
       .catch(() => undefined);
   }, []);
 
+  // Opened from Area Hunter (?url=&name=&city=&niche=): fill the form and run the audit once.
+  useEffect(() => {
+    const p = new URLSearchParams(window.location.search);
+    const input = { url: p.get("url") ?? "", name: p.get("name") ?? "", city: p.get("city") ?? "", niche: p.get("niche") ?? "" };
+    if (!input.url && !input.name) return;
+    setForm(input);
+    void audit(input, "form");
+    window.history.replaceState(null, "", window.location.pathname);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const shown = useMemo(() => {
     const term = q.toLowerCase().trim();
     return leads

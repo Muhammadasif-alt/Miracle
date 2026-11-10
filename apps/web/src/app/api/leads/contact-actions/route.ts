@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { ContactResearchEngine } from "@/lib/contact-research-engine";
 import { LeadMemoryEngine } from "@/lib/lead-memory-engine";
+import { findContactChannels } from "@/lib/contact-channels";
 
 export async function POST(req: NextRequest) {
   try {
@@ -22,6 +23,31 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({
         ok: true,
         message: `Lead deliverability reverified: ${updated?.outreachStatus || "Updated"}`,
+        lead: updated,
+      });
+    }
+
+    // Find every public contact channel (email, phone, Facebook, Instagram, LinkedIn) on the business website.
+    // A fresh website check replaces earlier website findings; values from Google / OpenStreetMap are kept
+    // when the website doesn't show that channel.
+    if (action === "research_channels") {
+      const site = websiteUrl || lead.website;
+      const prev = lead.contactChannels ?? {};
+      const found = site ? await findContactChannels(site) : { checkedAt: new Date().toISOString() };
+      const keys = ["email", "phone", "facebook", "instagram", "linkedin"] as const;
+      const fromWebsite = (k: (typeof keys)[number]) => prev[k]?.source.startsWith("Website") ?? false;
+      const channels: NonNullable<typeof lead.contactChannels> = { checkedAt: found.checkedAt };
+      for (const k of keys) {
+        const v = found[k] ?? (fromWebsite(k) ? undefined : prev[k]);
+        if (v) channels[k] = v;
+      }
+      const phone = channels.phone?.value ?? (fromWebsite("phone") ? undefined : lead.phone);
+      const updated = LeadMemoryEngine.upsertLead({ ...lead, contactChannels: channels, phone });
+      const n = (["email", "phone", "facebook", "instagram", "linkedin"] as const).filter((k) => channels[k]).length;
+      return NextResponse.json({
+        ok: true,
+        found: n > 0,
+        message: site ? `Found ${n} of 5 contact channels on the website.` : "No website on record — nothing to check.",
         lead: updated,
       });
     }

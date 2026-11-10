@@ -9,6 +9,7 @@ import {
   Sparkles,
   Users,
   ScanSearch,
+  Radar,
   type LucideIcon,
 } from "lucide-react";
 
@@ -91,6 +92,12 @@ export const SCREENS: Screen[] = [
 
 /** Extra tools only the developer sees (lib/team.ts isDeveloper). */
 export const DEV_SCREENS: Screen[] = [
+  {
+    href: "/area-hunter",
+    title: "Area Hunter",
+    subtitle: "Businesses in a radius · Google & website",
+    icon: Radar,
+  },
   {
     href: "/web-audit",
     title: "Web Audit",

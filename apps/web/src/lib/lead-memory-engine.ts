@@ -36,6 +36,20 @@ export type LeadCrmStatus =
   | "BIN"
   | "TEST_SIMULATED";
 
+export interface ContactChannel {
+  value: string;
+  /** Where it was found, e.g. "Website", "Google listing", "OpenStreetMap". */
+  source: string;
+}
+export interface ContactChannels {
+  email?: ContactChannel;
+  phone?: ContactChannel;
+  facebook?: ContactChannel;
+  instagram?: ContactChannel;
+  linkedin?: ContactChannel;
+  checkedAt?: string;
+}
+
 export interface LeadRecord {
   id: string;
   companyName: string;
@@ -51,6 +65,9 @@ export interface LeadRecord {
   country: string;
   city?: string;
   website?: string;
+  phone?: string;
+  /** Phone / email / social profiles found for the business, each with where it was found. */
+  contactChannels?: ContactChannels;
   businessDescription?: string;
   researchSummary?: string;
   auditFindings?: string;

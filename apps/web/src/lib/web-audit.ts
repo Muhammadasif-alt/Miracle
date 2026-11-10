@@ -105,7 +105,7 @@ async function assertPublicUrl(raw: string): Promise<URL> {
   return url;
 }
 
-async function safeFetch(raw: string, timeoutMs: number): Promise<{ res: Response; url: URL; ms: number }> {
+export async function safeFetch(raw: string, timeoutMs: number): Promise<{ res: Response; url: URL; ms: number }> {
   let url = await assertPublicUrl(raw);
   const started = performance.now();
   for (let hop = 0; hop < 5; hop++) {
@@ -124,7 +124,7 @@ async function safeFetch(raw: string, timeoutMs: number): Promise<{ res: Respons
   throw new Error("Too many redirects");
 }
 
-async function readCapped(res: Response): Promise<string> {
+export async function readCapped(res: Response): Promise<string> {
   const reader = res.body?.getReader();
   if (!reader) return "";
   const chunks: Uint8Array[] = [];
