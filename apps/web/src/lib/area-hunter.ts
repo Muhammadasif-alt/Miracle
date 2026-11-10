@@ -62,12 +62,42 @@ const OSM_TAGS: Record<string, { tags: [string, string][]; names: string }> = {
   cleaning: { tags: [["shop", "dry_cleaning"]], names: "clean|maid|janitor" },
   "pest control": { tags: [["craft", "pest_control"]], names: "pest|termite|exterminat" },
   hvac: { tags: [["craft", "hvac"]], names: "hvac|heating|cooling|air condition" },
+  medical: { tags: [["amenity", "clinic"], ["amenity", "doctors"], ["healthcare", "clinic"]], names: "clinic|medical|health|doctor" },
+  architect: { tags: [["office", "architect"]], names: "architect|interior design" },
+  marketing: { tags: [["office", "advertising_agency"]], names: "marketing|advertising|creative agency|media" },
+  finance: { tags: [["office", "financial_advisor"], ["office", "accountant"], ["office", "financial"]], names: "financial|accounting|accountant|tax|wealth" },
+  consulting: { tags: [["office", "consulting"]], names: "consulting|consultant|advisory" },
 };
+
+/** Map free-text / dropdown niches ("Dental Clinics", "Hair Salons, Spas & Beauty"…) to a key above. */
+const NICHE_PATTERNS: [RegExp, string][] = [
+  [/landscap|lawn|garden|yard|tree/, "landscaper"],
+  [/dent|orthodont/, "dentist"],
+  [/plumb/, "plumber"],
+  [/electric/, "electrician"],
+  [/roof/, "roofer"],
+  [/hvac|heating|air ?condition|cooling/, "hvac"],
+  [/restaurant|dining|food/, "restaurant"],
+  [/cafe|coffee/, "cafe"],
+  [/bak|pastry/, "bakery"],
+  [/salon|hair|beauty|spa|barber|nail/, "salon"],
+  [/gym|fitness|yoga|pilates/, "gym"],
+  [/real estate|realt|propert/, "real estate"],
+  [/auto|car |cars|mechanic|tire/, "auto repair"],
+  [/law|legal|attorney/, "lawyer"],
+  [/construct|contractor|builder|remodel/, "contractor"],
+  [/clean|maid|janitor/, "cleaning"],
+  [/pest|termite/, "pest control"],
+  [/medical|health|clinic|doctor/, "medical"],
+  [/architect|interior/, "architect"],
+  [/marketing|advertis|creative agenc/, "marketing"],
+  [/fintech|financ|account|tax/, "finance"],
+  [/consult|advisory/, "consulting"],
+];
 
 function nicheKey(niche: string): string {
   const n = niche.toLowerCase().trim();
-  if (/landscap|lawn|garden/.test(n)) return "landscaper";
-  return Object.keys(OSM_TAGS).find((k) => n.includes(k) || k.includes(n)) ?? n;
+  return NICHE_PATTERNS.find(([re]) => re.test(n))?.[1] ?? n;
 }
 
 function km(aLat: number, aLon: number, bLat: number, bLon: number): number {

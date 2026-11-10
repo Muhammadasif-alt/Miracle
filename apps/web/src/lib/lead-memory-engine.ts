@@ -68,6 +68,11 @@ export interface LeadRecord {
   phone?: string;
   /** Phone / email / social profiles found for the business, each with where it was found. */
   contactChannels?: ContactChannels;
+  /** Area search: Google listing found (true), not found (false), not checked (null). */
+  googleListed?: boolean | null;
+  distanceKm?: number;
+  /** Id of the place in Google / OpenStreetMap, so repeated area searches update instead of duplicating. */
+  areaSourceId?: string;
   businessDescription?: string;
   researchSummary?: string;
   auditFindings?: string;

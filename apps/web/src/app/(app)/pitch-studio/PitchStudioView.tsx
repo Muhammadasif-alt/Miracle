@@ -31,6 +31,18 @@ import {
 import { SearchableSelect } from "@/components/ui/SearchableSelect";
 import { COUNTRIES_DATA, NICHES_DATA, type CountryOption } from "@/lib/geo-data";
 import { ContactChannelsPanel } from "@/components/leads/ContactChannelsPanel";
+import { useMe } from "@/lib/session-context";
+import { isDeveloper } from "@/lib/team";
+import { Radar, ScanSearch } from "lucide-react";
+
+type AreaSummary = {
+  center: string;
+  radiusKm: number;
+  googleChecked: boolean;
+  notes: string[];
+  counts: { total: number; onGoogle: number; notOnGoogle: number; withWebsite: number; withoutWebsite: number };
+};
+type Tri = "ANY" | "YES" | "NO";
 import { BrandEmailWriter } from "@/lib/brand-email-writer";
 
 interface AnalyticsData {
@@ -46,6 +58,15 @@ interface AnalyticsData {
 }
 
 export function PitchStudioView() {
+  // Developer extras: search a radius around an area and filter by Google listing / website.
+  const dev = isDeveloper(useMe().user.email);
+  const [radiusKm, setRadiusKm] = useState(0); // 0 = normal city search
+  const [areaName, setAreaName] = useState("");
+  const [googleFilter, setGoogleFilter] = useState<Tri>("ANY");
+  const [siteFilter, setSiteFilter] = useState<Tri>("ANY");
+  const [areaSummary, setAreaSummary] = useState<AreaSummary | null>(null);
+  const [areaError, setAreaError] = useState<string | null>(null);
+
   // 1. Analytics State
   const [analyticsTimeframe, setAnalyticsTimeframe] = useState<"TODAY" | "7D" | "30D" | "ALL">("30D");
   const [activeChartMetric, setActiveChartMetric] = useState<"leads" | "sent" | "replies" | "meetings">("leads");
@@ -308,7 +329,46 @@ export function PitchStudioView() {
     loadEmailForLead(lead);
   };
 
+  /** Developer area search: every business of the niche within the radius, saved as leads and listed below. */
+  const handleAreaSearch = async () => {
+    setIsSearching(true);
+    setAreaError(null);
+    try {
+      const res = await fetch("/api/dev/area-hunt", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ area: areaName.trim() || city, country, niche, radiusKm, save: true }),
+      });
+      const data = await res.json();
+      if (!data.ok) throw new Error(data.error || "Area search failed.");
+      const r = data.result;
+      setAreaSummary({
+        center: r.center.label,
+        radiusKm: r.query.radiusKm,
+        googleChecked: r.googleChecked,
+        notes: [r.googleNote, r.osmNote].filter(Boolean),
+        counts: r.counts,
+      });
+      setGoogleFilter("ANY");
+      setSiteFilter("ANY");
+      const found: any[] = data.leads || [];
+      setLeads(found);
+      if (found.length > 0) {
+        setSelectedLead(found[0]);
+        loadEmailForLead(found[0]);
+      } else {
+        setSelectedLead(null);
+      }
+    } catch (err: any) {
+      setAreaError(err.message || "Area search failed.");
+    } finally {
+      setIsSearching(false);
+    }
+  };
+
   const handleStartDiscovery = async () => {
+    if (dev && radiusKm > 0) return handleAreaSearch();
+    setAreaSummary(null);
     const targetCount = getEffectiveTargetLeadCount();
     setIsSearching(true);
     setJobStatus("running");
@@ -556,6 +616,15 @@ export function PitchStudioView() {
     setTimeout(() => setActionNotice(null), 2500);
   };
 
+  // Developer filters on the discovered list (Google listing / website)
+  const visibleLeads = !dev
+    ? leads
+    : leads.filter(
+        (l) =>
+          (googleFilter === "ANY" || (googleFilter === "YES" ? l.googleListed === true : l.googleListed === false)) &&
+          (siteFilter === "ANY" || (siteFilter === "YES" ? !!l.website : !l.website)),
+      );
+
   // Country options for searchable select
   const countryOptions = COUNTRIES_DATA.map((c) => ({
     value: c.name,
@@ -764,11 +833,102 @@ export function PitchStudioView() {
           </div>
         </div>
 
+        {/* Developer: area radius search + Google / website filters */}
+        {dev && (
+          <div className="grid grid-cols-1 gap-3 rounded-[8px] border border-(--accent)/25 bg-(--accent)/5 p-3 sm:grid-cols-2 lg:grid-cols-[1.3fr_1.4fr_1fr_1fr]">
+            <label className="block">
+              <span className="mb-1 flex items-center gap-1.5 text-[11px] font-semibold text-(--n-888888)">
+                <Radar className="size-3 text-(--accent)" /> Area / neighbourhood (optional)
+              </span>
+              <input
+                className="input h-9 text-xs"
+                placeholder={`Defaults to ${city} — e.g. a ZIP, street or district`}
+                value={areaName}
+                onChange={(e) => setAreaName(e.target.value)}
+              />
+            </label>
+            <label className="block">
+              <span className="mb-1 flex justify-between text-[11px] font-semibold text-(--n-888888)">
+                <span>Search radius</span>
+                <span className="text-white">{radiusKm === 0 ? "Off — normal city search" : `${radiusKm} km`}</span>
+              </span>
+              <input
+                type="range"
+                min={0}
+                max={50}
+                value={radiusKm}
+                onChange={(e) => setRadiusKm(Number(e.target.value))}
+                className="mt-2 h-2 w-full cursor-pointer accent-[#8b7bff]"
+                aria-label="Search radius in kilometres"
+              />
+            </label>
+            {(
+              [
+                ["Google", googleFilter, setGoogleFilter, [["ANY", "All"], ["YES", "On Google"], ["NO", "Not on Google"]]],
+                ["Website", siteFilter, setSiteFilter, [["ANY", "All"], ["YES", "Has website"], ["NO", "No website"]]],
+              ] as const
+            ).map(([label, value, set, opts]) => (
+              <div key={label}>
+                <span className="mb-1 block text-[11px] font-semibold text-(--n-888888)">{label}</span>
+                <div className="flex flex-wrap gap-1">
+                  {opts.map(([k, l]) => (
+                    <button
+                      key={k}
+                      type="button"
+                      onClick={() => set(k)}
+                      disabled={label === "Google" && areaSummary !== null && !areaSummary.googleChecked}
+                      className={`rounded-full border px-2.5 py-1 text-[11px] transition-colors disabled:opacity-40 ${
+                        value === k ? "border-(--accent)/50 bg-(--accent)/15 text-white" : "border-(--n-2c2c42) text-(--n-a1a1aa) hover:text-white"
+                      }`}
+                    >
+                      {l}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {dev && areaSummary && (
+          <div className="space-y-2 rounded-[8px] border border-(--n-212132) bg-(--n-15151f) p-3 text-xs">
+            <p className="text-[11px] text-(--n-a1a1aa)">
+              <Radar className="mr-1 inline size-3 text-(--accent)" />
+              {areaSummary.center} · within {areaSummary.radiusKm} km
+            </p>
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-5">
+              {[
+                ["Found", areaSummary.counts.total, "text-white"],
+                ["On Google", areaSummary.googleChecked ? areaSummary.counts.onGoogle : "—", "text-(--accent-text)"],
+                ["Not on Google", areaSummary.googleChecked ? areaSummary.counts.notOnGoogle : "—", "text-[#EF4444]"],
+                ["Has website", areaSummary.counts.withWebsite, "text-(--good)"],
+                ["No website", areaSummary.counts.withoutWebsite, "text-[#F59E0B]"],
+              ].map(([l, v, c]) => (
+                <div key={l as string}>
+                  <span className="block text-[10px] text-(--n-71717a)">{l}</span>
+                  <strong className={`font-mono text-sm ${c}`}>{v}</strong>
+                </div>
+              ))}
+            </div>
+            {areaSummary.notes.length > 0 && <p className="text-[11px] text-[#F59E0B]">{areaSummary.notes.join(" ")}</p>}
+          </div>
+        )}
+        {dev && areaError && <p className="text-xs text-[#EF4444]">{areaError}</p>}
+
         {/* Find Leads Action & Controls */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2 border-t border-(--n-1b1b29)">
           <div className="text-[11px] text-(--n-71717a)">
-            Query: Target <strong className="text-white">{getEffectiveTargetLeadCount()} leads</strong> in{" "}
-            <strong className="text-white">{niche}</strong> ({city}, {country})
+            {dev && radiusKm > 0 ? (
+              <>
+                Area search: every <strong className="text-white">{niche}</strong> within{" "}
+                <strong className="text-white">{radiusKm} km</strong> of {areaName.trim() || city}, {country}
+              </>
+            ) : (
+              <>
+                Query: Target <strong className="text-white">{getEffectiveTargetLeadCount()} leads</strong> in{" "}
+                <strong className="text-white">{niche}</strong> ({city}, {country})
+              </>
+            )}
           </div>
 
           <div className="flex items-center gap-2">
@@ -868,19 +1028,28 @@ export function PitchStudioView() {
         {/* Left Column (5 Cols): Discovered Leads Table */}
         <div className="lg:col-span-5 rounded-[10px] border border-(--n-1e1e2d) bg-(--n-101018) overflow-hidden">
           <div className="p-3 border-b border-(--n-1e1e2d) flex items-center justify-between">
-            <h2 className="text-xs font-semibold text-white">Discovered Leads ({leads.length})</h2>
+            <h2 className="text-xs font-semibold text-white">
+              Discovered Leads ({visibleLeads.length}
+              {visibleLeads.length !== leads.length ? ` of ${leads.length}` : ""})
+            </h2>
             <Link href="/leads" className="text-[11px] text-(--accent) hover:underline font-medium">
               View All CRM &rarr;
             </Link>
           </div>
 
           <div className="divide-y divide-(--n-1e1e2d) max-h-[580px] overflow-y-auto scrollbar-none">
-            {leads.length === 0 ? (
+            {visibleLeads.length === 0 ? (
               <div className="py-12 text-center text-xs text-(--n-71717a)">
-                No leads yet. Select your criteria above and click <strong>Find Leads</strong>.
+                {leads.length === 0 ? (
+                  <>
+                    No leads yet. Select your criteria above and click <strong>Find Leads</strong>.
+                  </>
+                ) : (
+                  "No leads match the Google / website filters."
+                )}
               </div>
             ) : (
-              leads.map((lead) => {
+              visibleLeads.map((lead) => {
                 const isSelected = selectedLead?.id === lead.id;
                 return (
                   <div
@@ -896,13 +1065,30 @@ export function PitchStudioView() {
                       <p className={`text-xs font-semibold truncate ${isSelected ? "text-white" : "text-(--n-d4d4d8)"}`}>
                         {lead.businessName}
                       </p>
-                      <span className="rounded-full bg-(--accent)/10 px-1.5 py-0.2 text-[9px] font-mono text-(--accent) border border-(--accent)/20">
-                        Score: {lead.leadScore || 85}
-                      </span>
+                      {lead.source === "Area search" || lead.source === "Area Hunter" || lead.areaSourceId ? (
+                        <span className="flex shrink-0 gap-1">
+                          {lead.googleListed === true && (
+                            <span className="rounded-full border border-(--accent)/25 bg-(--accent)/10 px-1.5 text-[9px] font-semibold text-(--accent-text)">On Google</span>
+                          )}
+                          {lead.googleListed === false && (
+                            <span className="rounded-full border border-[#EF4444]/25 bg-[#EF4444]/10 px-1.5 text-[9px] font-semibold text-[#EF4444]">Not on Google</span>
+                          )}
+                          {!lead.website && (
+                            <span className="rounded-full border border-[#F59E0B]/25 bg-[#F59E0B]/10 px-1.5 text-[9px] font-semibold text-[#F59E0B]">No website</span>
+                          )}
+                        </span>
+                      ) : (
+                        <span className="rounded-full bg-(--accent)/10 px-1.5 py-0.2 text-[9px] font-mono text-(--accent) border border-(--accent)/20">
+                          Score: {lead.leadScore || 85}
+                        </span>
+                      )}
                     </div>
 
                     <div className="flex items-center justify-between text-[11px] text-(--n-71717a)">
-                      <span className="truncate">{lead.niche} &bull; {lead.city}</span>
+                      <span className="truncate">
+                        {lead.niche} &bull; {lead.city}
+                        {typeof lead.distanceKm === "number" ? ` · ${lead.distanceKm} km` : ""}
+                      </span>
                       {(() => {
                         const isReady = lead.email && lead.emailStatus === "VERIFIED" && lead.verificationStatus !== "INVALID_DOMAIN";
                         const isMissing = !lead.email || lead.emailStatus === "NO_EMAIL_FOUND";
@@ -965,6 +1151,20 @@ export function PitchStudioView() {
                   <span>{selectedLead.website.replace("https://", "")}</span>
                   <ExternalLink className="size-2.5" />
                 </a>
+              )}
+              {dev && selectedLead && (
+                <Link
+                  href={`/web-audit?${new URLSearchParams({
+                    url: selectedLead.website || "",
+                    name: selectedLead.businessName || selectedLead.companyName || "",
+                    city: selectedLead.city || "",
+                    niche: selectedLead.niche || "",
+                  })}`}
+                  className="ml-2 inline-flex shrink-0 items-center gap-1 rounded-[6px] border border-(--n-2c2c42) bg-(--n-1d1d2c) px-2 py-1 text-[11px] text-(--n-d4d4d8) hover:bg-(--n-29293d)"
+                >
+                  <ScanSearch className="size-3 text-(--accent)" />
+                  Web Audit
+                </Link>
               )}
             </div>
 

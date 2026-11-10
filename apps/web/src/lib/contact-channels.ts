@@ -16,6 +16,8 @@ const SOCIAL: Record<"facebook" | "instagram" | "linkedin", RegExp> = {
 };
 // US number written with separators, e.g. (512) 555-0199 / 512-555-0199; N11 area codes (911, 411…) are not real.
 const US_PHONE = /(?<!\d)(?:\+?1[\s.-]?)?\(?([2-9](?!11)\d{2})\)?[\s.-](\d{3})[\s.-](\d{4})(?!\d)/;
+// Any other country: only numbers written in international form, e.g. +44 20 7946 0958, +92 300 1234567.
+const INTL_PHONE = /(?<![\w+])\+(?!1[\s.-]?\(?\d)[1-9]\d{0,2}(?:[\s.-]?\(?\d{1,4}\)?){2,5}(?!\d)/;
 const EMAIL = /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b/;
 const JUNK_EMAIL = /(sentry|wixpress|example\.|domain\.com|yourdomain|email\.com|\.png|\.jpg|\.webp|@2x)/i;
 
@@ -71,8 +73,14 @@ export async function findContactChannels(website: string): Promise<ContactChann
       if (m && !JUNK_EMAIL.test(m[0])) out.email = { value: m[0].toLowerCase(), source: src };
     }
     if (!out.phone) {
-      const m = text.match(US_PHONE);
-      if (m) out.phone = { value: `(${m[1]}) ${m[2]}-${m[3]}`, source: src };
+      const intl = text.match(INTL_PHONE);
+      const digits = intl ? intl[0].replace(/\D/g, "") : "";
+      if (intl && digits.length >= 8 && digits.length <= 15) {
+        out.phone = { value: intl[0].trim(), source: src };
+      } else {
+        const m = text.match(US_PHONE);
+        if (m) out.phone = { value: `(${m[1]}) ${m[2]}-${m[3]}`, source: src };
+      }
     }
   }
   return out;

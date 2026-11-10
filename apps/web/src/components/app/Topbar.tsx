@@ -7,11 +7,13 @@ import { Menu, PauseCircle, PlayCircle, Settings, ShieldAlert, Sparkles } from "
 import { findScreen } from "@/lib/screens";
 import { ThemeToggle } from "./ThemeToggle";
 import { UserMenu } from "./UserMenu";
+import { useMe } from "@/lib/session-context";
 
 export function Topbar({ onOpenMenu }: { onOpenMenu: () => void }) {
   const pathname = usePathname();
   const screen = findScreen(pathname);
-  const [emailStatus, setEmailStatus] = useState<string>("zohaibaidesigner@gmail.com");
+  // Show who is signed in (Asif sees his own email, Zohaib his), not the shared sending mailbox.
+  const me = useMe();
   const [operatingMode, setOperatingMode] = useState<"TESTING" | "LIVE_PAUSED" | "LIVE_ACTIVE">("TESTING");
   const [isPaused, setIsPaused] = useState<boolean>(false);
   const [updating, setUpdating] = useState<boolean>(false);
@@ -30,14 +32,6 @@ export function Topbar({ onOpenMenu }: { onOpenMenu: () => void }) {
 
   useEffect(() => {
     loadSafety();
-    fetch("/api/settings")
-      .then((r) => r.json())
-      .then((data) => {
-        if (data.ok && data.settings?.emailAccount?.email) {
-          setEmailStatus(data.settings.emailAccount.email);
-        }
-      })
-      .catch(() => undefined);
   }, []);
 
   const handleToggleEmergencyStop = async () => {
@@ -109,7 +103,7 @@ export function Topbar({ onOpenMenu }: { onOpenMenu: () => void }) {
 
         <div className="hidden md:flex items-center gap-1.5 text-[11px] text-(--n-71717a)">
           <span className="size-1.5 rounded-full bg-(--accent)" />
-          <span className="text-(--n-a1a1aa) font-mono">{emailStatus}</span>
+          <span className="text-(--n-a1a1aa) font-mono">{me.user.email}</span>
         </div>
 
         <Link

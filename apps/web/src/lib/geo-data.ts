@@ -190,6 +190,14 @@ export const NICHES_DATA = [
   "Construction & Contractors",
   "Podcasts & Media Brands",
   "Corporate Consulting & B2B",
+  "Landscaping & Lawn Care",
+  "Roofing",
+  "Plumbing",
+  "HVAC & Air Conditioning",
+  "Electricians",
+  "Auto Repair & Car Services",
+  "Cleaning Services",
+  "Pest Control",
 ];
 
 export const AUDIENCES_DATA = [
