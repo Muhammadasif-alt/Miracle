@@ -73,6 +73,9 @@ export interface LeadRecord {
   distanceKm?: number;
   /** Id of the place in Google / OpenStreetMap, so repeated area searches update instead of duplicating. */
   areaSourceId?: string;
+  /** Job Leads: the job post this lead came from (dedupe key) */
+  jobSourceId?: string;
+  jobPostUrl?: string;
   businessDescription?: string;
   researchSummary?: string;
   auditFindings?: string;
