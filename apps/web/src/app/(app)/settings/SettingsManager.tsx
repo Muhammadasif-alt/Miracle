@@ -696,7 +696,7 @@ export function SettingsManager() {
       {/* ======================================================== */}
       {/* 1. COMPACT SETTINGS HEADER                               */}
       {/* ======================================================== */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#222222] pb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#212132] pb-4">
         <div>
           <h1 className="text-xl font-bold tracking-tight text-white">Settings</h1>
           <p className="text-xs text-[#888888] mt-0.5">
@@ -727,7 +727,7 @@ export function SettingsManager() {
       {/* ======================================================== */}
       {/* 2. RESPONSIVE COMPACT TABS                               */}
       {/* ======================================================== */}
-      <div className="flex flex-wrap items-center gap-1.5 bg-[#141414] p-1 rounded-lg border border-[#222222] text-xs">
+      <div className="flex flex-wrap items-center gap-1.5 bg-[#13131d] p-1 rounded-lg border border-[#212132] text-xs">
         {tabs.map((t) => {
           const Icon = t.icon;
           const isActive = activeTab === t.id;
@@ -738,7 +738,7 @@ export function SettingsManager() {
               onClick={() => setActiveTab(t.id)}
               className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-[6px] font-medium transition ${
                 isActive
-                  ? "bg-[#222222] text-white shadow-sm font-semibold"
+                  ? "bg-[#212132] text-white shadow-sm font-semibold"
                   : "text-[#888888] hover:text-[#CCCCCC]"
               }`}
             >
@@ -753,8 +753,8 @@ export function SettingsManager() {
       {/* 3. TAB 1: BUSINESS & SENDER PROFILE                     */}
       {/* ======================================================== */}
       {activeTab === "profile" && (
-        <section className="rounded-[10px] border border-[#202020] bg-[#121212] p-5 space-y-4">
-          <div className="border-b border-[#1E1E1E] pb-3">
+        <section className="rounded-[10px] border border-[#1f1f2e] bg-[#11111a] p-5 space-y-4">
+          <div className="border-b border-[#1d1d2c] pb-3">
             <h2 className="text-sm font-semibold text-white">Sender & Business Identity</h2>
             <p className="text-xs text-[#888888] mt-0.5">
               Used in every generated email and Gemini prompt. Miracle will never invent or alter your real name.
@@ -772,7 +772,7 @@ export function SettingsManager() {
                 value={senderName}
                 onChange={(e) => handleSenderNameChange(e.target.value)}
                 placeholder="e.g. Zohaib"
-                className="input bg-[#181818] border-[#262626] text-xs text-white h-9"
+                className="input bg-[#171723] border-[#252538] text-xs text-white h-9"
               />
               <span className="text-[10px] text-[#666666] mt-0.5 block">
                 Never replaces with fictional roles like &quot;Creative Studio Lead&quot;.
@@ -788,7 +788,7 @@ export function SettingsManager() {
                 value={businessName}
                 onChange={(e) => setBusinessName(e.target.value)}
                 placeholder="e.g. Miracle Creative Studio"
-                className="input bg-[#181818] border-[#262626] text-xs text-white h-9"
+                className="input bg-[#171723] border-[#252538] text-xs text-white h-9"
               />
             </div>
           </div>
@@ -803,7 +803,7 @@ export function SettingsManager() {
                 value={businessEmail}
                 onChange={(e) => setBusinessEmail(e.target.value)}
                 placeholder="zohaibaidesigner@gmail.com"
-                className="input bg-[#181818] border-[#262626] text-xs text-white h-9"
+                className="input bg-[#171723] border-[#252538] text-xs text-white h-9"
               />
             </div>
 
@@ -814,7 +814,7 @@ export function SettingsManager() {
               <select
                 value={timezone}
                 onChange={(e) => setTimezone(e.target.value)}
-                className="input bg-[#181818] border-[#262626] text-xs text-white h-9"
+                className="input bg-[#171723] border-[#252538] text-xs text-white h-9"
               >
                 <option value="America/New_York">Eastern Time (America/New_York)</option>
                 <option value="America/Chicago">Central Time (America/Chicago)</option>
@@ -836,7 +836,7 @@ export function SettingsManager() {
               value={servicesOffered}
               onChange={(e) => setServicesOffered(e.target.value)}
               placeholder="e.g. Graphic Design, Brand Identity & High-Converting Video Editing"
-              className="input bg-[#181818] border-[#262626] text-xs text-white h-9"
+              className="input bg-[#171723] border-[#252538] text-xs text-white h-9"
             />
           </div>
 
@@ -853,7 +853,7 @@ export function SettingsManager() {
               rows={3}
               value={emailSignature}
               onChange={(e) => setEmailSignature(e.target.value)}
-              className="input bg-[#181818] border-[#262626] text-xs font-mono text-white p-3 leading-relaxed"
+              className="input bg-[#171723] border-[#252538] text-xs font-mono text-white p-3 leading-relaxed"
             />
           </div>
         </section>
@@ -863,8 +863,8 @@ export function SettingsManager() {
       {/* 4. TAB 2: EMAIL ACCOUNTS & DELIVERABILITY                */}
       {/* ======================================================== */}
       {activeTab === "email" && (
-        <section className="rounded-[10px] border border-[#202020] bg-[#121212] p-5 space-y-4">
-          <div className="border-b border-[#1E1E1E] pb-3">
+        <section className="rounded-[10px] border border-[#1f1f2e] bg-[#11111a] p-5 space-y-4">
+          <div className="border-b border-[#1d1d2c] pb-3">
             <h2 className="text-sm font-semibold text-white">Email Connection & SMTP</h2>
             <p className="text-xs text-[#888888] mt-0.5">
               Send cold emails directly through your authenticated Gmail or custom SMTP account.
@@ -881,7 +881,7 @@ export function SettingsManager() {
                 value={connectedEmail}
                 onChange={(e) => setConnectedEmail(e.target.value)}
                 placeholder="zohaibaidesigner@gmail.com"
-                className="input bg-[#181818] border-[#262626] text-xs text-white h-9"
+                className="input bg-[#171723] border-[#252538] text-xs text-white h-9"
               />
             </div>
 
@@ -893,7 +893,7 @@ export function SettingsManager() {
                 value={appPassword}
                 onChange={(e) => setAppPassword(e.target.value)}
                 placeholder="xxxx xxxx xxxx xxxx"
-                className="input bg-[#181818] border-[#262626] text-xs text-white h-9 font-mono"
+                className="input bg-[#171723] border-[#252538] text-xs text-white h-9 font-mono"
               />
             </div>
           </div>
@@ -905,7 +905,7 @@ export function SettingsManager() {
             <select
               value={dailySendLimit}
               onChange={(e) => setDailySendLimit(Number(e.target.value))}
-              className="input bg-[#181818] border-[#262626] text-xs text-white h-9 w-full sm:w-64"
+              className="input bg-[#171723] border-[#252538] text-xs text-white h-9 w-full sm:w-64"
             >
               <option value="25">25 emails / day (Warm-up safety)</option>
               <option value="50">50 emails / day (Standard)</option>
@@ -914,7 +914,7 @@ export function SettingsManager() {
           </div>
 
           {/* Test Email Row */}
-          <div className="pt-3 border-t border-[#1E1E1E] space-y-2">
+          <div className="pt-3 border-t border-[#1d1d2c] space-y-2">
             <span className="text-[11px] font-semibold text-[#888888] block">
               Deliverability Health Check
             </span>
@@ -924,13 +924,13 @@ export function SettingsManager() {
                 value={testRecipient}
                 onChange={(e) => setTestRecipient(e.target.value)}
                 placeholder="test@domain.com"
-                className="input bg-[#181818] border-[#262626] text-xs text-white h-9 flex-1"
+                className="input bg-[#171723] border-[#252538] text-xs text-white h-9 flex-1"
               />
               <button
                 type="button"
                 onClick={handleTestSendEmail}
                 disabled={isSendingTestEmail}
-                className="rounded-[6px] bg-[#1E1E1E] border border-[#2E2E2E] px-4 h-9 text-xs font-medium text-white hover:bg-[#252525] inline-flex items-center gap-1.5 transition disabled:opacity-50 shrink-0"
+                className="rounded-[6px] bg-[#1d1d2c] border border-[#2c2c42] px-4 h-9 text-xs font-medium text-white hover:bg-[#252525] inline-flex items-center gap-1.5 transition disabled:opacity-50 shrink-0"
               >
                 <Send className="size-3 text-[#10B981]" />
                 <span>{isSendingTestEmail ? "Sending..." : "Send Test Email"}</span>
@@ -947,8 +947,8 @@ export function SettingsManager() {
       {/* 5. TAB 3: GOOGLE CALENDAR & MEET                         */}
       {/* ======================================================== */}
       {activeTab === "calendar" && (
-        <section className="rounded-[10px] border border-[#202020] bg-[#121212] p-5 space-y-4">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#1E1E1E] pb-3">
+        <section className="rounded-[10px] border border-[#1f1f2e] bg-[#11111a] p-5 space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#1d1d2c] pb-3">
             <div>
               <h2 className="text-sm font-semibold text-white flex items-center gap-2">
                 <Calendar className="size-4 text-[#10B981]" />
@@ -984,7 +984,7 @@ export function SettingsManager() {
                 value={calendarEmail || "zohaibaidesigner@gmail.com"}
                 onChange={(e) => setCalendarEmail(e.target.value)}
                 placeholder="Google email..."
-                className="input bg-[#181818] border-[#262626] text-xs text-white h-9"
+                className="input bg-[#171723] border-[#252538] text-xs text-white h-9"
               />
             </div>
 
@@ -997,7 +997,7 @@ export function SettingsManager() {
                 value={selectedCalendarName}
                 onChange={(e) => setSelectedCalendarName(e.target.value)}
                 placeholder="e.g. Primary Google Calendar"
-                className="input bg-[#181818] border-[#262626] text-xs text-white h-9"
+                className="input bg-[#171723] border-[#252538] text-xs text-white h-9"
               />
             </div>
           </div>
@@ -1024,7 +1024,7 @@ export function SettingsManager() {
               value={bookingUrl}
               onChange={(e) => setBookingUrl(e.target.value)}
               placeholder="https://calendar.google.com/calendar/u/0/appointments/schedules/..."
-              className="input bg-[#181818] border-[#262626] text-xs text-white h-9"
+              className="input bg-[#171723] border-[#252538] text-xs text-white h-9"
             />
           </div>
 
@@ -1033,7 +1033,7 @@ export function SettingsManager() {
               type="button"
               onClick={handleTestCalendar}
               disabled={testingCalendar}
-              className="rounded-[6px] bg-[#1E1E1E] border border-[#2E2E2E] px-3.5 py-1.5 text-xs font-medium text-white hover:bg-[#252525] inline-flex items-center gap-1.5 transition disabled:opacity-50"
+              className="rounded-[6px] bg-[#1d1d2c] border border-[#2c2c42] px-3.5 py-1.5 text-xs font-medium text-white hover:bg-[#252525] inline-flex items-center gap-1.5 transition disabled:opacity-50"
             >
               <RefreshCw className={`size-3 ${testingCalendar ? "animate-spin text-[#10B981]" : "text-[#888888]"}`} />
               <span>{testingCalendar ? "Verifying..." : "Test Calendar Health"}</span>
@@ -1043,7 +1043,7 @@ export function SettingsManager() {
               href="https://calendar.google.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="rounded-[6px] border border-[#262626] bg-[#181818] px-3.5 py-1.5 text-xs text-[#CCCCCC] hover:text-white inline-flex items-center gap-1 transition"
+              className="rounded-[6px] border border-[#252538] bg-[#171723] px-3.5 py-1.5 text-xs text-[#CCCCCC] hover:text-white inline-flex items-center gap-1 transition"
             >
               <span>Open Google Calendar UI</span>
               <ExternalLink className="size-3 text-[#777777]" />
@@ -1059,13 +1059,13 @@ export function SettingsManager() {
           </div>
 
           {calendarTestNotice && (
-            <div className="p-3 rounded-[6px] bg-[#1A1A1A] border border-[#2A2A2A] text-xs text-[#E5E5E5]">
+            <div className="p-3 rounded-[6px] bg-[#191926] border border-[#29293d] text-xs text-[#E5E5E5]">
               {calendarTestNotice}
             </div>
           )}
 
           {showCalendarDetails && (
-            <div className="p-3 rounded-[8px] bg-[#151515] border border-[#222222] text-xs font-mono space-y-1 text-[#888888]">
+            <div className="p-3 rounded-[8px] bg-[#14141e] border border-[#212132] text-xs font-mono space-y-1 text-[#888888]">
               <div>Target Calendar ID: <span className="text-white">{selectedCalendarId}</span></div>
               <div>Scopes: <span className="text-[#38BDF8]">https://www.googleapis.com/auth/calendar.events</span></div>
               <div>Direct Web Render: <span className="text-[#10B981]">Enabled</span></div>
@@ -1078,8 +1078,8 @@ export function SettingsManager() {
       {/* 6. TAB 4: BEHANCE VAULT (IMMUTABLE AUTHORITATIVE PROOF)  */}
       {/* ======================================================== */}
       {activeTab === "behance" && (
-        <section className="rounded-[10px] border border-[#202020] bg-[#121212] p-5 space-y-4">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#1E1E1E] pb-3">
+        <section className="rounded-[10px] border border-[#1f1f2e] bg-[#11111a] p-5 space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#1d1d2c] pb-3">
             <div>
               <h2 className="text-sm font-semibold text-white flex items-center gap-2">
                 <FolderHeart className="size-4 text-[#10B981]" />
@@ -1147,7 +1147,7 @@ export function SettingsManager() {
                 value={behanceUrl}
                 onChange={(e) => setBehanceUrl(e.target.value)}
                 placeholder="https://www.behance.net/your-username"
-                className="input bg-[#181818] border-[#262626] text-xs text-white h-9 flex-1 disabled:opacity-60 disabled:cursor-not-allowed font-mono"
+                className="input bg-[#171723] border-[#252538] text-xs text-white h-9 flex-1 disabled:opacity-60 disabled:cursor-not-allowed font-mono"
               />
 
               {!isBehanceLocked && (
@@ -1166,7 +1166,7 @@ export function SettingsManager() {
                   href={behanceUrl}
                   target="_blank"
                   rel="noreferrer"
-                  className="rounded-[6px] border border-[#2E2E2E] bg-[#1A1A1A] px-3 h-9 text-xs text-white inline-flex items-center gap-1 hover:bg-[#252525] shrink-0"
+                  className="rounded-[6px] border border-[#2c2c42] bg-[#191926] px-3 h-9 text-xs text-white inline-flex items-center gap-1 hover:bg-[#252525] shrink-0"
                 >
                   <span>Open Profile</span>
                   <ExternalLink className="size-3" />
@@ -1179,7 +1179,7 @@ export function SettingsManager() {
           </div>
 
           {/* Featured Case Studies */}
-          <div className="pt-3 border-t border-[#1E1E1E] space-y-3">
+          <div className="pt-3 border-t border-[#1d1d2c] space-y-3">
             <div className="flex items-center justify-between">
               <span className="text-xs font-semibold text-white">
                 Niche-Matched Behance Case Studies ({behanceProjects.length})
@@ -1190,7 +1190,7 @@ export function SettingsManager() {
               {behanceProjects.map((p) => (
                 <div
                   key={p.id}
-                  className="p-3 rounded-[8px] bg-[#181818] border border-[#262626] flex items-center justify-between gap-3 text-xs"
+                  className="p-3 rounded-[8px] bg-[#171723] border border-[#252538] flex items-center justify-between gap-3 text-xs"
                 >
                   <div className="min-w-0">
                     <p className="font-semibold text-white truncate">{p.title}</p>
@@ -1214,7 +1214,7 @@ export function SettingsManager() {
             </div>
 
             {/* Add Project Form */}
-            <div className="p-3 rounded-[8px] bg-[#161616] border border-[#222222] space-y-2">
+            <div className="p-3 rounded-[8px] bg-[#15151f] border border-[#212132] space-y-2">
               <span className="text-[11px] font-semibold text-[#888888] block">Add Niche Project</span>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                 <input
@@ -1222,14 +1222,14 @@ export function SettingsManager() {
                   value={newProjectTitle}
                   onChange={(e) => setNewProjectTitle(e.target.value)}
                   placeholder="Case Study Title"
-                  className="input bg-[#1E1E1E] border-[#2A2A2A] text-xs text-white h-8"
+                  className="input bg-[#1d1d2c] border-[#29293d] text-xs text-white h-8"
                 />
                 <input
                   type="url"
                   value={newProjectUrl}
                   onChange={(e) => setNewProjectUrl(e.target.value)}
                   placeholder="https://www.behance.net/gallery/..."
-                  className="input bg-[#1E1E1E] border-[#2A2A2A] text-xs text-white h-8"
+                  className="input bg-[#1d1d2c] border-[#29293d] text-xs text-white h-8"
                 />
                 <div className="flex items-center gap-2">
                   <input
@@ -1237,7 +1237,7 @@ export function SettingsManager() {
                     value={newProjectNiche}
                     onChange={(e) => setNewProjectNiche(e.target.value)}
                     placeholder="Target Niche (e.g. Real Estate)"
-                    className="input bg-[#1E1E1E] border-[#2A2A2A] text-xs text-white h-8 flex-1"
+                    className="input bg-[#1d1d2c] border-[#29293d] text-xs text-white h-8 flex-1"
                   />
                   <button
                     type="button"
@@ -1257,8 +1257,8 @@ export function SettingsManager() {
       {/* 7. TAB 5: AI MODELS & GATEWAYS (BLACK BIRD + GEMINI)      */}
       {/* ======================================================== */}
       {activeTab === "ai" && (
-        <section className="rounded-[10px] border border-[#202020] bg-[#121212] p-5 space-y-5">
-          <div className="border-b border-[#1E1E1E] pb-3">
+        <section className="rounded-[10px] border border-[#1f1f2e] bg-[#11111a] p-5 space-y-5">
+          <div className="border-b border-[#1d1d2c] pb-3">
             <h2 className="text-sm font-semibold text-white flex items-center gap-2">
               <Cpu className="size-4 text-[#10B981]" />
               AI Routing Gateway &amp; Model Engine
@@ -1275,14 +1275,14 @@ export function SettingsManager() {
           )}
 
           {/* Provider Toggle */}
-          <div className="rounded-[8px] bg-[#161616] border border-[#222222] p-4 space-y-3">
+          <div className="rounded-[8px] bg-[#15151f] border border-[#212132] p-4 space-y-3">
             <span className="text-[11px] font-semibold text-[#888888] block">Primary AI Engine Selection</span>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <label
                 className={`p-3 rounded-[8px] border cursor-pointer transition flex items-center gap-3 ${
                   aiProvider === "blackbird"
                     ? "bg-[#10B981]/10 border-[#10B981]/50 text-white"
-                    : "bg-[#181818] border-[#2A2A2A] text-[#888888] hover:border-[#38BDF8]/40"
+                    : "bg-[#171723] border-[#29293d] text-[#888888] hover:border-[#38BDF8]/40"
                 }`}
               >
                 <input
@@ -1309,7 +1309,7 @@ export function SettingsManager() {
                 className={`p-3 rounded-[8px] border cursor-pointer transition flex items-center gap-3 ${
                   aiProvider === "gemini"
                     ? "bg-[#10B981]/10 border-[#10B981]/50 text-white"
-                    : "bg-[#181818] border-[#2A2A2A] text-[#888888] hover:border-[#38BDF8]/40"
+                    : "bg-[#171723] border-[#29293d] text-[#888888] hover:border-[#38BDF8]/40"
                 }`}
               >
                 <input
@@ -1330,8 +1330,8 @@ export function SettingsManager() {
           </div>
 
           {/* Black Bird Gateway Card */}
-          <div className="rounded-[8px] bg-[#161616] border border-[#222222] p-4 space-y-4">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#202020] pb-3">
+          <div className="rounded-[8px] bg-[#15151f] border border-[#212132] p-4 space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#1f1f2e] pb-3">
               <div>
                 <h3 className="text-xs font-bold text-white flex items-center gap-2">
                   <Layers className="size-3.5 text-[#38BDF8]" />
@@ -1371,7 +1371,7 @@ export function SettingsManager() {
                 <select
                   value={bbPreferredModel}
                   onChange={(e) => handleSetPreferredModel(e.target.value)}
-                  className="input bg-[#181818] border-[#262626] text-xs text-white h-9 w-full font-mono"
+                  className="input bg-[#171723] border-[#252538] text-xs text-white h-9 w-full font-mono"
                 >
                   {bbModels.length > 0 ? (
                     bbModels.map((m) => (
@@ -1401,7 +1401,7 @@ export function SettingsManager() {
                     type="button"
                     onClick={handleTestBlackBird}
                     disabled={testingBB}
-                    className="rounded-[6px] bg-[#1E1E1E] border border-[#2E2E2E] px-4 h-9 text-xs font-medium text-white hover:bg-[#252525] inline-flex items-center gap-1.5 transition disabled:opacity-50 flex-1 justify-center"
+                    className="rounded-[6px] bg-[#1d1d2c] border border-[#2c2c42] px-4 h-9 text-xs font-medium text-white hover:bg-[#252525] inline-flex items-center gap-1.5 transition disabled:opacity-50 flex-1 justify-center"
                   >
                     <RefreshCw className={`size-3 ${testingBB ? "animate-spin text-[#10B981]" : "text-[#888888]"}`} />
                     <span>{testingBB ? "Sending prompt..." : "Test Black Bird Inference"}</span>
@@ -1415,8 +1415,8 @@ export function SettingsManager() {
           </div>
 
           {/* Direct Gemini Configuration */}
-          <div className="rounded-[8px] bg-[#161616] border border-[#222222] p-4 space-y-4">
-            <h3 className="text-xs font-bold text-white flex items-center gap-2 border-b border-[#202020] pb-2">
+          <div className="rounded-[8px] bg-[#15151f] border border-[#212132] p-4 space-y-4">
+            <h3 className="text-xs font-bold text-white flex items-center gap-2 border-b border-[#1f1f2e] pb-2">
               <Sparkles className="size-3.5 text-[#10B981]" />
               <span>Direct Google Gemini Backup</span>
             </h3>
@@ -1441,7 +1441,7 @@ export function SettingsManager() {
                   value={geminiApiKey}
                   onChange={(e) => setGeminiApiKey(e.target.value)}
                   placeholder="AIzaSy..."
-                  className="input bg-[#181818] border-[#262626] text-xs text-white h-9 font-mono"
+                  className="input bg-[#171723] border-[#252538] text-xs text-white h-9 font-mono"
                 />
               </div>
 
@@ -1452,7 +1452,7 @@ export function SettingsManager() {
                 <select
                   value={geminiModel}
                   onChange={(e) => setGeminiModel(e.target.value)}
-                  className="input bg-[#181818] border-[#262626] text-xs text-white h-9 w-full"
+                  className="input bg-[#171723] border-[#252538] text-xs text-white h-9 w-full"
                 >
                   <option value="gemini-2.5-flash">Gemini 2.5 Flash (Ultra Fast &amp; Reliable)</option>
                   <option value="gemini-1.5-pro">Gemini 1.5 Pro (Deep Audit Analysis)</option>
@@ -1465,7 +1465,7 @@ export function SettingsManager() {
                 type="button"
                 onClick={handleTestGemini}
                 disabled={testingGemini}
-                className="rounded-[6px] bg-[#1E1E1E] border border-[#2E2E2E] px-4 py-1.5 text-xs font-medium text-white hover:bg-[#252525] inline-flex items-center gap-1.5 transition disabled:opacity-50"
+                className="rounded-[6px] bg-[#1d1d2c] border border-[#2c2c42] px-4 py-1.5 text-xs font-medium text-white hover:bg-[#252525] inline-flex items-center gap-1.5 transition disabled:opacity-50"
               >
                 <Sparkles className="size-3 text-[#10B981]" />
                 <span>{testingGemini ? "Testing..." : "Test Gemini Connection"}</span>
@@ -1483,8 +1483,8 @@ export function SettingsManager() {
       {/* 7.5 TAB: SCRAPEGRAPHAI LEAD DISCOVERY PROVIDER          */}
       {/* ======================================================== */}
       {activeTab === "scrapegraph" && (
-        <section className="rounded-[10px] border border-[#202020] bg-[#121212] p-5 space-y-5">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#1E1E1E] pb-3">
+        <section className="rounded-[10px] border border-[#1f1f2e] bg-[#11111a] p-5 space-y-5">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#1d1d2c] pb-3">
             <div>
               <h2 className="text-sm font-semibold text-white flex items-center gap-2">
                 <Cpu className="size-4 text-[#10B981]" />
@@ -1530,7 +1530,7 @@ export function SettingsManager() {
           )}
 
           {/* Configuration Form */}
-          <div className="rounded-[8px] bg-[#161616] border border-[#222222] p-4 space-y-4">
+          <div className="rounded-[8px] bg-[#15151f] border border-[#212132] p-4 space-y-4">
             {/* API Key */}
             <div className="space-y-1.5">
               <label className="text-xs font-medium text-[#CCCCCC] flex items-center justify-between">
@@ -1549,7 +1549,7 @@ export function SettingsManager() {
                 value={scrapeGraphApiKey}
                 onChange={(e) => setScrapeGraphApiKey(e.target.value)}
                 placeholder="sgai-..."
-                className="w-full bg-[#181818] border-[#2A2A2A] text-white text-xs font-mono"
+                className="w-full bg-[#171723] border-[#29293d] text-white text-xs font-mono"
               />
               <p className="text-[11px] text-[#71717A]">
                 Requires a valid ScrapeGraphAI account. Enables real-time web discovery across Riyadh and global cities.
@@ -1557,7 +1557,7 @@ export function SettingsManager() {
             </div>
 
             {/* Enable Provider Toggle */}
-            <div className="flex items-center justify-between pt-2 border-t border-[#222222]">
+            <div className="flex items-center justify-between pt-2 border-t border-[#212132]">
               <div>
                 <span className="text-xs font-medium text-white block">Enable Live Web Discovery</span>
                 <p className="text-[11px] text-[#71717A]">
@@ -1576,7 +1576,7 @@ export function SettingsManager() {
             </div>
 
             {/* Max Credits per Search */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-[#222222]">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-[#212132]">
               <div className="space-y-1">
                 <label className="text-xs font-medium text-[#CCCCCC]">Max Credits per Discovery Run</label>
                 <input
@@ -1585,14 +1585,14 @@ export function SettingsManager() {
                   max="50"
                   value={scrapeGraphMaxCredits}
                   onChange={(e) => setScrapeGraphMaxCredits(Number(e.target.value) || 10)}
-                  className="w-full rounded-[6px] bg-[#181818] border border-[#2A2A2A] px-3 py-1.5 text-xs text-white"
+                  className="w-full rounded-[6px] bg-[#171723] border border-[#29293d] px-3 py-1.5 text-xs text-white"
                 />
                 <span className="text-[10px] text-[#71717A]">Protects against accidental quota overconsumption.</span>
               </div>
 
               <div className="space-y-1">
                 <label className="text-xs font-medium text-[#CCCCCC]">ScrapeGraph Account Balance</label>
-                <div className="p-2 rounded-[6px] bg-[#181818] border border-[#2A2A2A] text-xs font-mono text-[#38BDF8] flex items-center justify-between">
+                <div className="p-2 rounded-[6px] bg-[#171723] border border-[#29293d] text-xs font-mono text-[#38BDF8] flex items-center justify-between">
                   <span>Remaining Credits:</span>
                   <span className="font-bold text-white">
                     {scrapeGraphCreditsRemaining !== null ? scrapeGraphCreditsRemaining : "Not checked yet"}
@@ -1602,12 +1602,12 @@ export function SettingsManager() {
             </div>
 
             {/* Test Connection Button */}
-            <div className="pt-3 border-t border-[#222222] flex items-center gap-3">
+            <div className="pt-3 border-t border-[#212132] flex items-center gap-3">
               <button
                 type="button"
                 onClick={handleTestScrapeGraph}
                 disabled={isTestingScrapeGraph || !scrapeGraphApiKey}
-                className="rounded-[6px] bg-[#1E1E1E] border border-[#2E2E2E] px-3.5 py-1.5 text-xs font-medium text-white hover:bg-[#2A2A2A] inline-flex items-center gap-1.5 transition disabled:opacity-50"
+                className="rounded-[6px] bg-[#1d1d2c] border border-[#2c2c42] px-3.5 py-1.5 text-xs font-medium text-white hover:bg-[#29293d] inline-flex items-center gap-1.5 transition disabled:opacity-50"
               >
                 {isTestingScrapeGraph ? (
                   <RefreshCw className="size-3 animate-spin text-[#10B981]" />
@@ -1625,8 +1625,8 @@ export function SettingsManager() {
       {/* 8. TAB 6: SERVICES & PRICING ENGINE                      */}
       {/* ======================================================== */}
       {activeTab === "services" && (
-        <section className="rounded-[10px] border border-[#202020] bg-[#121212] p-5 space-y-4">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#1E1E1E] pb-3">
+        <section className="rounded-[10px] border border-[#1f1f2e] bg-[#11111a] p-5 space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#1d1d2c] pb-3">
             <div>
               <h2 className="text-sm font-semibold text-white flex items-center gap-2">
                 <Briefcase className="size-4 text-[#10B981]" />
@@ -1656,9 +1656,9 @@ export function SettingsManager() {
             {servicesCatalog.map((svc, idx) => (
               <div
                 key={svc.key || idx}
-                className="p-4 rounded-[8px] bg-[#161616] border border-[#222222] space-y-3"
+                className="p-4 rounded-[8px] bg-[#15151f] border border-[#212132] space-y-3"
               >
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#202020] pb-2">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#1f1f2e] pb-2">
                   <div className="flex items-center gap-2">
                     <span className="text-xs font-bold text-white">{svc.name}</span>
                     <span className="text-[10px] bg-[#10B981]/10 text-[#10B981] px-2 py-0.5 rounded font-mono">
@@ -1681,7 +1681,7 @@ export function SettingsManager() {
                         next[idx].minPrice = Number(e.target.value);
                         setServicesCatalog(next);
                       }}
-                      className="input bg-[#1E1E1E] border-[#2A2A2A] text-xs text-white h-8"
+                      className="input bg-[#1d1d2c] border-[#29293d] text-xs text-white h-8"
                     />
                   </div>
 
@@ -1695,7 +1695,7 @@ export function SettingsManager() {
                         next[idx].maxPrice = Number(e.target.value);
                         setServicesCatalog(next);
                       }}
-                      className="input bg-[#1E1E1E] border-[#2A2A2A] text-xs text-white h-8"
+                      className="input bg-[#1d1d2c] border-[#29293d] text-xs text-white h-8"
                     />
                   </div>
 
@@ -1709,7 +1709,7 @@ export function SettingsManager() {
                         next[idx].includedRevisions = Number(e.target.value);
                         setServicesCatalog(next);
                       }}
-                      className="input bg-[#1E1E1E] border-[#2A2A2A] text-xs text-white h-8"
+                      className="input bg-[#1d1d2c] border-[#29293d] text-xs text-white h-8"
                     />
                   </div>
 
@@ -1723,7 +1723,7 @@ export function SettingsManager() {
                         next[idx].advancePercent = Number(e.target.value);
                         setServicesCatalog(next);
                       }}
-                      className="input bg-[#1E1E1E] border-[#2A2A2A] text-xs text-white h-8"
+                      className="input bg-[#1d1d2c] border-[#29293d] text-xs text-white h-8"
                     />
                   </div>
                 </div>
@@ -1741,8 +1741,8 @@ export function SettingsManager() {
       {/* 9. TAB 7: AI CLIENT CONVERSATION AGENT                    */}
       {/* ======================================================== */}
       {activeTab === "agent" && (
-        <section className="rounded-[10px] border border-[#202020] bg-[#121212] p-5 space-y-5">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#1E1E1E] pb-3">
+        <section className="rounded-[10px] border border-[#1f1f2e] bg-[#11111a] p-5 space-y-5">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#1d1d2c] pb-3">
             <div>
               <h2 className="text-sm font-semibold text-white flex items-center gap-2">
                 <Bot className="size-4 text-[#10B981]" />
@@ -1774,7 +1774,7 @@ export function SettingsManager() {
           )}
 
           {/* Mode Selector */}
-          <div className="rounded-[8px] bg-[#161616] border border-[#222222] p-4 space-y-3">
+          <div className="rounded-[8px] bg-[#15151f] border border-[#212132] p-4 space-y-3">
             <span className="text-[11px] font-semibold text-[#888888] block">AI Response Mode</span>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               {[
@@ -1800,7 +1800,7 @@ export function SettingsManager() {
                   className={`p-3.5 rounded-[8px] border cursor-pointer transition ${
                     agentMode === m.id
                       ? "bg-[#10B981]/10 border-[#10B981]/50 text-white"
-                      : "bg-[#181818] border-[#2A2A2A] text-[#888888] hover:border-[#38BDF8]/40"
+                      : "bg-[#171723] border-[#29293d] text-[#888888] hover:border-[#38BDF8]/40"
                   }`}
                 >
                   <div className="font-semibold text-xs text-white mb-1">{m.title}</div>
@@ -1811,7 +1811,7 @@ export function SettingsManager() {
           </div>
 
           {/* Safety Toggles */}
-          <div className="rounded-[8px] bg-[#161616] border border-[#222222] p-4 space-y-3">
+          <div className="rounded-[8px] bg-[#15151f] border border-[#212132] p-4 space-y-3">
             <span className="text-[11px] font-semibold text-[#888888] block">Negotiation &amp; Safety Guards</span>
 
             <label className="flex items-center gap-2 cursor-pointer">
@@ -1840,7 +1840,7 @@ export function SettingsManager() {
           </div>
 
           {/* Emergency Pause Control */}
-          <div className="rounded-[8px] border border-[#2A2A2A] bg-[#161616] p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="rounded-[8px] border border-[#29293d] bg-[#15151f] p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
               <h3 className="text-xs font-bold text-white flex items-center gap-2">
                 <AlertCircle className={`size-4 ${agentPaused ? "text-[#EF4444]" : "text-[#F59E0B]"}`} />
@@ -1868,8 +1868,8 @@ export function SettingsManager() {
       {/* 8. TAB 6: AUTOMATION & SAFETY                            */}
       {/* ======================================================== */}
       {activeTab === "automation" && (
-        <section className="rounded-[10px] border border-[#202020] bg-[#121212] p-5 space-y-4">
-          <div className="border-b border-[#1E1E1E] pb-3">
+        <section className="rounded-[10px] border border-[#1f1f2e] bg-[#11111a] p-5 space-y-4">
+          <div className="border-b border-[#1d1d2c] pb-3">
             <h2 className="text-sm font-semibold text-white">Automation Safety & Suppression</h2>
             <p className="text-xs text-[#888888] mt-0.5">
               Prevent spam flags, stop sequences on prospect replies, and respect suppressions.
@@ -1910,7 +1910,7 @@ export function SettingsManager() {
               rows={4}
               value={dncList}
               onChange={(e) => setDncList(e.target.value)}
-              className="input bg-[#181818] border-[#262626] text-xs font-mono text-white p-3 leading-relaxed"
+              className="input bg-[#171723] border-[#252538] text-xs font-mono text-white p-3 leading-relaxed"
             />
           </div>
         </section>
@@ -1920,8 +1920,8 @@ export function SettingsManager() {
       {/* 9. TAB 7: OUTREACH SAFETY & LIVE GATE                    */}
       {/* ======================================================== */}
       {activeTab === "safety" && (
-        <section className="rounded-[10px] border border-[#202020] bg-[#121212] p-5 space-y-5">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#1E1E1E] pb-3">
+        <section className="rounded-[10px] border border-[#1f1f2e] bg-[#11111a] p-5 space-y-5">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#1d1d2c] pb-3">
             <div>
               <h2 className="text-sm font-semibold text-white flex items-center gap-2">
                 <Shield className="size-4 text-[#10B981]" />
@@ -1963,7 +1963,7 @@ export function SettingsManager() {
           )}
 
           {/* Emergency Stop Control */}
-          <div className="rounded-[8px] border border-[#2A2A2A] bg-[#161616] p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="rounded-[8px] border border-[#29293d] bg-[#15151f] p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
               <h3 className="text-xs font-bold text-white flex items-center gap-2">
                 <AlertCircle className={`size-4 ${outreachPaused ? "text-[#EF4444]" : "text-[#F59E0B]"}`} />
@@ -1999,7 +1999,7 @@ export function SettingsManager() {
                 value={approvedTestRecipient}
                 onChange={(e) => setApprovedTestRecipient(e.target.value)}
                 placeholder="zohaibaidesigner@gmail.com"
-                className="input bg-[#181818] border-[#262626] text-xs text-white h-9"
+                className="input bg-[#171723] border-[#252538] text-xs text-white h-9"
               />
               <span className="text-[10px] text-[#71717A] mt-1 block">
                 In Testing Mode, only emails sent to this verified address will actually be transmitted via SMTP.
@@ -2010,7 +2010,7 @@ export function SettingsManager() {
               <label className="text-[11px] font-semibold text-[#888888] block mb-1">
                 Environment Safety Flag (Dual-Gate)
               </label>
-              <div className="input bg-[#181818] border-[#262626] text-xs text-[#A1A1AA] h-9 flex items-center font-mono">
+              <div className="input bg-[#171723] border-[#252538] text-xs text-[#A1A1AA] h-9 flex items-center font-mono">
                 ENABLE_OUTBOUND_LIVE_SEND=&quot;false&quot; (Locked Safe)
               </div>
               <span className="text-[10px] text-[#71717A] mt-1 block">
@@ -2025,8 +2025,8 @@ export function SettingsManager() {
       {/* 10. TAB 8: SUPPRESSION REGISTRY & LEAD BIN               */}
       {/* ======================================================== */}
       {activeTab === "suppression" && (
-        <section className="rounded-[10px] border border-[#202020] bg-[#121212] p-5 space-y-4">
-          <div className="border-b border-[#1E1E1E] pb-3">
+        <section className="rounded-[10px] border border-[#1f1f2e] bg-[#11111a] p-5 space-y-4">
+          <div className="border-b border-[#1d1d2c] pb-3">
             <h2 className="text-sm font-semibold text-white flex items-center gap-2">
               <Shield className="size-4 text-[#10B981]" />
               HMAC Suppression Registry & Lifecycle Memory
@@ -2037,25 +2037,25 @@ export function SettingsManager() {
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <div className="rounded-[8px] bg-[#161616] border border-[#222222] p-3 text-center">
+            <div className="rounded-[8px] bg-[#15151f] border border-[#212132] p-3 text-center">
               <span className="text-[10px] text-[#71717A] block uppercase font-mono">Active CRM Leads</span>
               <span className="text-lg font-bold text-white mt-1 block">{suppressionStats.activeLeads}</span>
             </div>
-            <div className="rounded-[8px] bg-[#161616] border border-[#222222] p-3 text-center">
+            <div className="rounded-[8px] bg-[#15151f] border border-[#212132] p-3 text-center">
               <span className="text-[10px] text-[#71717A] block uppercase font-mono">Follow-up Due</span>
               <span className="text-lg font-bold text-[#F59E0B] mt-1 block">3-Day Trigger</span>
             </div>
-            <div className="rounded-[8px] bg-[#161616] border border-[#222222] p-3 text-center">
+            <div className="rounded-[8px] bg-[#15151f] border border-[#212132] p-3 text-center">
               <span className="text-[10px] text-[#71717A] block uppercase font-mono">Archived (7-Day)</span>
               <span className="text-lg font-bold text-[#818CF8] mt-1 block">{suppressionStats.archivedLeads}</span>
             </div>
-            <div className="rounded-[8px] bg-[#161616] border border-[#222222] p-3 text-center">
+            <div className="rounded-[8px] bg-[#15151f] border border-[#212132] p-3 text-center">
               <span className="text-[10px] text-[#71717A] block uppercase font-mono">Lead Bin</span>
               <span className="text-lg font-bold text-[#EF4444] mt-1 block">{suppressionStats.binLeads}</span>
             </div>
           </div>
 
-          <div className="rounded-[8px] bg-[#161616] border border-[#222222] p-4 space-y-2 text-xs">
+          <div className="rounded-[8px] bg-[#15151f] border border-[#212132] p-4 space-y-2 text-xs">
             <h3 className="font-semibold text-white">Suppression Invariants Enforced:</h3>
             <ul className="space-y-1 text-[#A1A1AA] list-disc list-inside">
               <li>Every contacted domain is fingerprinted using SHA-256 HMAC and blocked from duplicate discovery.</li>

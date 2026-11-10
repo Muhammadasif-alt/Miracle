@@ -277,9 +277,9 @@ export function PitchModal({ lead, onClose, onSendSuccess }: PitchModalProps) {
 
   return (
     <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
-      <div className="card max-w-2xl w-full p-6 shadow-2xl bg-[#121212] border border-[#2A2A2A] rounded-[18px] space-y-5 my-8">
+      <div className="card max-w-2xl w-full p-6 shadow-2xl bg-[#11111a] border border-[#29293d] rounded-[18px] space-y-5 my-8">
         {/* Header */}
-        <div className="flex items-center justify-between pb-4 border-b border-[#222222]">
+        <div className="flex items-center justify-between pb-4 border-b border-[#212132]">
           <div className="flex items-center gap-2.5">
             <span className="grid size-8 place-items-center rounded-[8px] bg-[#10B981]/10 text-[#10B981] border border-[#10B981]/20">
               <Sparkles className="size-4" />
@@ -300,7 +300,7 @@ export function PitchModal({ lead, onClose, onSendSuccess }: PitchModalProps) {
         </div>
 
         {/* SECTION A: Lead Context */}
-        <div className="rounded-[10px] bg-[#181818] border border-[#262626] p-3.5 space-y-2.5">
+        <div className="rounded-[10px] bg-[#171723] border border-[#252538] p-3.5 space-y-2.5">
           <div className="flex items-center justify-between">
             <span className="text-[10px] uppercase font-mono font-bold text-[#10B981] tracking-wider">
               Section A: Verified Lead Context
@@ -317,17 +317,17 @@ export function PitchModal({ lead, onClose, onSendSuccess }: PitchModalProps) {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
-            <div className="p-2 rounded bg-[#121212] border border-[#222222]">
+            <div className="p-2 rounded bg-[#11111a] border border-[#212132]">
               <span className="text-[10px] text-[#71717A] block">Observed Audit Finding:</span>
               <p className="text-[#E4E4E7] font-medium mt-0.5">{auditFinding}</p>
             </div>
-            <div className="p-2 rounded bg-[#121212] border border-[#222222]">
+            <div className="p-2 rounded bg-[#11111a] border border-[#212132]">
               <span className="text-[10px] text-[#71717A] block">Recommended Service Pitch:</span>
               <p className="text-[#10B981] font-medium mt-0.5">{recommendedService}</p>
             </div>
           </div>
 
-          <div className="p-2 rounded bg-[#121212] border border-[#222222] flex items-center justify-between">
+          <div className="p-2 rounded bg-[#11111a] border border-[#212132] flex items-center justify-between">
             <div className="min-w-0">
               <span className="text-[10px] text-[#71717A] block">Matched Behance Case Study:</span>
               <p className="text-white text-xs font-medium truncate">{matchedProjectTitle}</p>
@@ -344,7 +344,7 @@ export function PitchModal({ lead, onClose, onSendSuccess }: PitchModalProps) {
         </div>
 
         {/* SECTION B: AI Hook */}
-        <div className="rounded-[10px] bg-[#181818] border border-[#262626] p-3 space-y-1">
+        <div className="rounded-[10px] bg-[#171723] border border-[#252538] p-3 space-y-1">
           <span className="text-[10px] uppercase font-mono font-bold text-[#F59E0B] tracking-wider">
             Section B: 1-Line Personalized Hook
           </span>
@@ -352,7 +352,7 @@ export function PitchModal({ lead, onClose, onSendSuccess }: PitchModalProps) {
             type="text"
             value={hook}
             onChange={(e) => setHook(e.target.value)}
-            className="input bg-[#121212] border-[#262626] text-xs text-white"
+            className="input bg-[#11111a] border-[#252538] text-xs text-white"
           />
         </div>
 
@@ -368,7 +368,7 @@ export function PitchModal({ lead, onClose, onSendSuccess }: PitchModalProps) {
               type="text"
               value={subject}
               onChange={(e) => setSubject(e.target.value)}
-              className="input bg-[#181818] border-[#2A2A2A] text-xs text-white font-medium"
+              className="input bg-[#171723] border-[#29293d] text-xs text-white font-medium"
             />
           </div>
 
@@ -378,7 +378,7 @@ export function PitchModal({ lead, onClose, onSendSuccess }: PitchModalProps) {
               rows={8}
               value={body}
               onChange={(e) => setBody(e.target.value)}
-              className="input h-auto p-3.5 text-xs font-mono leading-relaxed resize-none text-[#D4D4D8] rounded-[10px] bg-[#181818] border-[#2A2A2A]"
+              className="input h-auto p-3.5 text-xs font-mono leading-relaxed resize-none text-[#D4D4D8] rounded-[10px] bg-[#171723] border-[#29293d]"
             />
           </div>
         </div>
@@ -396,12 +396,12 @@ export function PitchModal({ lead, onClose, onSendSuccess }: PitchModalProps) {
         )}
 
         {/* Action Controls Bar */}
-        <div className="pt-3 border-t border-[#222222] flex flex-wrap items-center justify-between gap-2">
+        <div className="pt-3 border-t border-[#212132] flex flex-wrap items-center justify-between gap-2">
           <div className="flex items-center gap-2">
             <button
               type="button"
               onClick={handleRegenerate}
-              className="rounded-[8px] bg-[#1A1A1A] border border-[#2A2A2A] px-3 py-1.5 text-xs font-medium text-white hover:bg-[#222222] inline-flex items-center gap-1.5"
+              className="rounded-[8px] bg-[#191926] border border-[#29293d] px-3 py-1.5 text-xs font-medium text-white hover:bg-[#212132] inline-flex items-center gap-1.5"
             >
               <RefreshCw className="size-3" />
               <span>Regenerate</span>
@@ -410,7 +410,7 @@ export function PitchModal({ lead, onClose, onSendSuccess }: PitchModalProps) {
             <button
               type="button"
               onClick={handleCopy}
-              className="rounded-[8px] bg-[#1A1A1A] border border-[#2A2A2A] px-3 py-1.5 text-xs font-medium text-white hover:bg-[#222222] inline-flex items-center gap-1.5"
+              className="rounded-[8px] bg-[#191926] border border-[#29293d] px-3 py-1.5 text-xs font-medium text-white hover:bg-[#212132] inline-flex items-center gap-1.5"
             >
               {copied ? <Check className="size-3 text-[#10B981]" /> : <Copy className="size-3" />}
               <span>{copied ? "Copied" : "Copy"}</span>
@@ -420,7 +420,7 @@ export function PitchModal({ lead, onClose, onSendSuccess }: PitchModalProps) {
               type="button"
               onClick={handleSaveDraft}
               disabled={savingDraft}
-              className="rounded-[8px] bg-[#1A1A1A] border border-[#2A2A2A] px-3 py-1.5 text-xs font-medium text-white hover:bg-[#222222] inline-flex items-center gap-1.5"
+              className="rounded-[8px] bg-[#191926] border border-[#29293d] px-3 py-1.5 text-xs font-medium text-white hover:bg-[#212132] inline-flex items-center gap-1.5"
             >
               <CheckCircle2 className="size-3 text-[#38BDF8]" />
               <span>{savedDraftNotice ? "Saved to Drafts!" : "Save Draft"}</span>
@@ -431,7 +431,7 @@ export function PitchModal({ lead, onClose, onSendSuccess }: PitchModalProps) {
             <button
               type="button"
               onClick={handleAddToSequence}
-              className="rounded-[8px] bg-[#1A1A1A] border border-[#333333] px-3.5 py-1.5 text-xs font-medium text-[#10B981] hover:bg-[#222222]"
+              className="rounded-[8px] bg-[#191926] border border-[#313147] px-3.5 py-1.5 text-xs font-medium text-[#10B981] hover:bg-[#212132]"
             >
               {addedToSequenceNotice ? "Added to Sequence!" : "+ Add to Sequence"}
             </button>
@@ -449,7 +449,7 @@ export function PitchModal({ lead, onClose, onSendSuccess }: PitchModalProps) {
             <button
               type="button"
               onClick={onClose}
-              className="rounded-[8px] bg-[#1A1A1A] border border-[#2A2A2A] px-3 py-1.5 text-xs text-[#888888] hover:text-white"
+              className="rounded-[8px] bg-[#191926] border border-[#29293d] px-3 py-1.5 text-xs text-[#888888] hover:text-white"
             >
               Close
             </button>

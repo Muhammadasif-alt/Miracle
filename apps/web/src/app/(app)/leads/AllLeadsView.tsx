@@ -340,11 +340,11 @@ export function AllLeadsView() {
   return (
     <div className="space-y-5 max-w-7xl mx-auto pb-16">
       {/* Page Title & Search Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#1F1F1F] pb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#1e1e2d] pb-4">
         <div>
           <div className="flex items-center gap-2">
             <h1 className="text-lg font-bold text-white tracking-tight">All Leads CRM</h1>
-            <span className="text-[10px] font-mono uppercase bg-[#1A1A1A] text-[#10B981] px-2 py-0.5 rounded border border-[#2A2A2A]">
+            <span className="text-[10px] font-mono uppercase bg-[#191926] text-[#10B981] px-2 py-0.5 rounded border border-[#29293d]">
               7-Day Lifecycle Protected
             </span>
           </div>
@@ -361,14 +361,14 @@ export function AllLeadsView() {
               placeholder="Search companies or emails..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="input pl-9 bg-[#141414] border-[#222222] text-xs text-white h-8 w-full"
+              className="input pl-9 bg-[#13131d] border-[#212132] text-xs text-white h-8 w-full"
             />
           </form>
 
           <button
             type="button"
             onClick={() => fetchLeads(activeTab, searchQuery)}
-            className="p-2 rounded-[6px] bg-[#141414] border border-[#222222] text-[#888888] hover:text-white"
+            className="p-2 rounded-[6px] bg-[#13131d] border border-[#212132] text-[#888888] hover:text-white"
             title="Refresh leads"
           >
             <RefreshCw className={`size-3.5 ${loading ? "animate-spin text-[#10B981]" : ""}`} />
@@ -385,7 +385,7 @@ export function AllLeadsView() {
       </div>
 
       {/* Filter Tabs */}
-      <div className="flex items-center gap-1 border-b border-[#1F1F1F] overflow-x-auto pb-1 scrollbar-none">
+      <div className="flex items-center gap-1 border-b border-[#1e1e2d] overflow-x-auto pb-1 scrollbar-none">
         {tabs.map((tab) => {
           const active = activeTab === tab.key;
           const isBin = tab.key === "BIN";
@@ -401,8 +401,8 @@ export function AllLeadsView() {
                     ? "bg-[#EF4444]/20 text-[#EF4444] border border-[#EF4444]/40 font-semibold"
                     : isArchived
                     ? "bg-[#6366F1]/20 text-[#818CF8] border border-[#6366F1]/40 font-semibold"
-                    : "bg-[#1F1F1F] text-white border border-[#333333] font-semibold"
-                  : "text-[#888888] hover:text-white hover:bg-[#141414] border border-transparent"
+                    : "bg-[#1e1e2d] text-white border border-[#313147] font-semibold"
+                  : "text-[#888888] hover:text-white hover:bg-[#13131d] border border-transparent"
               }`}
             >
               {isBin && <Trash2 className="size-3" />}
@@ -415,10 +415,10 @@ export function AllLeadsView() {
       </div>
 
       {/* Main Leads Table */}
-      <div className="rounded-[10px] border border-[#1F1F1F] bg-[#111111] overflow-hidden">
+      <div className="rounded-[10px] border border-[#1e1e2d] bg-[#101018] overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs text-[#A1A1AA]">
-            <thead className="bg-[#141414] text-[#71717A] text-[10px] font-semibold uppercase tracking-wider border-b border-[#1F1F1F]">
+            <thead className="bg-[#13131d] text-[#71717A] text-[10px] font-semibold uppercase tracking-wider border-b border-[#1e1e2d]">
               <tr>
                 <th className="px-4 py-3">Company</th>
                 <th className="px-4 py-3">Contact</th>
@@ -430,7 +430,7 @@ export function AllLeadsView() {
                 <th className="px-4 py-3 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#1F1F1F]">
+            <tbody className="divide-y divide-[#1e1e2d]">
               {leads.length === 0 ? (
                 <tr>
                   <td colSpan={8} className="py-12 text-center text-xs text-[#71717A]">
@@ -454,7 +454,7 @@ export function AllLeadsView() {
                     <tr
                       key={lead.id}
                       onClick={() => setSelectedLead(lead)}
-                      className="hover:bg-[#161616] transition-colors cursor-pointer"
+                      className="hover:bg-[#15151f] transition-colors cursor-pointer"
                     >
                       <td className="px-4 py-3 font-medium text-white">
                         <div>
@@ -486,7 +486,7 @@ export function AllLeadsView() {
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-2">
                           <span className="font-bold text-white text-xs">{score}</span>
-                          <div className="w-12 h-1.5 rounded-full bg-[#1F1F1F] overflow-hidden">
+                          <div className="w-12 h-1.5 rounded-full bg-[#1e1e2d] overflow-hidden">
                             <div
                               className="h-full rounded-full bg-[#10B981]"
                               style={{ width: `${Math.min(100, score)}%` }}
@@ -508,7 +508,7 @@ export function AllLeadsView() {
                               ? "bg-[#F59E0B]/10 text-[#F59E0B] border border-[#F59E0B]/20"
                               : lead.status === "INITIAL_SENT" || lead.stage === "CONTACTED"
                               ? "bg-[#38BDF8]/10 text-[#38BDF8] border border-[#38BDF8]/20"
-                              : "bg-[#1F1F1F] text-[#888888]"
+                              : "bg-[#1e1e2d] text-[#888888]"
                           }`}
                         >
                           {lead.isInBin
@@ -538,7 +538,7 @@ export function AllLeadsView() {
                               <button
                                 type="button"
                                 onClick={() => executeLeadAction("restore", lead.id)}
-                                className="rounded-[4px] bg-[#1A1A1A] border border-[#2E2E2E] text-[#10B981] hover:bg-[#10B981]/10 text-[11px] px-2 py-1 flex items-center gap-1"
+                                className="rounded-[4px] bg-[#191926] border border-[#2c2c42] text-[#10B981] hover:bg-[#10B981]/10 text-[11px] px-2 py-1 flex items-center gap-1"
                                 title="Restore to CRM"
                               >
                                 <Undo2 className="size-3" />
@@ -565,7 +565,7 @@ export function AllLeadsView() {
                               <button
                                 type="button"
                                 onClick={() => executeLeadAction("unarchive", lead.id)}
-                                className="rounded-[4px] bg-[#1A1A1A] border border-[#2E2E2E] text-white hover:text-[#10B981] text-[11px] px-2 py-1 flex items-center gap-1"
+                                className="rounded-[4px] bg-[#191926] border border-[#2c2c42] text-white hover:text-[#10B981] text-[11px] px-2 py-1 flex items-center gap-1"
                                 title="Unarchive lead"
                               >
                                 <ArchiveRestore className="size-3" />
@@ -574,7 +574,7 @@ export function AllLeadsView() {
                               <button
                                 type="button"
                                 onClick={() => executeLeadAction("bin", lead.id)}
-                                className="rounded-[4px] bg-[#1A1A1A] border border-[#2E2E2E] text-[#71717A] hover:text-[#EF4444] text-[11px] p-1"
+                                className="rounded-[4px] bg-[#191926] border border-[#2c2c42] text-[#71717A] hover:text-[#EF4444] text-[11px] p-1"
                                 title="Move to Bin"
                               >
                                 <Trash2 className="size-3" />
@@ -605,7 +605,7 @@ export function AllLeadsView() {
                               <button
                                 type="button"
                                 onClick={() => executeLeadAction("archive", lead.id)}
-                                className="rounded-[4px] bg-[#1A1A1A] border border-[#2E2E2E] text-[#71717A] hover:text-white text-[11px] p-1"
+                                className="rounded-[4px] bg-[#191926] border border-[#2c2c42] text-[#71717A] hover:text-white text-[11px] p-1"
                                 title="Archive lead"
                               >
                                 <Archive className="size-3" />
@@ -613,7 +613,7 @@ export function AllLeadsView() {
                               <button
                                 type="button"
                                 onClick={() => executeLeadAction("bin", lead.id)}
-                                className="rounded-[4px] bg-[#1A1A1A] border border-[#2E2E2E] text-[#71717A] hover:text-[#EF4444] text-[11px] p-1"
+                                className="rounded-[4px] bg-[#191926] border border-[#2c2c42] text-[#71717A] hover:text-[#EF4444] text-[11px] p-1"
                                 title="Move to Bin"
                               >
                                 <Trash2 className="size-3" />
@@ -634,11 +634,11 @@ export function AllLeadsView() {
       {/* LEAD DETAILS DRAWER */}
       {selectedLead && (
         <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex justify-end">
-          <div className="w-full max-w-xl bg-[#111111] border-l border-[#1F1F1F] h-full overflow-y-auto p-6 space-y-6 shadow-2xl">
+          <div className="w-full max-w-xl bg-[#101018] border-l border-[#1e1e2d] h-full overflow-y-auto p-6 space-y-6 shadow-2xl">
             {/* Drawer Header */}
-            <div className="flex items-center justify-between border-b border-[#1F1F1F] pb-4">
+            <div className="flex items-center justify-between border-b border-[#1e1e2d] pb-4">
               <div className="flex items-center gap-3">
-                <span className="grid size-9 place-items-center rounded-[8px] bg-[#1A1A1A] border border-[#2E2E2E] text-white font-bold text-sm">
+                <span className="grid size-9 place-items-center rounded-[8px] bg-[#191926] border border-[#2c2c42] text-white font-bold text-sm">
                   {(selectedLead.companyName || selectedLead.businessName || "M").charAt(0)}
                 </span>
                 <div>
@@ -661,7 +661,7 @@ export function AllLeadsView() {
             </div>
 
             {/* Status & Suppression Bar */}
-            <div className="flex items-center justify-between p-2.5 rounded-[8px] bg-[#141414] border border-[#222222]">
+            <div className="flex items-center justify-between p-2.5 rounded-[8px] bg-[#13131d] border border-[#212132]">
               <div className="flex items-center gap-2">
                 <Shield className="size-3.5 text-[#10B981]" />
                 <span className="text-[11px] text-[#A1A1AA]">Lead State:</span>
@@ -676,7 +676,7 @@ export function AllLeadsView() {
                     <button
                       type="button"
                       onClick={() => executeLeadAction("archive", selectedLead.id)}
-                      className="text-[11px] text-[#888888] hover:text-white px-2 py-0.5 rounded bg-[#1C1C1C]"
+                      className="text-[11px] text-[#888888] hover:text-white px-2 py-0.5 rounded bg-[#1b1b29]"
                     >
                       Archive
                     </button>
@@ -730,7 +730,7 @@ export function AllLeadsView() {
                   type="button"
                   onClick={() => handleCreateProposal(selectedLead.id, "logo_design")}
                   disabled={creatingProposal}
-                  className="rounded-[6px] bg-[#181818] border border-[#282828] px-3 py-1.5 text-xs font-medium text-white hover:bg-[#222222] flex items-center gap-1.5"
+                  className="rounded-[6px] bg-[#171723] border border-[#27273a] px-3 py-1.5 text-xs font-medium text-white hover:bg-[#212132] flex items-center gap-1.5"
                 >
                   <FileText className="size-3.5 text-[#38BDF8]" />
                   <span>{creatingProposal ? "Creating..." : "Create Proposal"}</span>
@@ -740,7 +740,7 @@ export function AllLeadsView() {
                   type="button"
                   onClick={() => handleQuickBookMeeting(selectedLead)}
                   disabled={schedulingMeeting}
-                  className="rounded-[6px] bg-[#181818] border border-[#282828] px-3 py-1.5 text-xs font-medium text-white hover:bg-[#222222] flex items-center gap-1.5"
+                  className="rounded-[6px] bg-[#171723] border border-[#27273a] px-3 py-1.5 text-xs font-medium text-white hover:bg-[#212132] flex items-center gap-1.5"
                 >
                   <CalendarCheck className="size-3.5 text-[#10B981]" />
                   <span>{schedulingMeeting ? "Booking Meet..." : "Book Google Meet"}</span>
@@ -762,8 +762,8 @@ export function AllLeadsView() {
 
             {/* AI SALES CONVERSATION INTELLIGENCE */}
             {!selectedLead.isInBin && (
-              <div className="rounded-[8px] bg-[#161616] border border-[#222222] p-3.5 space-y-3">
-                <div className="flex items-center justify-between border-b border-[#202020] pb-2">
+              <div className="rounded-[8px] bg-[#15151f] border border-[#212132] p-3.5 space-y-3">
+                <div className="flex items-center justify-between border-b border-[#1f1f2e] pb-2">
                   <div className="flex items-center gap-2">
                     <Bot className="size-3.5 text-[#10B981]" />
                     <span className="text-xs font-bold text-white">AI Sales Assistant</span>
@@ -784,7 +784,7 @@ export function AllLeadsView() {
                 </div>
 
                 {selectedLead.suggestedReply && (
-                  <div className="p-3 rounded-[6px] bg-[#1A1A1A] border border-[#2A2A2A] space-y-2">
+                  <div className="p-3 rounded-[6px] bg-[#191926] border border-[#29293d] space-y-2">
                     <div className="flex items-center justify-between text-[10px] text-[#888888]">
                       <span>AI Proposed Response</span>
                       <span className="text-[#10B981]">Ready for approval</span>
@@ -792,7 +792,7 @@ export function AllLeadsView() {
                     <p className="text-xs text-white leading-relaxed font-mono whitespace-pre-wrap">
                       {selectedLead.suggestedReply}
                     </p>
-                    <div className="flex items-center justify-end gap-2 pt-1 border-t border-[#262626]">
+                    <div className="flex items-center justify-end gap-2 pt-1 border-t border-[#252538]">
                       <button
                         type="button"
                         onClick={() => setReplyText(selectedLead.suggestedReply)}
@@ -816,8 +816,8 @@ export function AllLeadsView() {
 
             {/* DYNAMIC PROPOSALS SECTION */}
             {proposals.length > 0 && (
-              <div className="rounded-[8px] bg-[#161616] border border-[#222222] p-3.5 space-y-2.5">
-                <div className="flex items-center justify-between border-b border-[#202020] pb-2">
+              <div className="rounded-[8px] bg-[#15151f] border border-[#212132] p-3.5 space-y-2.5">
+                <div className="flex items-center justify-between border-b border-[#1f1f2e] pb-2">
                   <span className="text-xs font-bold text-white flex items-center gap-1.5">
                     <DollarSign className="size-3.5 text-[#10B981]" />
                     <span>Active Proposals ({proposals.length})</span>
@@ -827,7 +827,7 @@ export function AllLeadsView() {
                 {proposals.map((prop: any) => (
                   <div
                     key={prop.id}
-                    className="p-3 rounded-[6px] bg-[#181818] border border-[#262626] flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs"
+                    className="p-3 rounded-[6px] bg-[#171723] border border-[#252538] flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs"
                   >
                     <div>
                       <div className="flex items-center gap-2">
@@ -870,7 +870,7 @@ export function AllLeadsView() {
             )}
 
             {/* Business & Audit Context */}
-            <div className="rounded-[8px] bg-[#161616] border border-[#222222] p-4 space-y-3">
+            <div className="rounded-[8px] bg-[#15151f] border border-[#212132] p-4 space-y-3">
               <div className="flex items-center justify-between">
                 <span className="text-[10px] text-[#71717A] uppercase font-mono font-bold">
                   AI Audit Findings & Proof Focus
@@ -883,14 +883,14 @@ export function AllLeadsView() {
                 {selectedLead.auditFindings ||
                   "Verified online presence; lacks high-converting short-form creative and clear visual branding proof."}
               </p>
-              <div className="text-[11px] text-[#71717A] flex items-center justify-between pt-2 border-t border-[#202020]">
+              <div className="text-[11px] text-[#71717A] flex items-center justify-between pt-2 border-t border-[#1f1f2e]">
                 <span>Contact: {selectedLead.contactName || "Decision Maker"}</span>
                 <span className="font-mono text-white">{selectedLead.contactEmail || selectedLead.email || "No email"}</span>
               </div>
             </div>
 
             {/* REAL CONVERSATION THREAD */}
-            <div className="rounded-[8px] bg-[#161616] border border-[#222222] p-4 space-y-3">
+            <div className="rounded-[8px] bg-[#15151f] border border-[#212132] p-4 space-y-3">
               <div className="flex items-center justify-between">
                 <span className="text-[10px] text-[#71717A] uppercase font-mono font-bold flex items-center gap-1.5">
                   <MessageSquare className="size-3 text-[#38BDF8]" />
@@ -913,8 +913,8 @@ export function AllLeadsView() {
                       key={m.id}
                       className={`p-2.5 rounded-[8px] text-xs max-w-[88%] space-y-1 ${
                         m.sender === "you"
-                          ? "bg-[#1C1C1C] text-[#E4E4E7] ml-auto border border-[#282828]"
-                          : "bg-[#181818] text-white border border-[#10B981]/30 mr-auto"
+                          ? "bg-[#1b1b29] text-[#E4E4E7] ml-auto border border-[#27273a]"
+                          : "bg-[#171723] text-white border border-[#10B981]/30 mr-auto"
                       }`}
                     >
                       <div className="flex items-center justify-between text-[10px] text-[#71717A] gap-4">
@@ -931,13 +931,13 @@ export function AllLeadsView() {
 
               {/* Reply Input Box */}
               {!selectedLead.isInBin && (
-                <div className="pt-2 border-t border-[#202020] space-y-2">
+                <div className="pt-2 border-t border-[#1f1f2e] space-y-2">
                   <textarea
                     rows={2}
                     placeholder={`Write a direct reply to ${selectedLead.contactName || selectedLead.companyName}...`}
                     value={replyText}
                     onChange={(e) => setReplyText(e.target.value)}
-                    className="input bg-[#121212] border-[#222222] text-xs text-white p-2.5 resize-none w-full"
+                    className="input bg-[#11111a] border-[#212132] text-xs text-white p-2.5 resize-none w-full"
                   />
                   <div className="flex justify-end">
                     <button
@@ -955,13 +955,13 @@ export function AllLeadsView() {
             </div>
 
             {/* Stage Selector & Close */}
-            <div className="flex items-center justify-between pt-2 border-t border-[#1F1F1F]">
+            <div className="flex items-center justify-between pt-2 border-t border-[#1e1e2d]">
               <div className="flex items-center gap-2">
                 <span className="text-[11px] text-[#71717A]">Stage:</span>
                 <select
                   value={selectedLead.status || selectedLead.stage || "NEW"}
                   onChange={(e) => handleUpdateStage(selectedLead.id, e.target.value)}
-                  className="input bg-[#161616] border-[#222222] text-xs text-white h-8"
+                  className="input bg-[#15151f] border-[#212132] text-xs text-white h-8"
                 >
                   <option value="NEW">New</option>
                   <option value="RESEARCHED">Researched</option>
@@ -1003,8 +1003,8 @@ export function AllLeadsView() {
       {/* Dynamic Proposal Viewer & Approval Modal */}
       {showProposalModal && activeProposal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-          <div className="w-full max-w-lg rounded-[10px] border border-[#2A2A2A] bg-[#141414] p-5 space-y-4 shadow-2xl">
-            <div className="flex items-center justify-between border-b border-[#222222] pb-3">
+          <div className="w-full max-w-lg rounded-[10px] border border-[#29293d] bg-[#13131d] p-5 space-y-4 shadow-2xl">
+            <div className="flex items-center justify-between border-b border-[#212132] pb-3">
               <div className="flex items-center gap-2">
                 <FileText className="size-4 text-[#10B981]" />
                 <h2 className="text-sm font-bold text-white">Client Proposal &amp; Quote</h2>
@@ -1022,14 +1022,14 @@ export function AllLeadsView() {
             </div>
 
             <div className="space-y-3 text-xs">
-              <div className="p-3 rounded-[6px] bg-[#181818] border border-[#242424] space-y-1.5">
+              <div className="p-3 rounded-[6px] bg-[#171723] border border-[#232335] space-y-1.5">
                 <div className="text-[11px] text-[#888888]">Service Package</div>
                 <div className="text-sm font-bold text-white">{activeProposal.serviceName}</div>
                 <div className="text-[#A1A1AA]">{activeProposal.scope}</div>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
-                <div className="p-3 rounded-[6px] bg-[#181818] border border-[#242424]">
+                <div className="p-3 rounded-[6px] bg-[#171723] border border-[#232335]">
                   <div className="text-[10px] text-[#71717A] uppercase font-mono">Total Price</div>
                   <div className="text-base font-bold text-[#10B981] mt-1">${activeProposal.totalPrice} USD</div>
                   <div className="text-[10px] text-[#888888] mt-0.5">
@@ -1037,7 +1037,7 @@ export function AllLeadsView() {
                   </div>
                 </div>
 
-                <div className="p-3 rounded-[6px] bg-[#181818] border border-[#242424]">
+                <div className="p-3 rounded-[6px] bg-[#171723] border border-[#232335]">
                   <div className="text-[10px] text-[#71717A] uppercase font-mono">Deliverables &amp; Proof</div>
                   <div className="text-white mt-1">{activeProposal.revisionsIncluded} Included Revisions</div>
                   <a
@@ -1053,11 +1053,11 @@ export function AllLeadsView() {
               </div>
             </div>
 
-            <div className="flex items-center justify-end gap-2 pt-3 border-t border-[#222222]">
+            <div className="flex items-center justify-end gap-2 pt-3 border-t border-[#212132]">
               <button
                 type="button"
                 onClick={() => setShowProposalModal(false)}
-                className="rounded-[6px] border border-[#2E2E2E] px-3.5 py-1.5 text-xs text-[#888888] hover:text-white"
+                className="rounded-[6px] border border-[#2c2c42] px-3.5 py-1.5 text-xs text-[#888888] hover:text-white"
               >
                 Close
               </button>

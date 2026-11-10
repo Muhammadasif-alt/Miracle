@@ -57,7 +57,7 @@ export function Topbar({ onOpenMenu }: { onOpenMenu: () => void }) {
   };
 
   return (
-    <header className="sticky top-0 z-20 flex h-12 items-center justify-between border-b border-[#1F1F1F] bg-[#0A0A0A] px-4">
+    <header className="sticky top-0 z-20 flex h-14 items-center justify-between border-b border-white/[0.06] bg-[#07070c]/70 px-4 backdrop-blur-xl sm:px-5">
       {/* Left: Mobile Menu + Miracle / Page Title */}
       <div className="flex items-center gap-2.5">
         <button
@@ -79,7 +79,7 @@ export function Topbar({ onOpenMenu }: { onOpenMenu: () => void }) {
       {/* Right: Operational Status + Safety Mode Badge + Emergency Stop + Settings Icon + User Menu */}
       <div className="flex items-center gap-3">
         {/* Safety Mode Badge */}
-        <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-[11px] font-medium bg-[#141414] border-[#2A2A2A]">
+        <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-[11px] font-medium bg-[#13131d] border-[#29293d]">
           <span
             className={`size-2 rounded-full ${
               isPaused

@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import fs from "node:fs";
 import path from "node:path";
-import { DEFAULT_SETTINGS } from "../../settings/route";
+import { DEFAULT_SETTINGS } from "@/lib/default-settings";
 import { BehanceVault } from "@/lib/behance-vault";
 
 const SETTINGS_FILE = path.join(process.cwd(), ".data", "miracle-settings.json");

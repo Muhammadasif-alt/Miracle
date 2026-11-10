@@ -8,6 +8,7 @@ import {
   Settings,
   Sparkles,
   Users,
+  ScanSearch,
   type LucideIcon,
 } from "lucide-react";
 
@@ -88,6 +89,16 @@ export const SCREENS: Screen[] = [
   },
 ];
 
+/** Extra tools only the developer sees (lib/team.ts isDeveloper). */
+export const DEV_SCREENS: Screen[] = [
+  {
+    href: "/web-audit",
+    title: "Web Audit",
+    subtitle: "Website health & Google visibility",
+    icon: ScanSearch,
+  },
+];
+
 export const BOTTOM_SCREENS: Screen[] = [
   {
     href: "/settings",
@@ -102,7 +113,7 @@ export const BOTTOM_SCREENS: Screen[] = [
  * Route Resolver with backward compatibility for legacy URLs
  */
 export function findScreen(href: string): Screen {
-  const all = [...SCREENS, ...BOTTOM_SCREENS];
+  const all = [...SCREENS, ...DEV_SCREENS, ...BOTTOM_SCREENS];
   const exact = all.find((s) => s.href === href || href.startsWith(s.href + "/"));
   if (exact) return exact;
 

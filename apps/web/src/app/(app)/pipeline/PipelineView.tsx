@@ -262,7 +262,7 @@ export function PipelineView() {
   return (
     <div className="space-y-6 max-w-7xl mx-auto pb-16">
       {/* Header & Controls */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#222222] pb-5">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#212132] pb-5">
         <div>
           <PageHeader
             title="Lead Pipeline & CRM"
@@ -272,7 +272,7 @@ export function PipelineView() {
 
         <div className="flex items-center gap-2">
           {/* View Mode Toggle */}
-          <div className="flex items-center rounded-[8px] bg-[#161616] p-1 border border-[#262626]">
+          <div className="flex items-center rounded-[8px] bg-[#15151f] p-1 border border-[#252538]">
             <button
               type="button"
               onClick={() => setViewMode("kanban")}
@@ -311,7 +311,7 @@ export function PipelineView() {
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 bg-[#121212] border border-[#222222] p-3 rounded-[12px]">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 bg-[#11111a] border border-[#212132] p-3 rounded-[12px]">
         <div className="relative w-full sm:w-72">
           <Search className="size-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-[#71717A]" />
           <input
@@ -319,7 +319,7 @@ export function PipelineView() {
             placeholder="Search by company, niche, or city..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="input pl-9 bg-[#181818] border-[#2A2A2A] text-xs text-white"
+            className="input pl-9 bg-[#171723] border-[#29293d] text-xs text-white"
           />
         </div>
 
@@ -330,7 +330,7 @@ export function PipelineView() {
             className={`px-2.5 py-1 text-xs rounded-[6px] font-medium transition-all shrink-0 ${
               selectedStage === "ALL"
                 ? "bg-white text-black font-semibold"
-                : "bg-[#181818] text-[#888888] hover:text-white"
+                : "bg-[#171723] text-[#888888] hover:text-white"
             }`}
           >
             All Leads ({leads.length})
@@ -346,8 +346,8 @@ export function PipelineView() {
                 onClick={() => setSelectedStage(s.key)}
                 className={`px-2.5 py-1 text-xs rounded-[6px] font-medium transition-all shrink-0 flex items-center gap-1.5 ${
                   active
-                    ? "bg-[#222222] text-white border border-[#333333] font-semibold"
-                    : "bg-[#161616] text-[#71717A] hover:text-white"
+                    ? "bg-[#212132] text-white border border-[#313147] font-semibold"
+                    : "bg-[#15151f] text-[#71717A] hover:text-white"
                 }`}
               >
                 <span className="size-1.5 rounded-full" style={{ backgroundColor: s.color }} />
@@ -367,15 +367,15 @@ export function PipelineView() {
             return (
               <div
                 key={stage.key}
-                className="rounded-[14px] bg-[#121212] border border-[#222222] p-3 space-y-3 min-w-[240px] flex flex-col h-full"
+                className="rounded-[14px] bg-[#11111a] border border-[#212132] p-3 space-y-3 min-w-[240px] flex flex-col h-full"
               >
                 {/* Column Header */}
-                <div className="flex items-center justify-between pb-2 border-b border-[#202020]">
+                <div className="flex items-center justify-between pb-2 border-b border-[#1f1f2e]">
                   <div className="flex items-center gap-1.5">
                     <span className="size-2 rounded-full" style={{ backgroundColor: stage.color }} />
                     <span className="text-xs font-semibold text-white tracking-tight">{stage.label}</span>
                   </div>
-                  <span className="rounded-full bg-[#181818] border border-[#262626] px-2 py-0.5 text-[10px] font-mono text-[#888888]">
+                  <span className="rounded-full bg-[#171723] border border-[#252538] px-2 py-0.5 text-[10px] font-mono text-[#888888]">
                     {stageLeads.length}
                   </span>
                 </div>
@@ -391,7 +391,7 @@ export function PipelineView() {
                       <div
                         key={lead.id}
                         onClick={() => setSelectedLead(lead)}
-                        className="rounded-[10px] bg-[#181818] border border-[#262626] p-3 space-y-2 hover:border-[#383838] transition-all cursor-pointer shadow-sm group"
+                        className="rounded-[10px] bg-[#171723] border border-[#252538] p-3 space-y-2 hover:border-[#383838] transition-all cursor-pointer shadow-sm group"
                       >
                         <div className="flex items-start justify-between gap-1">
                           <p className="text-xs font-semibold text-white group-hover:text-[#10B981] transition-colors truncate">
@@ -406,11 +406,11 @@ export function PipelineView() {
                           {lead.niche} &bull; {lead.city}
                         </p>
 
-                        <div className="p-1.5 rounded bg-[#121212] border border-[#202020] text-[10px] text-[#A1A1AA] line-clamp-2">
+                        <div className="p-1.5 rounded bg-[#11111a] border border-[#1f1f2e] text-[10px] text-[#A1A1AA] line-clamp-2">
                           {lead.auditFindings}
                         </div>
 
-                        <div className="flex items-center justify-between pt-1 border-t border-[#222222]">
+                        <div className="flex items-center justify-between pt-1 border-t border-[#212132]">
                           <span className={`text-[9px] px-1.5 py-0.5 rounded ${lead.emailStatus === "VERIFIED" ? "bg-[#10B981]/10 text-[#10B981]" : "bg-[#F59E0B]/10 text-[#F59E0B]"}`}>
                             {lead.emailStatus}
                           </span>
@@ -449,10 +449,10 @@ export function PipelineView() {
 
       {/* TABLE VIEW */}
       {viewMode === "table" && (
-        <div className="rounded-[14px] bg-[#121212] border border-[#222222] overflow-hidden">
+        <div className="rounded-[14px] bg-[#11111a] border border-[#212132] overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs text-[#A1A1AA]">
-              <thead className="bg-[#181818] text-[#71717A] text-[10px] font-semibold uppercase tracking-wider border-b border-[#222222]">
+              <thead className="bg-[#171723] text-[#71717A] text-[10px] font-semibold uppercase tracking-wider border-b border-[#212132]">
                 <tr>
                   <th className="px-4 py-3">Company</th>
                   <th className="px-4 py-3">Niche & Location</th>
@@ -462,12 +462,12 @@ export function PipelineView() {
                   <th className="px-4 py-3 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#222222]">
+              <tbody className="divide-y divide-[#212132]">
                 {filteredLeads.map((lead) => (
                   <tr
                     key={lead.id}
                     onClick={() => setSelectedLead(lead)}
-                    className="hover:bg-[#181818] transition-colors cursor-pointer"
+                    className="hover:bg-[#171723] transition-colors cursor-pointer"
                   >
                     <td className="px-4 py-3 font-medium text-white">
                       <div>
@@ -502,7 +502,7 @@ export function PipelineView() {
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2">
                         <span className="font-bold text-white text-xs">{lead.leadScore}/100</span>
-                        <div className="w-16 h-1.5 rounded-full bg-[#222222] overflow-hidden">
+                        <div className="w-16 h-1.5 rounded-full bg-[#212132] overflow-hidden">
                           <div
                             className="h-full rounded-full bg-[#10B981]"
                             style={{ width: `${lead.leadScore}%` }}
@@ -516,7 +516,7 @@ export function PipelineView() {
                         value={lead.stage}
                         onClick={(e) => e.stopPropagation()}
                         onChange={(e) => handleStageChange(lead.id, e.target.value as PipelineStage)}
-                        className="bg-[#181818] border border-[#282828] text-white text-xs rounded px-2 py-1"
+                        className="bg-[#171723] border border-[#27273a] text-white text-xs rounded px-2 py-1"
                       >
                         {STAGES.map((s) => (
                           <option key={s.key} value={s.key}>
@@ -560,10 +560,10 @@ export function PipelineView() {
       {/* UNIFIED LEAD DETAIL DRAWER */}
       {selectedLead && (
         <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex justify-end">
-          <div className="w-full max-w-xl bg-[#121212] border-l border-[#2A2A2A] h-full overflow-y-auto p-6 space-y-6 shadow-2xl">
-            <div className="flex items-center justify-between border-b border-[#222222] pb-4">
+          <div className="w-full max-w-xl bg-[#11111a] border-l border-[#29293d] h-full overflow-y-auto p-6 space-y-6 shadow-2xl">
+            <div className="flex items-center justify-between border-b border-[#212132] pb-4">
               <div className="flex items-center gap-2.5">
-                <span className="grid size-9 place-items-center rounded-[8px] bg-[#1A1A1A] border border-[#2A2A2A] text-white font-bold text-sm">
+                <span className="grid size-9 place-items-center rounded-[8px] bg-[#191926] border border-[#29293d] text-white font-bold text-sm">
                   {selectedLead.businessName.charAt(0)}
                 </span>
                 <div>
@@ -607,7 +607,7 @@ export function PipelineView() {
 
               <Link
                 href="/meetings-setup"
-                className="rounded-[8px] bg-[#1E1E1E] border border-[#333333] px-3.5 py-2 text-xs font-medium text-white hover:bg-[#252525] flex items-center gap-1.5"
+                className="rounded-[8px] bg-[#1d1d2c] border border-[#313147] px-3.5 py-2 text-xs font-medium text-white hover:bg-[#252525] flex items-center gap-1.5"
               >
                 <CalendarCheck className="size-3.5 text-[#10B981]" />
                 <span>Book Meet</span>
@@ -615,14 +615,14 @@ export function PipelineView() {
             </div>
 
             {/* Stage Selector */}
-            <div className="rounded-[10px] bg-[#181818] border border-[#262626] p-3.5 space-y-2">
+            <div className="rounded-[10px] bg-[#171723] border border-[#252538] p-3.5 space-y-2">
               <span className="text-[10px] text-[#71717A] uppercase font-mono font-bold block">
                 Current Pipeline Stage
               </span>
               <select
                 value={selectedLead.stage}
                 onChange={(e) => handleStageChange(selectedLead.id, e.target.value as PipelineStage)}
-                className="input bg-[#121212] border-[#262626] text-xs text-white"
+                className="input bg-[#11111a] border-[#252538] text-xs text-white"
               >
                 {STAGES.map((s) => (
                   <option key={s.key} value={s.key}>
@@ -633,7 +633,7 @@ export function PipelineView() {
             </div>
 
             {/* Section: Website Audit Findings */}
-            <div className="rounded-[10px] bg-[#181818] border border-[#262626] p-4 space-y-3">
+            <div className="rounded-[10px] bg-[#171723] border border-[#252538] p-4 space-y-3">
               <div className="flex items-center justify-between">
                 <h3 className="text-xs font-semibold text-white flex items-center gap-2">
                   <Globe className="size-3.5 text-[#38BDF8]" />
@@ -644,12 +644,12 @@ export function PipelineView() {
                 </span>
               </div>
 
-              <div className="p-3 rounded bg-[#121212] border border-[#202020] text-xs text-[#E4E4E7] leading-relaxed">
+              <div className="p-3 rounded bg-[#11111a] border border-[#1f1f2e] text-xs text-[#E4E4E7] leading-relaxed">
                 {selectedLead.auditFindings}
               </div>
 
               <div className="space-y-1.5 text-xs">
-                <div className="flex items-center justify-between py-1 border-b border-[#202020]">
+                <div className="flex items-center justify-between py-1 border-b border-[#1f1f2e]">
                   <span className="text-[#71717A]">Official Website</span>
                   <a
                     href={selectedLead.website}
@@ -662,7 +662,7 @@ export function PipelineView() {
                   </a>
                 </div>
 
-                <div className="flex items-center justify-between py-1 border-b border-[#202020]">
+                <div className="flex items-center justify-between py-1 border-b border-[#1f1f2e]">
                   <span className="text-[#71717A]">Contact Email</span>
                   <span className="text-white font-mono">{selectedLead.email || "Unavailable"}</span>
                 </div>
@@ -675,7 +675,7 @@ export function PipelineView() {
             </div>
 
             {/* Section: Matched Behance Case Study */}
-            <div className="rounded-[10px] bg-[#181818] border border-[#262626] p-4 space-y-2.5">
+            <div className="rounded-[10px] bg-[#171723] border border-[#252538] p-4 space-y-2.5">
               <span className="text-[10px] text-[#71717A] uppercase font-mono font-bold block">
                 Matched Behance Proof
               </span>
@@ -692,7 +692,7 @@ export function PipelineView() {
             </div>
 
             {/* Section: Activity Timeline */}
-            <div className="rounded-[10px] bg-[#181818] border border-[#262626] p-4 space-y-3">
+            <div className="rounded-[10px] bg-[#171723] border border-[#252538] p-4 space-y-3">
               <span className="text-[10px] text-[#71717A] uppercase font-mono font-bold block">
                 Lead Activity Timeline
               </span>

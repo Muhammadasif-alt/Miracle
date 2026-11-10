@@ -34,3 +34,14 @@ export const TEAM: TeamMember[] = [
 export function findMember(slug: string): TeamMember | undefined {
   return TEAM.find((m) => m.slug === slug);
 }
+
+export function memberForEmail(email: string | undefined | null): TeamMember | undefined {
+  if (!email) return undefined;
+  const e = email.toLowerCase();
+  return TEAM.find((m) => m.email.toLowerCase() === e);
+}
+
+/** Developer-only tools (website & Google ranking audits) are shown to the developer on the team. */
+export function isDeveloper(email: string | undefined | null): boolean {
+  return memberForEmail(email)?.role === "Developer";
+}

@@ -567,8 +567,8 @@ export function PitchStudioView() {
       {/* ======================================================== */}
       {/* 1. TOP: LIVE ANALYTICS SECTION WITH TIMEFRAME SELECTOR   */}
       {/* ======================================================== */}
-      <section className="rounded-[10px] border border-[#1F1F1F] bg-[#111111] p-4 space-y-3.5">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#1C1C1C] pb-3">
+      <section className="rounded-[10px] border border-[#1e1e2d] bg-[#101018] p-4 space-y-3.5">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#1b1b29] pb-3">
           <div>
             <h2 className="text-xs font-bold uppercase tracking-wider text-white flex items-center gap-2">
               <span className="size-2 rounded-full bg-[#10B981] animate-pulse" />
@@ -579,7 +579,7 @@ export function PitchStudioView() {
             </p>
           </div>
 
-          <div className="flex items-center gap-1 bg-[#161616] border border-[#262626] p-1 rounded-md text-xs">
+          <div className="flex items-center gap-1 bg-[#15151f] border border-[#252538] p-1 rounded-md text-xs">
             {(["TODAY", "7D", "30D", "ALL"] as const).map((tf) => (
               <button
                 key={tf}
@@ -587,7 +587,7 @@ export function PitchStudioView() {
                 onClick={() => setAnalyticsTimeframe(tf)}
                 className={`px-2.5 py-0.5 rounded text-[11px] font-medium transition ${
                   analyticsTimeframe === tf
-                    ? "bg-[#2A2A2A] text-white font-semibold shadow-sm"
+                    ? "bg-[#29293d] text-white font-semibold shadow-sm"
                     : "text-[#71717A] hover:text-[#CCCCCC]"
                 }`}
               >
@@ -599,37 +599,37 @@ export function PitchStudioView() {
 
         {/* 6 Core Metrics Cards */}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5">
-          <div className="rounded-[8px] border border-[#1F1F1F] bg-[#161616] p-3">
+          <div className="rounded-[8px] border border-[#1e1e2d] bg-[#15151f] p-3">
             <span className="text-[10px] text-[#71717A] uppercase font-mono block">Leads Discovered</span>
             <p className="text-xl font-bold text-white tracking-tight mt-0.5">{analytics.totalLeadsFound}</p>
             <span className="text-[10px] text-[#10B981] font-medium">Qualified: {analytics.qualifiedLeads}</span>
           </div>
 
-          <div className="rounded-[8px] border border-[#1F1F1F] bg-[#161616] p-3">
+          <div className="rounded-[8px] border border-[#1e1e2d] bg-[#15151f] p-3">
             <span className="text-[10px] text-[#71717A] uppercase font-mono block">Emails Sent</span>
             <p className="text-xl font-bold text-white tracking-tight mt-0.5">{analytics.emailsSent}</p>
             <span className="text-[10px] text-[#38BDF8]">Gmail / SMTP</span>
           </div>
 
-          <div className="rounded-[8px] border border-[#1F1F1F] bg-[#161616] p-3">
+          <div className="rounded-[8px] border border-[#1e1e2d] bg-[#15151f] p-3">
             <span className="text-[10px] text-[#71717A] uppercase font-mono block">Tracked Opens</span>
             <p className="text-xl font-bold text-white tracking-tight mt-0.5">{analytics.trackedOpens}</p>
             <span className="text-[10px] text-[#A1A1AA]">Telemetry Signal</span>
           </div>
 
-          <div className="rounded-[8px] border border-[#1F1F1F] bg-[#161616] p-3">
+          <div className="rounded-[8px] border border-[#1e1e2d] bg-[#15151f] p-3">
             <span className="text-[10px] text-[#71717A] uppercase font-mono block">Replies Received</span>
             <p className="text-xl font-bold text-[#F59E0B] tracking-tight mt-0.5">{analytics.repliesReceived}</p>
             <span className="text-[10px] text-[#10B981]">Rate: {analytics.replyRate}%</span>
           </div>
 
-          <div className="rounded-[8px] border border-[#1F1F1F] bg-[#161616] p-3">
+          <div className="rounded-[8px] border border-[#1e1e2d] bg-[#15151f] p-3">
             <span className="text-[10px] text-[#71717A] uppercase font-mono block">Meetings Booked</span>
             <p className="text-xl font-bold text-[#10B981] tracking-tight mt-0.5">{analytics.meetingsBooked}</p>
             <span className="text-[10px] text-[#10B981]">Conv: {analytics.meetingConversionRate}%</span>
           </div>
 
-          <div className="rounded-[8px] border border-[#1F1F1F] bg-[#161616] p-3">
+          <div className="rounded-[8px] border border-[#1e1e2d] bg-[#15151f] p-3">
             <span className="text-[10px] text-[#71717A] uppercase font-mono block">Bounces / Failed</span>
             <p className="text-xl font-bold text-[#888888] tracking-tight mt-0.5">{analytics.bouncedEmails}</p>
             <span className="text-[10px] text-[#10B981]">High Deliverability</span>
@@ -637,7 +637,7 @@ export function PitchStudioView() {
         </div>
 
         {/* Minimal Progress Trend Visualizer */}
-        <div className="rounded-[6px] bg-[#141414] border border-[#1E1E1E] p-2.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
+        <div className="rounded-[6px] bg-[#13131d] border border-[#1d1d2c] p-2.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
           <div className="flex items-center gap-2">
             <span className="text-[11px] text-[#71717A]">Conversion Funnel:</span>
             <div className="flex items-center gap-1.5 font-mono text-[11px]">
@@ -660,7 +660,7 @@ export function PitchStudioView() {
       {/* ======================================================== */}
       {/* 2. MIDDLE: SMART SEARCH ROW (NO SLIDER! 5 DROPDOWNS)     */}
       {/* ======================================================== */}
-      <section className="rounded-[10px] border border-[#1F1F1F] bg-[#111111] p-4 space-y-4">
+      <section className="rounded-[10px] border border-[#1e1e2d] bg-[#101018] p-4 space-y-4">
         {/* Desktop 5-Column Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
           {/* 1. Country Searchable Dropdown */}
@@ -708,7 +708,7 @@ export function PitchStudioView() {
                   localStorage.setItem("miracle_last_lead_count", val);
                 } catch {}
               }}
-              className="input bg-[#181818] border-[#262626] text-xs text-white h-9 w-full"
+              className="input bg-[#171723] border-[#252538] text-xs text-white h-9 w-full"
             >
               <option value="10">10 Leads</option>
               <option value="25">25 Leads</option>
@@ -733,7 +733,7 @@ export function PitchStudioView() {
                       localStorage.setItem("miracle_last_lead_count", String(count));
                     } catch {}
                   }}
-                  className="input bg-[#1A1A1A] border-[#2A2A2A] text-xs text-white h-7 w-24 font-mono"
+                  className="input bg-[#191926] border-[#29293d] text-xs text-white h-7 w-24 font-mono"
                   placeholder="1-500"
                 />
                 <span className="text-[10px] text-[#777777]">target leads</span>
@@ -749,7 +749,7 @@ export function PitchStudioView() {
             <select
               value={automationMode}
               onChange={(e) => setAutomationMode(e.target.value as any)}
-              className="input bg-[#181818] border-[#262626] text-xs text-white h-9 w-full"
+              className="input bg-[#171723] border-[#252538] text-xs text-white h-9 w-full"
             >
               <option value="manual">Manual</option>
               <option value="ai_assisted">AI Assisted</option>
@@ -764,7 +764,7 @@ export function PitchStudioView() {
         </div>
 
         {/* Find Leads Action & Controls */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2 border-t border-[#1C1C1C]">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2 border-t border-[#1b1b29]">
           <div className="text-[11px] text-[#71717A]">
             Query: Target <strong className="text-white">{getEffectiveTargetLeadCount()} leads</strong> in{" "}
             <strong className="text-white">{niche}</strong> ({city}, {country})
@@ -776,7 +776,7 @@ export function PitchStudioView() {
                 <button
                   type="button"
                   onClick={handlePauseJob}
-                  className="rounded-[6px] bg-[#1A1A1A] border border-[#2E2E2E] px-3 py-1.5 text-xs font-medium text-white hover:bg-[#252525] inline-flex items-center gap-1.5"
+                  className="rounded-[6px] bg-[#191926] border border-[#2c2c42] px-3 py-1.5 text-xs font-medium text-white hover:bg-[#252525] inline-flex items-center gap-1.5"
                 >
                   <Pause className="size-3" />
                   <span>Pause</span>
@@ -784,7 +784,7 @@ export function PitchStudioView() {
                 <button
                   type="button"
                   onClick={handleStopJob}
-                  className="rounded-[6px] bg-[#1A1A1A] border border-[#2E2E2E] px-3 py-1.5 text-xs font-medium text-[#EF4444] hover:bg-[#252525] inline-flex items-center gap-1.5"
+                  className="rounded-[6px] bg-[#191926] border border-[#2c2c42] px-3 py-1.5 text-xs font-medium text-[#EF4444] hover:bg-[#252525] inline-flex items-center gap-1.5"
                 >
                   <StopCircle className="size-3" />
                   <span>Stop</span>
@@ -796,7 +796,7 @@ export function PitchStudioView() {
               <button
                 type="button"
                 onClick={handleResumeJob}
-                className="rounded-[6px] bg-[#1A1A1A] border border-[#2E2E2E] px-3 py-1.5 text-xs font-medium text-[#10B981] hover:bg-[#252525] inline-flex items-center gap-1.5"
+                className="rounded-[6px] bg-[#191926] border border-[#2c2c42] px-3 py-1.5 text-xs font-medium text-[#10B981] hover:bg-[#252525] inline-flex items-center gap-1.5"
               >
                 <Play className="size-3" />
                 <span>Resume</span>
@@ -817,7 +817,7 @@ export function PitchStudioView() {
 
         {/* Real-time Contact Quality & Progress Banner (Sections 4, 5, 6 & Add-on) */}
         {(jobStatus === "running" || jobStatus === "paused" || jobProgress.businessesScanned > 0 || jobProgress.readyContacts > 0) && (
-          <div className="p-3.5 rounded-[8px] bg-[#161616] border border-[#222222] space-y-2.5 text-xs">
+          <div className="p-3.5 rounded-[8px] bg-[#15151f] border border-[#212132] space-y-2.5 text-xs">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div className="flex items-center gap-2">
                 <span className={`size-2 rounded-full ${jobStatus === "running" ? "bg-[#10B981] animate-pulse" : "bg-[#F59E0B]"}`} />
@@ -830,7 +830,7 @@ export function PitchStudioView() {
               </span>
             </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-6 gap-2 pt-1.5 border-t border-[#222222] text-[11px]">
+            <div className="grid grid-cols-2 sm:grid-cols-6 gap-2 pt-1.5 border-t border-[#212132] text-[11px]">
               <div>
                 <span className="text-[#71717A] block text-[10px]">Ready Contacts</span>
                 <strong className="text-[#10B981] font-mono">{jobProgress.readyContacts} / {jobProgress.requestedValidLeads}</strong>
@@ -865,15 +865,15 @@ export function PitchStudioView() {
       {/* ======================================================== */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
         {/* Left Column (5 Cols): Discovered Leads Table */}
-        <div className="lg:col-span-5 rounded-[10px] border border-[#1F1F1F] bg-[#111111] overflow-hidden">
-          <div className="p-3 border-b border-[#1F1F1F] flex items-center justify-between">
+        <div className="lg:col-span-5 rounded-[10px] border border-[#1e1e2d] bg-[#101018] overflow-hidden">
+          <div className="p-3 border-b border-[#1e1e2d] flex items-center justify-between">
             <h2 className="text-xs font-semibold text-white">Discovered Leads ({leads.length})</h2>
             <Link href="/leads" className="text-[11px] text-[#10B981] hover:underline font-medium">
               View All CRM &rarr;
             </Link>
           </div>
 
-          <div className="divide-y divide-[#1F1F1F] max-h-[580px] overflow-y-auto scrollbar-none">
+          <div className="divide-y divide-[#1e1e2d] max-h-[580px] overflow-y-auto scrollbar-none">
             {leads.length === 0 ? (
               <div className="py-12 text-center text-xs text-[#71717A]">
                 No leads yet. Select your criteria above and click <strong>Find Leads</strong>.
@@ -887,8 +887,8 @@ export function PitchStudioView() {
                     onClick={() => handleSelectLead(lead)}
                     className={`p-3 transition-colors cursor-pointer space-y-1.5 ${
                       isSelected
-                        ? "bg-[#1C1C1C] border-l-2 border-l-[#10B981]"
-                        : "hover:bg-[#141414]"
+                        ? "bg-[#1b1b29] border-l-2 border-l-[#10B981]"
+                        : "hover:bg-[#13131d]"
                     }`}
                   >
                     <div className="flex items-center justify-between">
@@ -943,9 +943,9 @@ export function PitchStudioView() {
         </div>
 
         {/* Right Column (7 Cols): Selected Lead Context & AI Composer */}
-        <div className="lg:col-span-7 rounded-[10px] border border-[#1F1F1F] bg-[#111111] p-4 space-y-4">
+        <div className="lg:col-span-7 rounded-[10px] border border-[#1e1e2d] bg-[#101018] p-4 space-y-4">
           {/* Top Lead Context Pill */}
-          <div className="rounded-[8px] bg-[#161616] border border-[#222222] p-3 space-y-2">
+          <div className="rounded-[8px] bg-[#15151f] border border-[#212132] p-3 space-y-2">
             <div className="flex items-center justify-between">
               <div className="min-w-0">
                 <span className="text-[10px] text-[#71717A] uppercase font-mono block">Selected Prospect</span>
@@ -968,7 +968,7 @@ export function PitchStudioView() {
             </div>
 
             {selectedLead && (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px] pt-1 border-t border-[#202020]">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px] pt-1 border-t border-[#1f1f2e]">
                 <div>
                   <span className="text-[#71717A] block text-[10px]">Observed Audit Finding:</span>
                   <p className="text-[#D4D4D8] font-medium leading-snug">
@@ -1014,7 +1014,7 @@ export function PitchStudioView() {
                         type="button"
                         onClick={() => handleResearchWebsiteContact(selectedLead.website)}
                         disabled={isResearching}
-                        className="rounded-[6px] border border-[#2E2E2E] bg-[#1E1E1E] px-2.5 py-1 text-[11px] text-[#D4D4D8] inline-flex items-center gap-1 hover:bg-[#2A2A2A] disabled:opacity-50"
+                        className="rounded-[6px] border border-[#2c2c42] bg-[#1d1d2c] px-2.5 py-1 text-[11px] text-[#D4D4D8] inline-flex items-center gap-1 hover:bg-[#29293d] disabled:opacity-50"
                       >
                         {isResearching ? (
                           <Loader2 className="size-3 animate-spin" />
@@ -1028,7 +1028,7 @@ export function PitchStudioView() {
                     <button
                       type="button"
                       onClick={() => setShowManualEmailInput(!showManualEmailInput)}
-                      className="rounded-[6px] border border-[#2E2E2E] bg-[#1E1E1E] px-2.5 py-1 text-[11px] text-[#D4D4D8] inline-flex items-center gap-1 hover:bg-[#2A2A2A]"
+                      className="rounded-[6px] border border-[#2c2c42] bg-[#1d1d2c] px-2.5 py-1 text-[11px] text-[#D4D4D8] inline-flex items-center gap-1 hover:bg-[#29293d]"
                     >
                       <Plus className="size-3 text-[#10B981]" />
                       <span>Add Verified Email</span>
@@ -1043,13 +1043,13 @@ export function PitchStudioView() {
                 )}
 
                 {showManualEmailInput && (
-                  <div className="mt-2.5 pt-2 border-t border-[#2A2A2A] flex items-center gap-2">
+                  <div className="mt-2.5 pt-2 border-t border-[#29293d] flex items-center gap-2">
                     <input
                       type="email"
                       value={manualEmailValue}
                       onChange={(e) => setManualEmailValue(e.target.value)}
                       placeholder="e.g. contact@business.com"
-                      className="input bg-[#181818] border-[#2E2E2E] text-xs text-white h-8 flex-1 font-mono"
+                      className="input bg-[#171723] border-[#2c2c42] text-xs text-white h-8 flex-1 font-mono"
                     />
                     <button
                       type="button"
@@ -1066,7 +1066,7 @@ export function PitchStudioView() {
           </div>
 
           {/* Portfolio Source Indicator (Section 5 Mandate) */}
-          <div className="rounded-[8px] bg-[#141414] border border-[#242424] p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+          <div className="rounded-[8px] bg-[#13131d] border border-[#232335] p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
             <div className="min-w-0">
               <div className="flex items-center gap-2">
                 <span className="text-[10px] uppercase font-mono tracking-wider font-semibold text-[#A1A1AA]">
@@ -1100,7 +1100,7 @@ export function PitchStudioView() {
                     href={userProfile.behanceUrl}
                     target="_blank"
                     rel="noreferrer"
-                    className="rounded-[6px] border border-[#2E2E2E] bg-[#1E1E1E] px-2.5 py-1 text-[11px] text-white inline-flex items-center gap-1 hover:bg-[#2A2A2A]"
+                    className="rounded-[6px] border border-[#2c2c42] bg-[#1d1d2c] px-2.5 py-1 text-[11px] text-white inline-flex items-center gap-1 hover:bg-[#29293d]"
                   >
                     <span>Open Profile</span>
                     <ExternalLink className="size-3" />
@@ -1112,7 +1112,7 @@ export function PitchStudioView() {
                       setActionNotice("✓ Portfolio link copied to clipboard!");
                       setTimeout(() => setActionNotice(null), 2000);
                     }}
-                    className="rounded-[6px] border border-[#2E2E2E] bg-[#1E1E1E] px-2.5 py-1 text-[11px] text-white inline-flex items-center gap-1 hover:bg-[#2A2A2A]"
+                    className="rounded-[6px] border border-[#2c2c42] bg-[#1d1d2c] px-2.5 py-1 text-[11px] text-white inline-flex items-center gap-1 hover:bg-[#29293d]"
                   >
                     <Copy className="size-3" />
                     <span>Copy Link</span>
@@ -1135,7 +1135,7 @@ export function PitchStudioView() {
               type="text"
               value={subject}
               onChange={(e) => setSubject(e.target.value)}
-              className="input bg-[#181818] border-[#262626] text-xs text-white h-9 font-medium"
+              className="input bg-[#171723] border-[#252538] text-xs text-white h-9 font-medium"
             />
           </div>
 
@@ -1153,12 +1153,12 @@ export function PitchStudioView() {
               rows={8}
               value={body}
               onChange={(e) => setBody(e.target.value)}
-              className="input h-auto p-3 text-xs font-mono leading-relaxed resize-none text-[#E4E4E7] rounded-[8px] bg-[#181818] border-[#262626]"
+              className="input h-auto p-3 text-xs font-mono leading-relaxed resize-none text-[#E4E4E7] rounded-[8px] bg-[#171723] border-[#252538]"
             />
           </div>
 
           {/* Optional Collapsed Follow-ups */}
-          <div className="rounded-[8px] bg-[#141414] border border-[#202020] p-3 space-y-2">
+          <div className="rounded-[8px] bg-[#13131d] border border-[#1f1f2e] p-3 space-y-2">
             <div className="flex items-center justify-between">
               <label htmlFor="followupToggle" className="text-xs text-white font-medium cursor-pointer flex items-center gap-2">
                 <input
@@ -1180,7 +1180,7 @@ export function PitchStudioView() {
                   <select
                     value={followUp1Days}
                     onChange={(e) => setFollowUp1Days(Number(e.target.value))}
-                    className="input bg-[#1A1A1A] border-[#2A2A2A] text-white text-xs h-8 mt-1"
+                    className="input bg-[#191926] border-[#29293d] text-white text-xs h-8 mt-1"
                   >
                     <option value={2}>After 2 Days</option>
                     <option value={3}>After 3 Days (Recommended)</option>
@@ -1192,7 +1192,7 @@ export function PitchStudioView() {
                   <select
                     value={followUp2Days}
                     onChange={(e) => setFollowUp2Days(Number(e.target.value))}
-                    className="input bg-[#1A1A1A] border-[#2A2A2A] text-white text-xs h-8 mt-1"
+                    className="input bg-[#191926] border-[#29293d] text-white text-xs h-8 mt-1"
                   >
                     <option value={5}>After 5 Days</option>
                     <option value={6}>After 6 Days (Recommended)</option>
@@ -1211,13 +1211,13 @@ export function PitchStudioView() {
           )}
 
           {/* Composer Action Controls */}
-          <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-[#1C1C1C]">
+          <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-[#1b1b29]">
             <div className="flex items-center gap-1.5">
               <button
                 type="button"
                 onClick={handleGenerateGemini}
                 disabled={isGenerating}
-                className="rounded-[6px] bg-[#1A1A1A] border border-[#2E2E2E] px-3 py-1.5 text-xs font-medium text-white hover:bg-[#222222] inline-flex items-center gap-1.5"
+                className="rounded-[6px] bg-[#191926] border border-[#2c2c42] px-3 py-1.5 text-xs font-medium text-white hover:bg-[#212132] inline-flex items-center gap-1.5"
               >
                 {isGenerating ? <Loader2 className="size-3 animate-spin" /> : <Sparkles className="size-3 text-[#10B981]" />}
                 <span>Generate with Gemini</span>
@@ -1226,7 +1226,7 @@ export function PitchStudioView() {
               <button
                 type="button"
                 onClick={handleCopy}
-                className="rounded-[6px] bg-[#1A1A1A] border border-[#2E2E2E] px-2.5 py-1.5 text-xs font-medium text-[#888888] hover:text-white"
+                className="rounded-[6px] bg-[#191926] border border-[#2c2c42] px-2.5 py-1.5 text-xs font-medium text-[#888888] hover:text-white"
                 title="Copy text"
               >
                 {copied ? <Check className="size-3 text-[#10B981]" /> : <Copy className="size-3" />}
@@ -1235,7 +1235,7 @@ export function PitchStudioView() {
               <button
                 type="button"
                 onClick={handleSaveDraft}
-                className="rounded-[6px] bg-[#1A1A1A] border border-[#2E2E2E] px-3 py-1.5 text-xs font-medium text-[#A1A1AA] hover:text-white"
+                className="rounded-[6px] bg-[#191926] border border-[#2c2c42] px-3 py-1.5 text-xs font-medium text-[#A1A1AA] hover:text-white"
               >
                 Save Draft
               </button>
@@ -1245,7 +1245,7 @@ export function PitchStudioView() {
               <button
                 type="button"
                 onClick={handleAddToSequence}
-                className="rounded-[6px] bg-[#1A1A1A] border border-[#2E2E2E] px-3 py-1.5 text-xs font-medium text-[#10B981] hover:bg-[#222222]"
+                className="rounded-[6px] bg-[#191926] border border-[#2c2c42] px-3 py-1.5 text-xs font-medium text-[#10B981] hover:bg-[#212132]"
               >
                 + Add to Sequence
               </button>

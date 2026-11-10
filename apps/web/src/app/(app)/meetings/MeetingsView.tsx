@@ -220,7 +220,7 @@ export function MeetingsView() {
       {/* ======================================================== */}
       {/* 1. TOP HEADER & GOOGLE CALENDAR CONNECTION BAR          */}
       {/* ======================================================== */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#222222] pb-5">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#212132] pb-5">
         <div>
           <h1 className="text-xl font-bold tracking-tight text-white flex items-center gap-2">
             <CalendarCheck className="size-5 text-[#10B981]" />
@@ -236,7 +236,7 @@ export function MeetingsView() {
             type="button"
             onClick={handleSyncNow}
             disabled={syncing}
-            className="rounded-[6px] border border-[#2A2A2A] bg-[#161616] px-3 py-1.5 text-xs font-medium text-white hover:bg-[#202020] inline-flex items-center gap-1.5 transition disabled:opacity-50"
+            className="rounded-[6px] border border-[#29293d] bg-[#15151f] px-3 py-1.5 text-xs font-medium text-white hover:bg-[#1f1f2e] inline-flex items-center gap-1.5 transition disabled:opacity-50"
           >
             <RefreshCw className={`size-3.5 ${syncing ? "animate-spin text-[#10B981]" : "text-[#888888]"}`} />
             <span>{syncing ? "Syncing..." : "Sync Now"}</span>
@@ -275,9 +275,9 @@ export function MeetingsView() {
       </div>
 
       {/* Verified Google Calendar Connection Card */}
-      <div className="rounded-[10px] border border-[#222222] bg-[#121212] p-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="rounded-[10px] border border-[#212132] bg-[#11111a] p-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex items-start gap-3">
-          <div className="grid size-9 shrink-0 place-items-center rounded-lg border border-[#262626] bg-[#181818]">
+          <div className="grid size-9 shrink-0 place-items-center rounded-lg border border-[#252538] bg-[#171723]">
             <Calendar className="size-4 text-[#10B981]" />
           </div>
           <div>
@@ -309,7 +309,7 @@ export function MeetingsView() {
             type="button"
             onClick={handleTestConnection}
             disabled={testing}
-            className="rounded-[6px] border border-[#262626] bg-[#181818] px-3 py-1.5 text-xs text-[#CCCCCC] hover:text-white hover:bg-[#222222] transition disabled:opacity-50"
+            className="rounded-[6px] border border-[#252538] bg-[#171723] px-3 py-1.5 text-xs text-[#CCCCCC] hover:text-white hover:bg-[#212132] transition disabled:opacity-50"
           >
             {testing ? "Testing API..." : "Test Connection"}
           </button>
@@ -318,7 +318,7 @@ export function MeetingsView() {
             href="https://calendar.google.com"
             target="_blank"
             rel="noopener noreferrer"
-            className="rounded-[6px] border border-[#262626] bg-[#181818] px-3 py-1.5 text-xs text-[#CCCCCC] hover:text-white hover:bg-[#222222] inline-flex items-center gap-1 transition"
+            className="rounded-[6px] border border-[#252538] bg-[#171723] px-3 py-1.5 text-xs text-[#CCCCCC] hover:text-white hover:bg-[#212132] inline-flex items-center gap-1 transition"
           >
             <span>Open Google Calendar</span>
             <ExternalLink className="size-3 text-[#777777]" />
@@ -326,7 +326,7 @@ export function MeetingsView() {
 
           <Link
             href="/settings"
-            className="rounded-[6px] border border-[#262626] bg-[#181818] px-3 py-1.5 text-xs text-[#10B981] hover:bg-[#222222] transition"
+            className="rounded-[6px] border border-[#252538] bg-[#171723] px-3 py-1.5 text-xs text-[#10B981] hover:bg-[#212132] transition"
           >
             Configure in Settings
           </Link>
@@ -334,7 +334,7 @@ export function MeetingsView() {
       </div>
 
       {statusMessage && (
-        <div className="rounded-[8px] bg-[#1A1A1A] border border-[#2E2E2E] p-3 text-xs text-[#E5E5E5] flex items-center justify-between">
+        <div className="rounded-[8px] bg-[#191926] border border-[#2c2c42] p-3 text-xs text-[#E5E5E5] flex items-center justify-between">
           <span>{statusMessage}</span>
           <button onClick={() => setStatusMessage(null)} className="text-[#888888] hover:text-white">
             <X className="size-3.5" />
@@ -346,7 +346,7 @@ export function MeetingsView() {
       {/* 2. FILTER TABS & SEARCH ROW                             */}
       {/* ======================================================== */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div className="flex items-center gap-1.5 bg-[#141414] p-1 rounded-lg border border-[#222222] text-xs">
+        <div className="flex items-center gap-1.5 bg-[#13131d] p-1 rounded-lg border border-[#212132] text-xs">
           {(["UPCOMING", "TODAY", "THIS_WEEK", "PAST", "ALL"] as const).map((tab) => {
             const labels = {
               UPCOMING: "Upcoming",
@@ -363,7 +363,7 @@ export function MeetingsView() {
                 onClick={() => setFilterTab(tab)}
                 className={`px-3 py-1 rounded-[6px] font-medium transition ${
                   isActive
-                    ? "bg-[#222222] text-white shadow-sm font-semibold"
+                    ? "bg-[#212132] text-white shadow-sm font-semibold"
                     : "text-[#888888] hover:text-[#CCCCCC]"
                 }`}
               >
@@ -380,7 +380,7 @@ export function MeetingsView() {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search meetings by client or company..."
-            className="input bg-[#141414] border-[#222222] pl-8 text-xs text-white h-8 w-full rounded-md"
+            className="input bg-[#13131d] border-[#212132] pl-8 text-xs text-white h-8 w-full rounded-md"
           />
         </div>
       </div>
@@ -389,12 +389,12 @@ export function MeetingsView() {
       {/* 3. MEETINGS LIST OR GENUINE EMPTY STATE                  */}
       {/* ======================================================== */}
       {loading ? (
-        <div className="rounded-[10px] border border-[#222222] bg-[#121212] p-12 text-center text-xs text-[#777777]">
+        <div className="rounded-[10px] border border-[#212132] bg-[#11111a] p-12 text-center text-xs text-[#777777]">
           Loading scheduled meetings from database and Google Calendar...
         </div>
       ) : filteredMeetings.length === 0 ? (
-        <div className="rounded-[10px] border border-[#222222] bg-[#121212] p-12 text-center space-y-3">
-          <div className="grid size-12 place-items-center rounded-full bg-[#181818] border border-[#262626] mx-auto text-[#666666]">
+        <div className="rounded-[10px] border border-[#212132] bg-[#11111a] p-12 text-center space-y-3">
+          <div className="grid size-12 place-items-center rounded-full bg-[#171723] border border-[#252538] mx-auto text-[#666666]">
             <CalendarCheck className="size-6" />
           </div>
           <h3 className="text-sm font-semibold text-white">No upcoming meetings</h3>
@@ -405,7 +405,7 @@ export function MeetingsView() {
             <button
               type="button"
               onClick={() => setShowModal(true)}
-              className="rounded-[6px] bg-[#1E1E1E] border border-[#2A2A2A] px-3.5 py-1.5 text-xs text-white hover:bg-[#252525] inline-flex items-center gap-1.5 transition"
+              className="rounded-[6px] bg-[#1d1d2c] border border-[#29293d] px-3.5 py-1.5 text-xs text-white hover:bg-[#252525] inline-flex items-center gap-1.5 transition"
             >
               <Plus className="size-3.5 text-[#10B981]" />
               <span>Schedule Strategy Call</span>
@@ -431,7 +431,7 @@ export function MeetingsView() {
             return (
               <div
                 key={m.id}
-                className="rounded-[10px] border border-[#202020] bg-[#121212] hover:border-[#2A2A2A] p-4 transition flex flex-col md:flex-row md:items-center justify-between gap-4"
+                className="rounded-[10px] border border-[#1f1f2e] bg-[#11111a] hover:border-[#29293d] p-4 transition flex flex-col md:flex-row md:items-center justify-between gap-4"
               >
                 <div className="space-y-1.5">
                   <div className="flex flex-wrap items-center gap-2">
@@ -486,7 +486,7 @@ export function MeetingsView() {
                       href={m.googleMeetUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="rounded-[6px] border border-[#2A2A2A] bg-[#1A1A1A] hover:bg-[#252525] px-3 py-1.5 text-xs font-medium text-white inline-flex items-center gap-1.5 transition"
+                      className="rounded-[6px] border border-[#29293d] bg-[#191926] hover:bg-[#252525] px-3 py-1.5 text-xs font-medium text-white inline-flex items-center gap-1.5 transition"
                     >
                       <Video className="size-3.5 text-[#10B981]" />
                       <span>Join Meet</span>
@@ -496,7 +496,7 @@ export function MeetingsView() {
                   <button
                     type="button"
                     onClick={() => handleDeleteMeeting(m.id)}
-                    className="rounded-[6px] border border-transparent p-1.5 text-[#666666] hover:text-[#EF4444] hover:bg-[#202020] transition"
+                    className="rounded-[6px] border border-transparent p-1.5 text-[#666666] hover:text-[#EF4444] hover:bg-[#1f1f2e] transition"
                     title="Remove Meeting"
                   >
                     <Trash2 className="size-3.5" />
@@ -513,8 +513,8 @@ export function MeetingsView() {
       {/* ======================================================== */}
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-          <div className="w-full max-w-lg rounded-xl border border-[#2A2A2A] bg-[#141414] shadow-2xl p-6 space-y-4">
-            <div className="flex items-center justify-between border-b border-[#222222] pb-3">
+          <div className="w-full max-w-lg rounded-xl border border-[#29293d] bg-[#13131d] shadow-2xl p-6 space-y-4">
+            <div className="flex items-center justify-between border-b border-[#212132] pb-3">
               <h2 className="text-sm font-semibold text-white flex items-center gap-2">
                 <CalendarCheck className="size-4 text-[#10B981]" />
                 Schedule Strategy Session
@@ -540,7 +540,7 @@ export function MeetingsView() {
                     value={newClientName}
                     onChange={(e) => setNewClientName(e.target.value)}
                     placeholder="e.g. Marcus Vance"
-                    className="input bg-[#1A1A1A] border-[#2A2A2A] text-xs text-white h-9"
+                    className="input bg-[#191926] border-[#29293d] text-xs text-white h-9"
                   />
                 </div>
                 <div>
@@ -552,7 +552,7 @@ export function MeetingsView() {
                     value={newClientEmail}
                     onChange={(e) => setNewClientEmail(e.target.value)}
                     placeholder="marcus@company.com"
-                    className="input bg-[#1A1A1A] border-[#2A2A2A] text-xs text-white h-9"
+                    className="input bg-[#191926] border-[#29293d] text-xs text-white h-9"
                   />
                 </div>
               </div>
@@ -566,7 +566,7 @@ export function MeetingsView() {
                   value={newBusinessName}
                   onChange={(e) => setNewBusinessName(e.target.value)}
                   placeholder="e.g. Apex Luxury Properties"
-                  className="input bg-[#1A1A1A] border-[#2A2A2A] text-xs text-white h-9"
+                  className="input bg-[#191926] border-[#29293d] text-xs text-white h-9"
                 />
               </div>
 
@@ -579,7 +579,7 @@ export function MeetingsView() {
                     type="date"
                     value={newDate}
                     onChange={(e) => setNewDate(e.target.value)}
-                    className="input bg-[#1A1A1A] border-[#2A2A2A] text-xs text-white h-9"
+                    className="input bg-[#191926] border-[#29293d] text-xs text-white h-9"
                   />
                 </div>
                 <div>
@@ -590,7 +590,7 @@ export function MeetingsView() {
                     type="time"
                     value={newTime}
                     onChange={(e) => setNewTime(e.target.value)}
-                    className="input bg-[#1A1A1A] border-[#2A2A2A] text-xs text-white h-9"
+                    className="input bg-[#191926] border-[#29293d] text-xs text-white h-9"
                   />
                 </div>
                 <div>
@@ -600,7 +600,7 @@ export function MeetingsView() {
                   <select
                     value={newDuration}
                     onChange={(e) => setNewDuration(e.target.value)}
-                    className="input bg-[#1A1A1A] border-[#2A2A2A] text-xs text-white h-9"
+                    className="input bg-[#191926] border-[#29293d] text-xs text-white h-9"
                   >
                     <option value="15">15 mins</option>
                     <option value="30">30 mins</option>
@@ -619,7 +619,7 @@ export function MeetingsView() {
                   value={newNotes}
                   onChange={(e) => setNewNotes(e.target.value)}
                   placeholder="Scope review, design retainer discussion, and creative showreel walkthrough."
-                  className="input bg-[#1A1A1A] border-[#2A2A2A] text-xs text-white py-2"
+                  className="input bg-[#191926] border-[#29293d] text-xs text-white py-2"
                 />
               </div>
 
@@ -635,11 +635,11 @@ export function MeetingsView() {
                 </span>
               </label>
 
-              <div className="flex items-center justify-end gap-2 pt-3 border-t border-[#222222]">
+              <div className="flex items-center justify-end gap-2 pt-3 border-t border-[#212132]">
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}
-                  className="rounded-[6px] border border-[#2A2A2A] bg-transparent px-3 py-1.5 text-xs text-[#888888] hover:text-white"
+                  className="rounded-[6px] border border-[#29293d] bg-transparent px-3 py-1.5 text-xs text-[#888888] hover:text-white"
                 >
                   Cancel
                 </button>

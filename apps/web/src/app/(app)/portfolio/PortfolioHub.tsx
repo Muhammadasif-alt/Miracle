@@ -230,7 +230,7 @@ export function PortfolioHub() {
   return (
     <div className="space-y-6 max-w-5xl mx-auto pb-16">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#222222] pb-5">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#212132] pb-5">
         <div>
           <PageHeader
             title="My Behance Portfolio"
@@ -249,8 +249,8 @@ export function PortfolioHub() {
       </div>
 
       {/* Primary Behance Profile Setup Card */}
-      <div className="rounded-[14px] border border-[#222222] bg-[#121212] p-6 space-y-5">
-        <div className="flex items-center justify-between border-b border-[#222222] pb-4">
+      <div className="rounded-[14px] border border-[#212132] bg-[#11111a] p-6 space-y-5">
+        <div className="flex items-center justify-between border-b border-[#212132] pb-4">
           <div className="flex items-center gap-3">
             <span className="grid size-10 place-items-center rounded-[10px] bg-white text-black font-black text-sm">
               Bē
@@ -275,7 +275,7 @@ export function PortfolioHub() {
                 value={behanceUrl}
                 onChange={(e) => setBehanceUrl(e.target.value)}
                 placeholder="https://www.behance.net/your-agency"
-                className="input bg-[#181818] border-[#2A2A2A] text-white text-xs pr-10"
+                className="input bg-[#171723] border-[#29293d] text-white text-xs pr-10"
               />
               <a
                 href={behanceUrl}
@@ -296,7 +296,7 @@ export function PortfolioHub() {
               value={studioName}
               onChange={(e) => setStudioName(e.target.value)}
               placeholder="Miracle Creative Studio"
-              className="input mt-1.5 bg-[#181818] border-[#2A2A2A] text-white text-xs"
+              className="input mt-1.5 bg-[#171723] border-[#29293d] text-white text-xs"
             />
           </div>
         </div>
@@ -307,14 +307,14 @@ export function PortfolioHub() {
             type="text"
             value={coreServices}
             onChange={(e) => setCoreServices(e.target.value)}
-            className="input mt-1.5 bg-[#181818] border-[#2A2A2A] text-white text-xs"
+            className="input mt-1.5 bg-[#171723] border-[#29293d] text-white text-xs"
           />
         </div>
       </div>
 
       {/* Add New Case Study Form */}
-      <form onSubmit={handleAddProject} className="rounded-[14px] border border-[#222222] bg-[#121212] p-6 space-y-4">
-        <div className="flex items-center justify-between border-b border-[#222222] pb-3">
+      <form onSubmit={handleAddProject} className="rounded-[14px] border border-[#212132] bg-[#11111a] p-6 space-y-4">
+        <div className="flex items-center justify-between border-b border-[#212132] pb-3">
           <h2 className="text-sm font-semibold text-white flex items-center gap-2">
             <Plus className="size-4 text-[#10B981]" />
             <span>Add Specific Behance Case Study</span>
@@ -330,7 +330,7 @@ export function PortfolioHub() {
               placeholder="e.g. Modern Dental Clinic Rebrand & Signage"
               value={newTitle}
               onChange={(e) => setNewTitle(e.target.value)}
-              className="input mt-1.5 bg-[#181818] border-[#2A2A2A] text-white text-xs"
+              className="input mt-1.5 bg-[#171723] border-[#29293d] text-white text-xs"
             />
           </div>
 
@@ -341,7 +341,7 @@ export function PortfolioHub() {
               placeholder="https://www.behance.net/gallery/..."
               value={newUrl}
               onChange={(e) => setNewUrl(e.target.value)}
-              className="input mt-1.5 bg-[#181818] border-[#2A2A2A] text-white text-xs"
+              className="input mt-1.5 bg-[#171723] border-[#29293d] text-white text-xs"
             />
           </div>
 
@@ -350,7 +350,7 @@ export function PortfolioHub() {
             <select
               value={newCategory}
               onChange={(e) => setNewCategory(e.target.value as any)}
-              className="input mt-1.5 bg-[#181818] border-[#2A2A2A] text-white text-xs"
+              className="input mt-1.5 bg-[#171723] border-[#29293d] text-white text-xs"
             >
               <option value="Graphic Design & Branding">Graphic Design & Branding</option>
               <option value="Video Editing & Showreels">Video Editing & Showreels</option>
@@ -364,7 +364,7 @@ export function PortfolioHub() {
             <select
               value={newNiche}
               onChange={(e) => setNewNiche(e.target.value as any)}
-              className="input mt-1.5 bg-[#181818] border-[#2A2A2A] text-white text-xs"
+              className="input mt-1.5 bg-[#171723] border-[#29293d] text-white text-xs"
             >
               <option value="All Niches">All Niches (Universal)</option>
               <option value="Real Estate">Real Estate Agents & Luxury Brokers</option>
@@ -383,14 +383,14 @@ export function PortfolioHub() {
             placeholder="e.g. Generated +45% booking conversion through refined luxury visual identity"
             value={newDesc}
             onChange={(e) => setNewDesc(e.target.value)}
-            className="input mt-1.5 bg-[#181818] border-[#2A2A2A] text-white text-xs"
+            className="input mt-1.5 bg-[#171723] border-[#29293d] text-white text-xs"
           />
         </div>
 
         <div className="flex justify-end pt-2">
           <button
             type="submit"
-            className="rounded-[8px] bg-[#1E1E1E] border border-[#333333] px-4 py-2 text-xs font-semibold text-white hover:bg-[#252525] transition-all"
+            className="rounded-[8px] bg-[#1d1d2c] border border-[#313147] px-4 py-2 text-xs font-semibold text-white hover:bg-[#252525] transition-all"
           >
             + Add Case Study to Vault
           </button>
@@ -398,15 +398,15 @@ export function PortfolioHub() {
       </form>
 
       {/* Case Studies List */}
-      <div className="rounded-[14px] border border-[#222222] bg-[#121212] p-6 space-y-4">
-        <div className="flex items-center justify-between border-b border-[#222222] pb-3">
+      <div className="rounded-[14px] border border-[#212132] bg-[#11111a] p-6 space-y-4">
+        <div className="flex items-center justify-between border-b border-[#212132] pb-3">
           <div>
             <h2 className="text-sm font-semibold text-white">Configured Behance Projects ({projects.length})</h2>
             <p className="text-xs text-[#888888]">These exact URLs will be referenced in your outreach emails based on prospect industry.</p>
           </div>
         </div>
 
-        <div className="divide-y divide-[#222222]">
+        <div className="divide-y divide-[#212132]">
           {projects.map((proj) => (
             <div key={proj.id} className="py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div className="space-y-1 min-w-0">
@@ -435,14 +435,14 @@ export function PortfolioHub() {
               </div>
 
               <div className="flex items-center gap-2 shrink-0">
-                <span className="text-[10px] text-[#A1A1AA] bg-[#181818] border border-[#282828] px-2.5 py-1 rounded-[6px]">
+                <span className="text-[10px] text-[#A1A1AA] bg-[#171723] border border-[#27273a] px-2.5 py-1 rounded-[6px]">
                   {proj.targetNiche}
                 </span>
 
                 <button
                   type="button"
                   onClick={() => handleToggleFeatured(proj.id)}
-                  className={`p-1.5 rounded-[6px] border ${proj.featured ? "text-[#F59E0B] border-[#F59E0B]/30 bg-[#F59E0B]/10" : "text-[#71717A] border-[#2A2A2A] hover:text-white"}`}
+                  className={`p-1.5 rounded-[6px] border ${proj.featured ? "text-[#F59E0B] border-[#F59E0B]/30 bg-[#F59E0B]/10" : "text-[#71717A] border-[#29293d] hover:text-white"}`}
                   title="Toggle Featured"
                 >
                   <Star className="size-3.5" />
@@ -451,7 +451,7 @@ export function PortfolioHub() {
                 <button
                   type="button"
                   onClick={() => handleRemoveProject(proj.id)}
-                  className="p-1.5 rounded-[6px] border border-[#2A2A2A] text-[#71717A] hover:text-[#EF4444] hover:border-[#EF4444]/30"
+                  className="p-1.5 rounded-[6px] border border-[#29293d] text-[#71717A] hover:text-[#EF4444] hover:border-[#EF4444]/30"
                   title="Remove Project"
                 >
                   <Trash2 className="size-3.5" />

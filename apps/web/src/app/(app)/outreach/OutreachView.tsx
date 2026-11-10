@@ -569,9 +569,9 @@ export function OutreachView() {
       </PageHeader>
 
       {/* SENDER EMAIL & VAULT STATUS BAR (Semantic Badges) */}
-      <div className="card p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-[#121212] border border-[#2A2A2A]">
+      <div className="card p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-[#11111a] border border-[#29293d]">
         <div className="flex items-center gap-3">
-          <div className="p-2.5 rounded-[12px] bg-[#1A1A1A] border border-[#2A2A2A]">
+          <div className="p-2.5 rounded-[12px] bg-[#191926] border border-[#29293d]">
             <Mail className="size-4 text-[#10B981]" />
           </div>
           <div className="text-xs">
@@ -752,13 +752,13 @@ export function OutreachView() {
       )}
 
       {/* Sub-Tab Navigation */}
-      <div className="flex items-center gap-2 border-b border-[#2A2A2A] pb-1">
+      <div className="flex items-center gap-2 border-b border-[#29293d] pb-1">
         <button
           type="button"
           onClick={() => setActiveSubTab("campaigns")}
           className={`inline-flex items-center gap-2 px-4 py-2.5 text-xs font-medium rounded-t-[10px] transition-all border-b-2 ${
             activeSubTab === "campaigns"
-              ? "border-[#10B981] text-white bg-[#121212] font-semibold"
+              ? "border-[#10B981] text-white bg-[#11111a] font-semibold"
               : "border-transparent text-[#AAAAAA] hover:text-white"
           }`}
         >
@@ -771,13 +771,13 @@ export function OutreachView() {
           onClick={() => setActiveSubTab("inbox")}
           className={`inline-flex items-center gap-2 px-4 py-2.5 text-xs font-medium rounded-t-[10px] transition-all border-b-2 ${
             activeSubTab === "inbox"
-              ? "border-[#10B981] text-white bg-[#121212] font-semibold"
+              ? "border-[#10B981] text-white bg-[#11111a] font-semibold"
               : "border-transparent text-[#AAAAAA] hover:text-white"
           }`}
         >
           <Inbox className="size-3.5" />
           <span>Client Reply Inbox</span>
-          <span className="text-[10px] bg-[#1A1A1A] border border-[#2A2A2A] text-white font-mono px-1.5 py-0.5 rounded-full">
+          <span className="text-[10px] bg-[#191926] border border-[#29293d] text-white font-mono px-1.5 py-0.5 rounded-full">
             {inboxList.filter((m) => m.status === "PENDING").length}
           </span>
         </button>
@@ -787,13 +787,13 @@ export function OutreachView() {
           onClick={() => setActiveSubTab("logs")}
           className={`inline-flex items-center gap-2 px-4 py-2.5 text-xs font-medium rounded-t-[10px] transition-all border-b-2 ${
             activeSubTab === "logs"
-              ? "border-[#10B981] text-white bg-[#121212] font-semibold"
+              ? "border-[#10B981] text-white bg-[#11111a] font-semibold"
               : "border-transparent text-[#AAAAAA] hover:text-white"
           }`}
         >
           <Activity className="size-3.5 text-[#10B981]" />
           <span>Tracking & AI Insights</span>
-          <span className="text-[10px] bg-[#1A1A1A] border border-[#2A2A2A] text-white font-mono px-1.5 py-0.5 rounded-full">
+          <span className="text-[10px] bg-[#191926] border border-[#29293d] text-white font-mono px-1.5 py-0.5 rounded-full">
             {deliveryLogs.length}
           </span>
         </button>
@@ -829,22 +829,22 @@ export function OutreachView() {
                     onClick={() => handleSelectTemplate(tmpl)}
                     className={`p-4 rounded-[14px] text-left border transition-all flex flex-col justify-between ${
                       isSelected
-                        ? "bg-[#1A1A1A] border-[#10B981] text-white shadow-md ring-1 ring-[#10B981]/50"
-                        : "bg-[#121212] border-[#2A2A2A] text-[#AAAAAA] hover:border-[#3A3A3A] hover:text-white"
+                        ? "bg-[#191926] border-[#10B981] text-white shadow-md ring-1 ring-[#10B981]/50"
+                        : "bg-[#11111a] border-[#29293d] text-[#AAAAAA] hover:border-[#38384f] hover:text-white"
                     }`}
                   >
                     <div className="space-y-2">
                       <div className="flex items-center justify-between">
-                        <div className="p-2 rounded-[8px] bg-[#1A1A1A] text-white">
+                        <div className="p-2 rounded-[8px] bg-[#191926] text-white">
                           <Icon className="size-4" />
                         </div>
-                        <span className="text-[10px] font-mono uppercase bg-[#1A1A1A] px-2 py-0.5 rounded-[6px] border border-[#2A2A2A] text-[#10B981]">
+                        <span className="text-[10px] font-mono uppercase bg-[#191926] px-2 py-0.5 rounded-[6px] border border-[#29293d] text-[#10B981]">
                           {tmpl.service}
                         </span>
                       </div>
                       <div className="font-semibold text-xs text-white leading-snug">{tmpl.name}</div>
                     </div>
-                    <div className="text-[10px] text-[#777777] mt-3 pt-2 border-t border-[#2A2A2A] flex items-center justify-between">
+                    <div className="text-[10px] text-[#777777] mt-3 pt-2 border-t border-[#29293d] flex items-center justify-between">
                       <span>Includes 4-step sequence</span>
                       <span className="text-[#10B981] font-semibold">Auto-Linked</span>
                     </div>
@@ -857,8 +857,8 @@ export function OutreachView() {
           {/* Email Sequence Editor & Live Preview */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
             {/* Left: Customizer & Spam Guard */}
-            <div className="lg:col-span-7 card p-6 space-y-4 bg-[#121212] border border-[#2A2A2A]">
-              <div className="flex items-center justify-between pb-2 border-b border-[#2A2A2A]">
+            <div className="lg:col-span-7 card p-6 space-y-4 bg-[#11111a] border border-[#29293d]">
+              <div className="flex items-center justify-between pb-2 border-b border-[#29293d]">
                 <h3 className="text-sm font-semibold text-white flex items-center gap-2">
                   <Sparkles className="size-4 text-[#10B981]" />
                   <span>Sequence Customizer</span>
@@ -906,7 +906,7 @@ export function OutreachView() {
                     type="text"
                     value={customSubject}
                     onChange={(e) => setCustomSubject(e.target.value)}
-                    className="input h-10 text-xs rounded-[10px] bg-[#1A1A1A] border-[#2A2A2A]"
+                    className="input h-10 text-xs rounded-[10px] bg-[#191926] border-[#29293d]"
                   />
                 </div>
 
@@ -923,26 +923,26 @@ export function OutreachView() {
                     rows={8}
                     value={customBody}
                     onChange={(e) => setCustomBody(e.target.value)}
-                    className="input h-auto p-3 text-xs font-mono leading-relaxed resize-none rounded-[10px] bg-[#1A1A1A] border-[#2A2A2A]"
+                    className="input h-auto p-3 text-xs font-mono leading-relaxed resize-none rounded-[10px] bg-[#191926] border-[#29293d]"
                   />
                 </div>
               </div>
 
               {/* 4-Step Sequence Timeline */}
-              <div className="pt-3 border-t border-[#2A2A2A] space-y-2">
+              <div className="pt-3 border-t border-[#29293d] space-y-2">
                 <span className="text-[10px] font-semibold uppercase tracking-wider text-[#AAAAAA] block">
                   Follow-Up Sequence Schedule (Stops on Reply)
                 </span>
                 <div className="space-y-1.5 text-xs text-[#AAAAAA]">
-                  <div className="p-2.5 rounded-[10px] bg-[#1A1A1A] border border-[#2A2A2A] flex items-center justify-between">
+                  <div className="p-2.5 rounded-[10px] bg-[#191926] border border-[#29293d] flex items-center justify-between">
                     <span><strong>Step 1:</strong> Initial Visual Pitch (Day 0)</span>
                     <span className="text-[10px] text-[#10B981] font-semibold">Primary</span>
                   </div>
-                  <div className="p-2.5 rounded-[10px] bg-[#1A1A1A] border border-[#2A2A2A] flex items-center justify-between">
+                  <div className="p-2.5 rounded-[10px] bg-[#191926] border border-[#29293d] flex items-center justify-between">
                     <span><strong>Step 2:</strong> {selectedTemplate.followUp1.replace("{{calendarUrl}}", vault.calendarBookingUrl || "")}</span>
                     <span className="text-[10px] text-[#777777]">Day 3</span>
                   </div>
-                  <div className="p-2.5 rounded-[10px] bg-[#1A1A1A] border border-[#2A2A2A] flex items-center justify-between">
+                  <div className="p-2.5 rounded-[10px] bg-[#191926] border border-[#29293d] flex items-center justify-between">
                     <span><strong>Step 3:</strong> {selectedTemplate.followUp2}</span>
                     <span className="text-[10px] text-[#777777]">Day 6</span>
                   </div>
@@ -988,7 +988,7 @@ export function OutreachView() {
             </div>
 
             {/* Right: Real-time Rendered Preview & Auto-Injected Links */}
-            <div className="lg:col-span-5 card p-6 space-y-4 bg-[#121212] border border-[#2A2A2A]">
+            <div className="lg:col-span-5 card p-6 space-y-4 bg-[#11111a] border border-[#29293d]">
               <div className="flex items-center justify-between">
                 <span className="text-[10px] uppercase font-mono font-medium text-[#777777]">
                   Live Preview (Client Recipient View)
@@ -999,8 +999,8 @@ export function OutreachView() {
                 </span>
               </div>
 
-              <div className="rounded-[12px] border border-[#2A2A2A] bg-[#1A1A1A] p-4 space-y-3 text-xs">
-                <div className="space-y-1 pb-3 border-b border-[#2A2A2A]">
+              <div className="rounded-[12px] border border-[#29293d] bg-[#191926] p-4 space-y-3 text-xs">
+                <div className="space-y-1 pb-3 border-b border-[#29293d]">
                   <div className="text-[#777777]">
                     To: <span className="text-white font-medium">{targetLead.contactName || targetLead.businessName} ({targetLead.email})</span>
                   </div>
@@ -1018,7 +1018,7 @@ export function OutreachView() {
                     .replace(/{{calendarUrl}}/g, vault.calendarBookingUrl || "")}
                 </div>
 
-                <div className="pt-3 border-t border-[#2A2A2A] space-y-1 text-[11px]">
+                <div className="pt-3 border-t border-[#29293d] space-y-1 text-[11px]">
                   <div className="flex items-center justify-between text-[#777777]">
                     <span>Injected Proof Reel:</span>
                     <a
@@ -1051,7 +1051,7 @@ export function OutreachView() {
       {/* ── Sub-Tab 2: Client Reply Inbox ── */}
       {activeSubTab === "inbox" && (
         <div className="space-y-6">
-          <div className="card p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-[#121212] border border-[#2A2A2A]">
+          <div className="card p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-[#11111a] border border-[#29293d]">
             <div className="space-y-0.5">
               <div className="flex items-center gap-2 font-semibold text-xs text-white">
                 <Bot className="size-4 text-[#10B981]" />
@@ -1062,7 +1062,7 @@ export function OutreachView() {
               </p>
             </div>
 
-            <div className="flex items-center gap-1.5 bg-[#1A1A1A] p-1 rounded-[10px] border border-[#2A2A2A]">
+            <div className="flex items-center gap-1.5 bg-[#191926] p-1 rounded-[10px] border border-[#29293d]">
               <button
                 type="button"
                 onClick={() => setAutoReplyMode("APPROVAL")}
@@ -1100,8 +1100,8 @@ export function OutreachView() {
                     onClick={() => handleSelectInbox(msg)}
                     className={`w-full p-4 rounded-[14px] text-left border transition-all space-y-2 ${
                       isSelected
-                        ? "bg-[#1A1A1A] border-[#10B981] shadow-md ring-1 ring-[#10B981]/50"
-                        : "bg-[#121212] border-[#2A2A2A] hover:border-[#3A3A3A]"
+                        ? "bg-[#191926] border-[#10B981] shadow-md ring-1 ring-[#10B981]/50"
+                        : "bg-[#11111a] border-[#29293d] hover:border-[#38384f]"
                     }`}
                   >
                     <div className="flex items-center justify-between text-xs">
@@ -1121,8 +1121,8 @@ export function OutreachView() {
 
             {/* Right Column: Suggested Reply */}
             {selectedInbox && (
-              <div className="lg:col-span-7 card p-6 space-y-4 bg-[#121212] border border-[#2A2A2A]">
-                <div className="space-y-1 pb-3 border-b border-[#2A2A2A]">
+              <div className="lg:col-span-7 card p-6 space-y-4 bg-[#11111a] border border-[#29293d]">
+                <div className="space-y-1 pb-3 border-b border-[#29293d]">
                   <h4 className="text-sm font-semibold text-white">
                     Suggested Response to {selectedInbox.senderName}
                   </h4>
@@ -1136,13 +1136,13 @@ export function OutreachView() {
                     rows={8}
                     value={replyText}
                     onChange={(e) => setReplyText(e.target.value)}
-                    className="input h-auto p-3 text-xs font-mono leading-relaxed resize-none rounded-[10px] bg-[#1A1A1A] border-[#2A2A2A]"
+                    className="input h-auto p-3 text-xs font-mono leading-relaxed resize-none rounded-[10px] bg-[#191926] border-[#29293d]"
                   />
                 </div>
 
                 {/* Live Google Meet Sync Card if generated */}
                 {scheduledMeetData && (
-                  <div className="p-3.5 rounded-[12px] bg-[#181818] border border-[#10B981]/40 space-y-2">
+                  <div className="p-3.5 rounded-[12px] bg-[#171723] border border-[#10B981]/40 space-y-2">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         <span className="size-2 rounded-full bg-[#10B981] animate-pulse" />
@@ -1160,7 +1160,7 @@ export function OutreachView() {
                         href={scheduledMeetData.meetLink}
                         target="_blank"
                         rel="noreferrer"
-                        className="btn-secondary h-8 px-3 text-xs font-semibold rounded-[8px] inline-flex items-center gap-1.5 bg-[#222222] border-[#333333] hover:border-white text-white transition-all"
+                        className="btn-secondary h-8 px-3 text-xs font-semibold rounded-[8px] inline-flex items-center gap-1.5 bg-[#212132] border-[#313147] hover:border-white text-white transition-all"
                       >
                         <span>Join Google Meet</span>
                         <ExternalLink className="size-3" />
@@ -1169,7 +1169,7 @@ export function OutreachView() {
                         href={scheduledMeetData.googleCalendarUrl}
                         target="_blank"
                         rel="noreferrer"
-                        className="btn-secondary h-8 px-3 text-xs font-semibold rounded-[8px] inline-flex items-center gap-1.5 bg-[#222222] border-[#333333] hover:border-white text-white transition-all"
+                        className="btn-secondary h-8 px-3 text-xs font-semibold rounded-[8px] inline-flex items-center gap-1.5 bg-[#212132] border-[#313147] hover:border-white text-white transition-all"
                       >
                         <span>Open in Google Calendar</span>
                         <ExternalLink className="size-3" />
@@ -1184,7 +1184,7 @@ export function OutreachView() {
                     type="button"
                     onClick={handleBookGoogleMeet}
                     disabled={isBookingMeet}
-                    className="btn-secondary h-10 px-4 text-xs font-semibold inline-flex items-center gap-2 rounded-[10px] bg-[#1A1A1A] border-[#333333] hover:border-[#10B981] text-white w-full sm:w-auto"
+                    className="btn-secondary h-10 px-4 text-xs font-semibold inline-flex items-center gap-2 rounded-[10px] bg-[#191926] border-[#313147] hover:border-[#10B981] text-white w-full sm:w-auto"
                   >
                     {isBookingMeet ? (
                       <>
@@ -1247,7 +1247,7 @@ export function OutreachView() {
               {learningInsights.map((ins) => (
                 <div
                   key={ins.id}
-                  className="card p-5 bg-[#121212] border border-[#2A2A2A] rounded-[16px] space-y-3 shadow-lg"
+                  className="card p-5 bg-[#11111a] border border-[#29293d] rounded-[16px] space-y-3 shadow-lg"
                 >
                   <div className="flex items-center justify-between">
                     <span className="badge badge-success text-[10px]">
@@ -1259,7 +1259,7 @@ export function OutreachView() {
                     <h4 className="text-xs font-bold text-white leading-snug">{ins.headline}</h4>
                     <p className="text-[11px] text-[#AAAAAA] mt-1 leading-relaxed">{ins.description}</p>
                   </div>
-                  <div className="pt-2 border-t border-[#2A2A2A] text-[10px] text-[#10B981] font-medium">
+                  <div className="pt-2 border-t border-[#29293d] text-[10px] text-[#10B981] font-medium">
                     {ins.appliedRule}
                   </div>
                 </div>
@@ -1268,7 +1268,7 @@ export function OutreachView() {
           </div>
 
           {/* Multi-Signal Email Tracking Table */}
-          <div className="card p-6 space-y-4 bg-[#121212] border border-[#2A2A2A]">
+          <div className="card p-6 space-y-4 bg-[#11111a] border border-[#29293d]">
             <div className="flex items-center justify-between">
               <div>
                 <h3 className="text-sm font-semibold text-white">Live Email Tracking Events</h3>
@@ -1290,9 +1290,9 @@ export function OutreachView() {
               )}
             </div>
 
-            <div className="overflow-x-auto rounded-[12px] border border-[#2A2A2A]">
+            <div className="overflow-x-auto rounded-[12px] border border-[#29293d]">
               <table className="w-full text-xs text-left">
-                <thead className="bg-[#1A1A1A] border-b border-[#2A2A2A] text-[#AAAAAA] font-semibold text-[10px] uppercase tracking-wider">
+                <thead className="bg-[#191926] border-b border-[#29293d] text-[#AAAAAA] font-semibold text-[10px] uppercase tracking-wider">
                   <tr>
                     <th className="px-4 py-3">Recipient</th>
                     <th className="px-4 py-3">Subject Formula</th>
@@ -1302,15 +1302,15 @@ export function OutreachView() {
                     <th className="px-4 py-3">Status</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#2A2A2A]">
+                <tbody className="divide-y divide-[#29293d]">
                   {learningEvents.map((ev) => (
-                    <tr key={ev.trackingId} className="hover:bg-[#1A1A1A]">
+                    <tr key={ev.trackingId} className="hover:bg-[#191926]">
                       <td className="px-4 py-3">
                         <div className="font-semibold text-white">{ev.businessName}</div>
                         <div className="text-[11px] text-[#777777]">{ev.recipientEmail}</div>
                       </td>
                       <td className="px-4 py-3">
-                        <span className="badge text-[10px] bg-[#1A1A1A] border border-[#2A2A2A] text-[#AAAAAA]">
+                        <span className="badge text-[10px] bg-[#191926] border border-[#29293d] text-[#AAAAAA]">
                           {ev.subjectPattern}
                         </span>
                       </td>
@@ -1350,7 +1350,7 @@ export function OutreachView() {
                               ? "badge-success"
                               : ev.status === "OPENED" || ev.status === "CLICKED_PORTFOLIO"
                               ? "bg-[#10B981]/15 text-[#10B981] border border-[#10B981]/30"
-                              : "bg-[#1A1A1A] border border-[#2A2A2A] text-[#AAAAAA]"
+                              : "bg-[#191926] border border-[#29293d] text-[#AAAAAA]"
                           }`}
                         >
                           {ev.status}

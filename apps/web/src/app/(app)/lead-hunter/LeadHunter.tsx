@@ -334,34 +334,34 @@ export function LeadHunter() {
       />
 
       {/* 4 Pipeline Milestones */}
-      <section className="card p-5 space-y-3 bg-[#121212] border border-[#2A2A2A]">
+      <section className="card p-5 space-y-3 bg-[#11111a] border border-[#29293d]">
         <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-[#AAAAAA]">
           <span className="size-1.5 rounded-full bg-white" />
           <span>Full-Stack Google Ecosystem Workflow</span>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
-          <div className="p-3.5 rounded-[14px] bg-[#1A1A1A] border border-[#2A2A2A] space-y-1">
+          <div className="p-3.5 rounded-[14px] bg-[#191926] border border-[#29293d] space-y-1">
             <span className="text-[10px] font-mono text-[#777777]">PHASE 01</span>
             <div className="text-xs font-semibold text-white">YouTube & Maps Discovery</div>
             <p className="text-[11px] text-[#AAAAAA] leading-relaxed">
               Extracts high-value channels, videos, about pages, and deep website emails.
             </p>
           </div>
-          <div className="p-3.5 rounded-[14px] bg-[#1A1A1A] border border-[#2A2A2A] space-y-1">
+          <div className="p-3.5 rounded-[14px] bg-[#191926] border border-[#29293d] space-y-1">
             <span className="text-[10px] font-mono text-[#777777]">PHASE 02</span>
             <div className="text-xs font-semibold text-white">AI Qualification (Score &gt;= 7)</div>
             <p className="text-[11px] text-[#AAAAAA] leading-relaxed">
               Filters out dormant/junk leads and scores business potential from 1 to 10.
             </p>
           </div>
-          <div className="p-3.5 rounded-[14px] bg-[#1A1A1A] border border-[#2A2A2A] space-y-1">
+          <div className="p-3.5 rounded-[14px] bg-[#191926] border border-[#29293d] space-y-1">
             <span className="text-[10px] font-mono text-[#777777]">PHASE 03</span>
             <div className="text-xs font-semibold text-white">Google Sheets Master Tracker</div>
             <p className="text-[11px] text-[#AAAAAA] leading-relaxed">
               Auto-pushes qualified leads with 1-line personalized hooks to your Sheet.
             </p>
           </div>
-          <div className="p-3.5 rounded-[14px] bg-[#1A1A1A] border border-[#2A2A2A] space-y-1">
+          <div className="p-3.5 rounded-[14px] bg-[#191926] border border-[#29293d] space-y-1">
             <span className="text-[10px] font-mono text-[#777777]">PHASE 04</span>
             <div className="text-xs font-semibold text-white">Gmail & Meet Booking</div>
             <p className="text-[11px] text-[#AAAAAA] leading-relaxed">
@@ -372,7 +372,7 @@ export function LeadHunter() {
       </section>
 
       {/* Engine Selection Bar */}
-      <div className="flex items-center justify-between gap-3 border-b border-[#2A2A2A] pb-3">
+      <div className="flex items-center justify-between gap-3 border-b border-[#29293d] pb-3">
         <div className="flex items-center gap-2">
           <button
             type="button"
@@ -380,7 +380,7 @@ export function LeadHunter() {
             className={`inline-flex items-center gap-2 px-4 py-2 text-xs font-medium rounded-[10px] transition-all ${
               engine === "youtube"
                 ? "bg-white text-black font-semibold shadow-sm"
-                : "bg-[#121212] text-[#AAAAAA] border border-[#2A2A2A] hover:text-white"
+                : "bg-[#11111a] text-[#AAAAAA] border border-[#29293d] hover:text-white"
             }`}
           >
             <YoutubeIcon className="size-3.5 text-white" />
@@ -393,7 +393,7 @@ export function LeadHunter() {
             className={`inline-flex items-center gap-2 px-4 py-2 text-xs font-medium rounded-[10px] transition-all ${
               engine === "google_maps"
                 ? "bg-white text-black font-semibold shadow-sm"
-                : "bg-[#121212] text-[#AAAAAA] border border-[#2A2A2A] hover:text-white"
+                : "bg-[#11111a] text-[#AAAAAA] border border-[#29293d] hover:text-white"
             }`}
           >
             <MapPin className="size-3.5" />
@@ -406,7 +406,7 @@ export function LeadHunter() {
             className={`inline-flex items-center gap-2 px-4 py-2 text-xs font-medium rounded-[10px] transition-all ${
               engine === "linkedin"
                 ? "bg-white text-black font-semibold shadow-sm"
-                : "bg-[#121212] text-[#AAAAAA] border border-[#2A2A2A] hover:text-white"
+                : "bg-[#11111a] text-[#AAAAAA] border border-[#29293d] hover:text-white"
             }`}
           >
             <LinkedinIcon className="size-3.5" />
@@ -420,7 +420,7 @@ export function LeadHunter() {
       </div>
 
       {/* Scraper Config Form */}
-      <form onSubmit={handleStartScrape} className="card p-6 space-y-6 bg-[#121212] border border-[#2A2A2A]">
+      <form onSubmit={handleStartScrape} className="card p-6 space-y-6 bg-[#11111a] border border-[#29293d]">
         {/* 1. Target Presets */}
         <div className="space-y-2.5">
           <label className="text-xs font-semibold uppercase tracking-wider text-[#AAAAAA] block">
@@ -434,8 +434,8 @@ export function LeadHunter() {
                 onClick={() => handleSelectPreset(preset)}
                 className={`p-3 rounded-[12px] text-left border transition-all flex flex-col justify-between ${
                   selectedPreset === preset.id
-                    ? "bg-[#1A1A1A] border-white text-white"
-                    : "bg-[#121212] border-[#2A2A2A] text-[#AAAAAA] hover:border-[#3A3A3A] hover:text-white"
+                    ? "bg-[#191926] border-white text-white"
+                    : "bg-[#11111a] border-[#29293d] text-[#AAAAAA] hover:border-[#38384f] hover:text-white"
                 }`}
               >
                 <div className="font-medium text-xs truncate text-white">{preset.label}</div>
@@ -497,7 +497,7 @@ export function LeadHunter() {
                 value={roleInput}
                 onChange={(e) => setRoleInput(e.target.value)}
                 placeholder="e.g. Fitness, Real Estate, Creator"
-                className="input h-10 text-xs rounded-[10px] bg-[#1A1A1A] border-[#2A2A2A]"
+                className="input h-10 text-xs rounded-[10px] bg-[#191926] border-[#29293d]"
               />
             </div>
 
@@ -505,7 +505,7 @@ export function LeadHunter() {
               <label className="text-xs font-semibold text-[#AAAAAA] block mb-1.5 uppercase tracking-wider">
                 AI Quality Filter (Threshold)
               </label>
-              <div className="flex items-center gap-2 h-10 px-3 rounded-[10px] bg-[#1A1A1A] border border-[#2A2A2A] text-xs">
+              <div className="flex items-center gap-2 h-10 px-3 rounded-[10px] bg-[#191926] border border-[#29293d] text-xs">
                 <Star className="size-3.5 text-white" />
                 <span className="font-semibold text-white">Score &gt;= 7.0</span>
                 <span className="text-[11px] text-[#777777] ml-auto">Filters low-quality junk</span>
@@ -541,7 +541,7 @@ export function LeadHunter() {
                   className={`inline-flex items-center gap-2 px-3.5 py-2 rounded-[10px] text-xs font-medium border transition-all ${
                     isSelected
                       ? "bg-white text-black font-semibold border-white"
-                      : "bg-[#1A1A1A] border-[#2A2A2A] text-[#AAAAAA] hover:text-white"
+                      : "bg-[#191926] border-[#29293d] text-[#AAAAAA] hover:text-white"
                   }`}
                 >
                   <Icon className="size-3.5" />
@@ -553,7 +553,7 @@ export function LeadHunter() {
         </div>
 
         {/* 4. Custom Lead Count & Scraper Trigger */}
-        <div className="pt-4 border-t border-[#2A2A2A] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="pt-4 border-t border-[#29293d] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <span className="text-xs font-semibold text-white shrink-0">Extract Lead Count:</span>
             <div className="flex items-center gap-1.5">
@@ -565,7 +565,7 @@ export function LeadHunter() {
                   className={`px-3 py-1.5 text-xs font-medium rounded-[8px] border transition-all ${
                     leadCount === n
                       ? "bg-white text-black font-semibold border-white"
-                      : "bg-[#1A1A1A] border-[#2A2A2A] text-[#AAAAAA] hover:text-white"
+                      : "bg-[#191926] border-[#29293d] text-[#AAAAAA] hover:text-white"
                   }`}
                 >
                   {n}
@@ -578,7 +578,7 @@ export function LeadHunter() {
                   max={250}
                   value={leadCount}
                   onChange={(e) => setLeadCount(Math.max(1, Math.min(250, Number(e.target.value) || 1)))}
-                  className="input h-8 w-20 text-xs text-center rounded-[8px] bg-[#1A1A1A] border-[#2A2A2A]"
+                  className="input h-8 w-20 text-xs text-center rounded-[8px] bg-[#191926] border-[#29293d]"
                 />
                 <span className="text-[11px] text-[#777777]">custom</span>
               </div>
@@ -607,7 +607,7 @@ export function LeadHunter() {
 
       {/* Sheets Sync Notification Banner */}
       {sheetSyncSuccess && (
-        <div className="p-4 rounded-[14px] bg-[#121212] border border-white text-white text-xs flex items-center justify-between gap-3 shadow-lg">
+        <div className="p-4 rounded-[14px] bg-[#11111a] border border-white text-white text-xs flex items-center justify-between gap-3 shadow-lg">
           <div className="flex items-center gap-2.5">
             <CheckCircle2 className="size-4 shrink-0 text-white" />
             <span className="font-medium">{sheetSyncSuccess}</span>
@@ -643,7 +643,7 @@ export function LeadHunter() {
                   placeholder="Filter extracted leads..."
                   value={filterQuery}
                   onChange={(e) => setFilterQuery(e.target.value)}
-                  className="input h-8 pl-9 text-xs w-44 rounded-[8px] bg-[#1A1A1A] border-[#2A2A2A]"
+                  className="input h-8 pl-9 text-xs w-44 rounded-[8px] bg-[#191926] border-[#29293d]"
                 />
               </div>
 
@@ -672,9 +672,9 @@ export function LeadHunter() {
             </div>
           </div>
 
-          <div className="card overflow-hidden bg-[#121212] border border-[#2A2A2A]">
+          <div className="card overflow-hidden bg-[#11111a] border border-[#29293d]">
             <table className="w-full text-xs text-left">
-              <thead className="bg-[#1A1A1A] border-b border-[#2A2A2A] text-[#AAAAAA] font-semibold uppercase text-[10px] tracking-wider">
+              <thead className="bg-[#191926] border-b border-[#29293d] text-[#AAAAAA] font-semibold uppercase text-[10px] tracking-wider">
                 <tr>
                   <th className="px-4 py-3">Lead / Channel</th>
                   <th className="px-4 py-3">Verified Contact</th>
@@ -683,9 +683,9 @@ export function LeadHunter() {
                   <th className="px-4 py-3 text-right">Outreach</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#2A2A2A]">
+              <tbody className="divide-y divide-[#29293d]">
                 {filteredLeads.map((lead) => (
-                  <tr key={lead.id} className="hover:bg-[#1A1A1A]/50 transition-colors">
+                  <tr key={lead.id} className="hover:bg-[#191926]/50 transition-colors">
                     <td className="px-4 py-3.5">
                       <div className="font-semibold text-white text-xs">
                         {lead.channelName || lead.businessName}
@@ -720,7 +720,7 @@ export function LeadHunter() {
                     </td>
 
                     <td className="px-4 py-3.5">
-                      <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-[8px] bg-[#1A1A1A] border border-white text-white font-mono text-[11px]">
+                      <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-[8px] bg-[#191926] border border-white text-white font-mono text-[11px]">
                         <Star className="size-3 fill-white text-white" />
                         <span className="font-bold">{lead.aiQualityScore || "8.5"} / 10</span>
                       </div>

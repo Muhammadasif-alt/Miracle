@@ -98,7 +98,7 @@ export function SearchableSelect({
               }
             }}
             placeholder={customPlaceholder}
-            className="input bg-[#181818] border-[#262626] text-xs text-white h-9 flex-1"
+            className="input bg-[#171723] border-[#252538] text-xs text-white h-9 flex-1"
             autoFocus
           />
           <button
@@ -116,7 +116,7 @@ export function SearchableSelect({
           <button
             type="button"
             onClick={() => setIsCustomMode(false)}
-            className="rounded-[6px] border border-[#2A2A2A] bg-[#1C1C1C] px-2 h-9 text-xs text-[#888888] hover:text-white"
+            className="rounded-[6px] border border-[#29293d] bg-[#1b1b29] px-2 h-9 text-xs text-[#888888] hover:text-white"
           >
             <X className="size-3.5" />
           </button>
@@ -125,7 +125,7 @@ export function SearchableSelect({
         <button
           type="button"
           onClick={() => setIsOpen(!isOpen)}
-          className="w-full flex items-center justify-between gap-2 h-9 px-3 rounded-[6px] bg-[#181818] border border-[#262626] hover:border-[#333333] text-left text-xs text-white transition focus:outline-none focus:border-[#10B981]"
+          className="w-full flex items-center justify-between gap-2 h-9 px-3 rounded-[6px] bg-[#171723] border border-[#252538] hover:border-[#313147] text-left text-xs text-white transition focus:outline-none focus:border-[#10B981]"
         >
           <span className="truncate flex items-center gap-1.5">
             {selectedItem?.icon && <span>{selectedItem.icon}</span>}
@@ -138,8 +138,8 @@ export function SearchableSelect({
       )}
 
       {isOpen && (
-        <div className="absolute top-full left-0 mt-1 w-full min-w-[200px] z-50 rounded-lg border border-[#2A2A2A] bg-[#161616] shadow-xl overflow-hidden animate-in fade-in zoom-in-95 duration-100">
-          <div className="p-2 border-b border-[#222222]">
+        <div className="absolute top-full left-0 mt-1 w-full min-w-[200px] z-50 rounded-lg border border-[#29293d] bg-[#15151f] shadow-xl overflow-hidden animate-in fade-in zoom-in-95 duration-100">
+          <div className="p-2 border-b border-[#212132]">
             <div className="relative">
               <Search className="size-3.5 absolute left-2.5 top-2.5 text-[#666666]" />
               <input
@@ -148,7 +148,7 @@ export function SearchableSelect({
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Search..."
-                className="w-full bg-[#1F1F1F] border border-[#2B2B2B] pl-8 pr-2 py-1 text-xs text-white rounded-[4px] focus:outline-none focus:border-[#10B981]"
+                className="w-full bg-[#1e1e2d] border border-[#2B2B2B] pl-8 pr-2 py-1 text-xs text-white rounded-[4px] focus:outline-none focus:border-[#10B981]"
               />
             </div>
           </div>
@@ -172,7 +172,7 @@ export function SearchableSelect({
                     className={`w-full flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-[4px] text-xs text-left transition ${
                       isSelected
                         ? "bg-[#10B981]/15 text-[#10B981] font-semibold"
-                        : "text-[#CCCCCC] hover:bg-[#202020] hover:text-white"
+                        : "text-[#CCCCCC] hover:bg-[#1f1f2e] hover:text-white"
                     }`}
                   >
                     <span className="truncate flex items-center gap-1.5">
@@ -189,7 +189,7 @@ export function SearchableSelect({
             )}
 
             {allowCustom && (
-              <div className="pt-1 mt-1 border-t border-[#222222]">
+              <div className="pt-1 mt-1 border-t border-[#212132]">
                 <button
                   type="button"
                   onClick={() => {

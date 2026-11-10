@@ -126,7 +126,7 @@ export function CommandCenter() {
   return (
     <div className="space-y-6 max-w-7xl mx-auto">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#222222] pb-5">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#212132] pb-5">
         <div>
           <h1 className="text-xl font-bold text-white tracking-tight flex items-center gap-2">
             <span>Miracle Operational Overview</span>
@@ -151,7 +151,7 @@ export function CommandCenter() {
 
           <Link
             href="/pipeline"
-            className="inline-flex items-center gap-1.5 rounded-[8px] bg-[#181818] border border-[#2A2A2A] px-3.5 py-2 text-xs font-medium text-white transition-all hover:bg-[#222222]"
+            className="inline-flex items-center gap-1.5 rounded-[8px] bg-[#171723] border border-[#29293d] px-3.5 py-2 text-xs font-medium text-white transition-all hover:bg-[#212132]"
           >
             <GitBranch className="size-3.5 text-[#10B981]" />
             <span>Review Pipeline</span>
@@ -159,7 +159,7 @@ export function CommandCenter() {
 
           <Link
             href="/outreach"
-            className="inline-flex items-center gap-1.5 rounded-[8px] bg-[#181818] border border-[#2A2A2A] px-3.5 py-2 text-xs font-medium text-white transition-all hover:bg-[#222222]"
+            className="inline-flex items-center gap-1.5 rounded-[8px] bg-[#171723] border border-[#29293d] px-3.5 py-2 text-xs font-medium text-white transition-all hover:bg-[#212132]"
           >
             <Send className="size-3.5 text-white" />
             <span>Open Outreach</span>
@@ -169,7 +169,7 @@ export function CommandCenter() {
 
       {/* Operational KPI Grid */}
       <section className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
-        <div className="rounded-[12px] border border-[#222222] bg-[#121212] p-4 space-y-1">
+        <div className="rounded-[12px] border border-[#212132] bg-[#11111a] p-4 space-y-1">
           <span className="text-[11px] font-medium text-[#888888] flex items-center justify-between">
             <span>Discovered Leads</span>
             <Search className="size-3.5 text-[#888888]" />
@@ -178,7 +178,7 @@ export function CommandCenter() {
           <span className="text-[10px] text-[#10B981] font-medium">+100% verified sources</span>
         </div>
 
-        <div className="rounded-[12px] border border-[#222222] bg-[#121212] p-4 space-y-1">
+        <div className="rounded-[12px] border border-[#212132] bg-[#11111a] p-4 space-y-1">
           <span className="text-[11px] font-medium text-[#888888] flex items-center justify-between">
             <span>Qualified Leads</span>
             <Sparkles className="size-3.5 text-[#10B981]" />
@@ -187,7 +187,7 @@ export function CommandCenter() {
           <span className="text-[10px] text-[#888888]">Audit score &ge; 70</span>
         </div>
 
-        <div className="rounded-[12px] border border-[#222222] bg-[#121212] p-4 space-y-1">
+        <div className="rounded-[12px] border border-[#212132] bg-[#11111a] p-4 space-y-1">
           <span className="text-[11px] font-medium text-[#888888] flex items-center justify-between">
             <span>Emails Sent</span>
             <Send className="size-3.5 text-[#38BDF8]" />
@@ -196,7 +196,7 @@ export function CommandCenter() {
           <span className="text-[10px] text-[#38BDF8]">Via Gmail / SMTP</span>
         </div>
 
-        <div className="rounded-[12px] border border-[#222222] bg-[#121212] p-4 space-y-1">
+        <div className="rounded-[12px] border border-[#212132] bg-[#11111a] p-4 space-y-1">
           <span className="text-[11px] font-medium text-[#888888] flex items-center justify-between">
             <span>Replies Received</span>
             <Inbox className="size-3.5 text-[#F59E0B]" />
@@ -205,7 +205,7 @@ export function CommandCenter() {
           <span className="text-[10px] text-[#888888]">Live 2-panel sync</span>
         </div>
 
-        <div className="rounded-[12px] border border-[#222222] bg-[#121212] p-4 space-y-1">
+        <div className="rounded-[12px] border border-[#212132] bg-[#11111a] p-4 space-y-1">
           <span className="text-[11px] font-medium text-[#888888] flex items-center justify-between">
             <span>Meetings Booked</span>
             <CalendarCheck className="size-3.5 text-[#10B981]" />
@@ -214,7 +214,7 @@ export function CommandCenter() {
           <span className="text-[10px] text-[#10B981]">Google Calendar synced</span>
         </div>
 
-        <div className="rounded-[12px] border border-[#222222] bg-[#121212] p-4 space-y-1">
+        <div className="rounded-[12px] border border-[#212132] bg-[#11111a] p-4 space-y-1">
           <span className="text-[11px] font-medium text-[#888888] flex items-center justify-between">
             <span>Active Automations</span>
             <Zap className="size-3.5 text-[#A855F7]" />
@@ -230,7 +230,7 @@ export function CommandCenter() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left Column: Recent Lead Activity & Pipeline Pulse */}
         <div className="lg:col-span-2 space-y-6">
-          <section className="rounded-[14px] border border-[#222222] bg-[#121212] p-5 space-y-4">
+          <section className="rounded-[14px] border border-[#212132] bg-[#11111a] p-5 space-y-4">
             <div className="flex items-center justify-between">
               <div>
                 <h2 className="text-sm font-semibold text-white">Recent Lead Activity & Audits</h2>
@@ -245,11 +245,11 @@ export function CommandCenter() {
               </Link>
             </div>
 
-            <div className="divide-y divide-[#222222]">
+            <div className="divide-y divide-[#212132]">
               {recentLeads.map((lead, idx) => (
                 <div key={lead.id || idx} className="py-3 flex items-center justify-between gap-3 first:pt-1 last:pb-1">
                   <div className="min-w-0 flex items-center gap-3">
-                    <span className="grid size-8 place-items-center rounded-[8px] bg-[#1A1A1A] border border-[#2A2A2A] text-xs font-bold text-white shrink-0">
+                    <span className="grid size-8 place-items-center rounded-[8px] bg-[#191926] border border-[#29293d] text-xs font-bold text-white shrink-0">
                       {(lead.businessName || "L").charAt(0)}
                     </span>
                     <div className="min-w-0">
@@ -266,7 +266,7 @@ export function CommandCenter() {
                     </span>
                     <Link
                       href={`/lead-hunter?select=${lead.id}`}
-                      className="rounded-[6px] bg-[#1A1A1A] border border-[#2A2A2A] px-2.5 py-1 text-[11px] font-medium text-white hover:bg-[#252525]"
+                      className="rounded-[6px] bg-[#191926] border border-[#29293d] px-2.5 py-1 text-[11px] font-medium text-white hover:bg-[#252525]"
                     >
                       Audit & Pitch &rarr;
                     </Link>
@@ -277,7 +277,7 @@ export function CommandCenter() {
           </section>
 
           {/* Pending Draft Approvals */}
-          <section className="rounded-[14px] border border-[#222222] bg-[#121212] p-5 space-y-4">
+          <section className="rounded-[14px] border border-[#212132] bg-[#11111a] p-5 space-y-4">
             <div className="flex items-center justify-between">
               <div>
                 <h2 className="text-sm font-semibold text-white">Pending Outreach Draft Approvals</h2>
@@ -294,7 +294,7 @@ export function CommandCenter() {
 
             <div className="space-y-2.5">
               {pendingDrafts.map((d, i) => (
-                <div key={d.id || i} className="rounded-[10px] bg-[#181818] border border-[#262626] p-3 flex items-center justify-between gap-3">
+                <div key={d.id || i} className="rounded-[10px] bg-[#171723] border border-[#252538] p-3 flex items-center justify-between gap-3">
                   <div className="min-w-0">
                     <p className="text-xs font-medium text-white truncate">{d.subject || `Pitch for ${d.company}`}</p>
                     <p className="text-[11px] text-[#71717A] truncate">Recipient: {d.company}</p>
@@ -319,7 +319,7 @@ export function CommandCenter() {
         {/* Right Column: Upcoming Meetings & Account Readiness */}
         <div className="space-y-6">
           {/* Upcoming Meetings Card */}
-          <section className="rounded-[14px] border border-[#222222] bg-[#121212] p-5 space-y-4">
+          <section className="rounded-[14px] border border-[#212132] bg-[#11111a] p-5 space-y-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <CalendarCheck className="size-4 text-[#10B981]" />
@@ -335,7 +335,7 @@ export function CommandCenter() {
 
             <div className="space-y-3">
               {upcomingMeetings.map((m, idx) => (
-                <div key={m.id || idx} className="rounded-[10px] bg-[#181818] border border-[#282828] p-3 space-y-2">
+                <div key={m.id || idx} className="rounded-[10px] bg-[#171723] border border-[#27273a] p-3 space-y-2">
                   <div className="flex items-center justify-between">
                     <p className="text-xs font-semibold text-white">{m.leadName}</p>
                     <span className="text-[10px] font-mono text-[#10B981] bg-[#10B981]/10 px-1.5 py-0.5 rounded border border-[#10B981]/20">
@@ -363,7 +363,7 @@ export function CommandCenter() {
           </section>
 
           {/* Setup Readiness Summary */}
-          <section className="rounded-[14px] border border-[#222222] bg-[#121212] p-5 space-y-3">
+          <section className="rounded-[14px] border border-[#212132] bg-[#11111a] p-5 space-y-3">
             <div className="flex items-center justify-between">
               <h2 className="text-sm font-semibold text-white">Account Connections</h2>
               <Link href="/settings" className="text-xs text-[#888888] hover:text-white">
@@ -372,21 +372,21 @@ export function CommandCenter() {
             </div>
 
             <div className="space-y-2 text-xs">
-              <div className="flex items-center justify-between py-1.5 border-b border-[#222222]">
+              <div className="flex items-center justify-between py-1.5 border-b border-[#212132]">
                 <span className="text-[#AAAAAA]">Gmail SMTP / OAuth</span>
                 <span className="flex items-center gap-1.5 text-[#10B981] font-medium">
                   <CheckCircle2 className="size-3.5" /> Connected
                 </span>
               </div>
 
-              <div className="flex items-center justify-between py-1.5 border-b border-[#222222]">
+              <div className="flex items-center justify-between py-1.5 border-b border-[#212132]">
                 <span className="text-[#AAAAAA]">Google Calendar & Meet</span>
                 <span className="flex items-center gap-1.5 text-[#10B981] font-medium">
                   <CheckCircle2 className="size-3.5" /> Synced
                 </span>
               </div>
 
-              <div className="flex items-center justify-between py-1.5 border-b border-[#222222]">
+              <div className="flex items-center justify-between py-1.5 border-b border-[#212132]">
                 <span className="text-[#AAAAAA]">Behance Portfolio</span>
                 <span className="flex items-center gap-1.5 text-[#10B981] font-medium">
                   <CheckCircle2 className="size-3.5" /> Active Link

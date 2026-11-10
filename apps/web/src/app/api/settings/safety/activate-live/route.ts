@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { SafetyModeEngine } from "@/lib/safety-mode";
-import { DEFAULT_SETTINGS } from "../../route";
+import { DEFAULT_SETTINGS } from "@/lib/default-settings";
 import fs from "node:fs";
 import path from "node:path";
 

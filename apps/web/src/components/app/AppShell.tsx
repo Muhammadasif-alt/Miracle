@@ -22,13 +22,13 @@ export function AppShell({ children }: { children: ReactNode }) {
   }, [menuOpen]);
 
   return (
-    <div className="flex min-h-screen bg-canvas">
+    <div className="app-ambient flex min-h-screen">
       <Sidebar />
 
       {menuOpen && (
         <div className="fixed inset-0 z-40 lg:hidden" role="dialog" aria-modal="true" aria-label="Navigation">
-          <div className="absolute inset-0 bg-black/30" onClick={() => setMenuOpen(false)} />
-          <div className="absolute inset-y-0 left-0 w-72 border-r border-line bg-surface shadow-2xl">
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setMenuOpen(false)} />
+          <div className="absolute inset-y-0 left-0 w-72 shadow-2xl">
             <button
               type="button"
               onClick={() => setMenuOpen(false)}
@@ -44,7 +44,7 @@ export function AppShell({ children }: { children: ReactNode }) {
 
       {/* The area tone colours accents (icons, badges, focus) for everything on this page. */}
       <div data-tone={tone} className="relative flex min-w-0 flex-1 flex-col lg:pl-64">
-        <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 z-30 h-0.5 bg-linear-to-r from-tone via-tone/50 to-transparent" />
+        <div aria-hidden="true" className="accent-gradient pointer-events-none absolute inset-x-0 top-0 z-30 h-px opacity-60" />
         <Topbar onOpenMenu={() => setMenuOpen(true)} />
         <OutboundBanner />
         <main className="flex-1 px-4 py-6 sm:px-5 sm:py-8">

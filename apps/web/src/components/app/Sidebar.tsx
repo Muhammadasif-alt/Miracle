@@ -1,92 +1,103 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Settings } from "lucide-react";
+import { CodeXml, Settings } from "lucide-react";
 import { Logo } from "@/components/brand/Logo";
-import { StarIcon } from "@/components/brand/StarIcon";
-import { BOTTOM_SCREENS, SCREENS } from "@/lib/screens";
+import { MemberAvatar, RoleChip } from "@/components/auth/MemberCard";
+import { BOTTOM_SCREENS, DEV_SCREENS, SCREENS, type Screen } from "@/lib/screens";
 import { useMe } from "@/lib/session-context";
+import { isDeveloper, memberForEmail } from "@/lib/team";
 import { UserMenu } from "./UserMenu";
+
+/** Legacy URLs that belong to a primary screen, so the right item stays highlighted. */
+function isActive(s: Screen, pathname: string): boolean {
+  if (pathname === s.href || pathname.startsWith(s.href + "/")) return true;
+  if (s.href === "/pitch-studio") return ["/", "/dashboard", "/lead-hunter", "/outreach"].includes(pathname);
+  if (s.href === "/leads") return pathname === "/pipeline" || pathname === "/saved-leads";
+  if (s.href === "/meetings") return pathname === "/meetings-setup";
+  return false;
+}
+
+function NavItem({ s, pathname, onNavigate }: { s: Screen; pathname: string; onNavigate?: () => void }) {
+  const active = isActive(s, pathname);
+  const Icon = s.icon;
+  return (
+    <Link
+      href={s.href}
+      onClick={onNavigate}
+      aria-current={active ? "page" : undefined}
+      className={`group relative flex items-center gap-3 rounded-xl border px-3 py-2.5 text-[13px] font-medium transition-all ${
+        active ? "nav-active border-transparent text-white" : "border-transparent text-[#8b8ba3] hover:bg-white/[0.04] hover:text-white"
+      }`}
+    >
+      {active ? <span aria-hidden="true" className="accent-gradient absolute top-2 bottom-2 -left-[11px] w-[3px] rounded-full" /> : null}
+      <Icon className={`size-4 shrink-0 ${active ? "text-[#c7bfff]" : "text-[#6b6b85] group-hover:text-white"}`} />
+      <span className="min-w-0">
+        <span className="block truncate">{s.title}</span>
+        {s.subtitle ? <span className="block truncate text-[10.5px] font-normal text-[#6b6b85]">{s.subtitle}</span> : null}
+      </span>
+    </Link>
+  );
+}
 
 export function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname();
   const me = useMe();
-  const [savedOwnerName, setSavedOwnerName] = useState<string>("Zohaib");
-
-  useEffect(() => {
-    fetch("/api/settings")
-      .then((r) => r.json())
-      .then((data) => {
-        if (data.ok && data.settings?.businessProfile?.senderName) {
-          setSavedOwnerName(data.settings.businessProfile.senderName);
-        }
-      })
-      .catch(() => undefined);
-  }, []);
+  const member = memberForEmail(me.user.email);
+  const dev = isDeveloper(me.user.email);
 
   return (
-    <div className="flex h-full flex-col bg-[#0A0A0A] border-r border-[#1F1F1F]">
-      {/* Brand Header */}
-      <div className="flex h-14 items-center border-b border-[#1F1F1F] px-4">
+    <div className="flex h-full flex-col border-r border-white/[0.06] bg-[#08080e]/90 backdrop-blur-xl">
+      <div className="flex h-14 items-center border-b border-white/[0.06] px-4">
         <Logo href="/pitch-studio" size="md" />
       </div>
 
-      {/* Primary 4 Operational Navigation Items */}
-      <nav className="flex-1 px-2.5 py-4 space-y-1" aria-label="Main">
-        {SCREENS.map((s) => {
-          const active =
-            pathname === s.href ||
-            (s.href === "/pitch-studio" && (pathname === "/" || pathname === "/dashboard" || pathname === "/lead-hunter" || pathname === "/outreach")) ||
-            (s.href === "/leads" && (pathname.startsWith("/leads") || pathname === "/pipeline" || pathname === "/saved-leads")) ||
-            (s.href === "/meetings" && (pathname.startsWith("/meetings") || pathname === "/meetings-setup")) ||
-            (s.href === "/analytics" && pathname.startsWith("/analytics"));
+      <nav className="flex-1 space-y-6 overflow-y-auto px-3 py-5" aria-label="Main">
+        <div className="space-y-1">
+          <p className="px-3 pb-1.5 text-[10px] font-semibold tracking-[0.14em] text-[#5c5c75] uppercase">Workspace</p>
+          {SCREENS.map((s) => (
+            <NavItem key={s.href} s={s} pathname={pathname} onNavigate={onNavigate} />
+          ))}
+        </div>
 
-          const Icon = s.icon;
-          return (
-            <Link
-              key={s.href}
-              href={s.href}
-              onClick={onNavigate}
-              aria-current={active ? "page" : undefined}
-              className={`flex items-center gap-3 rounded-[8px] px-3 py-2 text-xs font-medium transition-all ${
-                active
-                  ? "bg-[#1C1C1C] text-white shadow-sm border border-[#2E2E2E]"
-                  : "text-[#888888] hover:bg-[#121212] hover:text-white border border-transparent"
-              }`}
-            >
-              <Icon className={`size-4 ${active ? "text-[#10B981]" : "text-[#71717A]"}`} />
-              <span className="truncate">{s.title}</span>
-            </Link>
-          );
-        })}
+        {dev ? (
+          <div className="space-y-1">
+            <p className="flex items-center gap-1.5 px-3 pb-1.5 text-[10px] font-semibold tracking-[0.14em] text-[#5c5c75] uppercase">
+              <CodeXml className="size-3" aria-hidden="true" />
+              Developer tools
+            </p>
+            {DEV_SCREENS.map((s) => (
+              <NavItem key={s.href} s={s} pathname={pathname} onNavigate={onNavigate} />
+            ))}
+          </div>
+        ) : null}
       </nav>
 
-      {/* Bottom Minimal Section: Settings + User Avatar */}
-      <div className="p-3 border-t border-[#1F1F1F] space-y-2">
-        <Link
-          href="/settings"
-          onClick={onNavigate}
-          className={`flex items-center gap-3 rounded-[8px] px-3 py-2 text-xs font-medium transition-all ${
-            pathname === "/settings"
-              ? "bg-[#1C1C1C] text-white border border-[#2E2E2E]"
-              : "text-[#888888] hover:bg-[#121212] hover:text-white border border-transparent"
-          }`}
-        >
-          <Settings className="size-4 text-[#71717A]" />
-          <span>Settings</span>
-        </Link>
+      <div className="space-y-2 border-t border-white/[0.06] p-3">
+        {BOTTOM_SCREENS.map((s) => (
+          <NavItem key={s.href} s={{ ...s, subtitle: undefined, icon: Settings }} pathname={pathname} onNavigate={onNavigate} />
+        ))}
 
-        {/* User Card */}
-        <div className="flex items-center justify-between rounded-[8px] border border-[#1F1F1F] bg-[#111111] p-1.5 px-2">
-          <div className="flex items-center gap-2 min-w-0">
-            <span className="grid size-6 place-items-center rounded-[6px] bg-[#1A1A1A] text-white shrink-0">
-              <StarIcon className="size-3 text-white" />
+        <div className="flex items-center gap-2.5 rounded-xl border border-white/[0.07] bg-white/[0.03] p-2">
+          {member ? (
+            <span className="shrink-0 scale-[0.6] -m-2.5">
+              <MemberAvatar member={member} />
             </span>
-            <span className="truncate text-xs text-[#A1A1AA] font-medium">
-              {savedOwnerName || me?.user?.name || "Zohaib"}
+          ) : (
+            <span className="grid size-8 shrink-0 place-items-center rounded-full bg-white/10 text-xs font-semibold">
+              {me.user.name.slice(0, 1).toUpperCase()}
             </span>
+          )}
+          <div className="min-w-0 flex-1">
+            <p className="truncate text-[13px] font-medium text-white">{member?.name ?? me.user.name}</p>
+            {member ? (
+              <span className="mt-0.5 block origin-left scale-90">
+                <RoleChip member={member} />
+              </span>
+            ) : (
+              <p className="truncate text-[11px] text-[#6b6b85]">{me.user.email}</p>
+            )}
           </div>
           <UserMenu />
         </div>
@@ -97,7 +108,7 @@ export function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
 
 export function Sidebar() {
   return (
-    <aside className="hidden lg:flex lg:w-64 lg:flex-col lg:fixed lg:inset-y-0 z-30">
+    <aside className="z-30 hidden lg:fixed lg:inset-y-0 lg:flex lg:w-64 lg:flex-col">
       <SidebarNav />
     </aside>
   );
