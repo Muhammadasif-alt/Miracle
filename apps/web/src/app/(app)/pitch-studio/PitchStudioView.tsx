@@ -44,6 +44,7 @@ type AreaSummary = {
 };
 type Tri = "ANY" | "YES" | "NO";
 import { BrandEmailWriter } from "@/lib/brand-email-writer";
+import { realEmail } from "@/lib/lead-email";
 
 interface AnalyticsData {
   totalLeadsFound: number;
@@ -304,7 +305,7 @@ export function PitchStudioView() {
     const generated = BrandEmailWriter.generateEmail(
       {
         businessName: company,
-        email: lead.email || "contact@domain.com",
+        email: realEmail(lead.email, lead.contactEmail) ?? "",
         websiteUrl: lead.website,
         niche: leadNiche,
         city: leadCity,
@@ -574,7 +575,7 @@ export function PitchStudioView() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          to: selectedLead.email || "recipient@domain.com",
+          to: realEmail(selectedLead.email, selectedLead.contactEmail),
           subject,
           body,
           leadId: selectedLead.id,

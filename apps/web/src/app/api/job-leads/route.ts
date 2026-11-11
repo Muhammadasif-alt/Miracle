@@ -2,6 +2,8 @@ import { NextResponse, type NextRequest } from "next/server";
 import { getMe } from "@/lib/session";
 import { JOB_COUNTRIES, searchJobLeads, type JobLead } from "@/lib/job-leads";
 import { LeadMemoryEngine, type LeadRecord } from "@/lib/lead-memory-engine";
+import { findJobContact, type JobContact } from "@/lib/job-contact";
+import { isRealEmail, realEmail } from "@/lib/lead-email";
 
 export const maxDuration = 60;
 
@@ -27,6 +29,12 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: true, ...result });
   }
 
+  if (body?.action === "contact") {
+    const company = str(body.company, 120);
+    if (!company) return NextResponse.json({ ok: false, error: "Company missing." }, { status: 400 });
+    return NextResponse.json({ ok: true, contact: await findJobContact(company, safeUrl(str(body.website, 300))) });
+  }
+
   if (body?.action === "save" && Array.isArray(body.jobs)) {
     const existing = LeadMemoryEngine.getLeads();
     const leads: LeadRecord[] = (body.jobs as unknown[]).slice(0, 80).flatMap((raw) => {
@@ -37,12 +45,16 @@ export async function POST(req: NextRequest) {
       const url = safeUrl(str(j.url, 600));
       if (!id || !company || !title || !url) return [];
       const prev = existing.find((l) => l.jobSourceId === id);
-      const website = safeUrl(str(j.companyWebsite, 300)) ?? prev?.website ?? "";
+      const c = (raw as { contact?: Partial<JobContact> }).contact;
+      const email = isRealEmail(c?.email?.value) ? c!.email!.value.toLowerCase() : realEmail(prev?.email);
+      const website = safeUrl(str(c?.website, 300)) ?? safeUrl(str(j.companyWebsite, 300)) ?? prev?.website ?? "";
       const posted = j.postedAt ? new Date(j.postedAt).toDateString() : "recently";
-      return [
-        LeadMemoryEngine.upsertLead({
+      const data: Partial<LeadRecord> = {
           ...(prev ?? {}),
-          contactEmail: prev?.contactEmail, // same key → update instead of duplicate
+          contactEmail: email ?? prev?.contactEmail,
+          email,
+          emailStatus: email ? "VERIFIED" : undefined,
+          phone: c?.phone?.value ?? prev?.phone,
           companyName: company,
           businessName: company,
           website,
@@ -57,10 +69,22 @@ export async function POST(req: NextRequest) {
           recommendedService: `Freelance / agency ${title} support instead of a full-time hire`,
           contactChannels: {
             ...(prev?.contactChannels ?? {}),
-            linkedin: prev?.contactChannels?.linkedin, // only a verified company page, never a guessed one
+            ...(c?.email && email ? { email: c.email } : {}),
+            ...(c?.phone ? { phone: c.phone } : {}),
+            // only a company page the company's own website links to — never a guessed one
+            ...(c?.linkedin ? { linkedin: c.linkedin } : {}),
+            checkedAt: c ? new Date().toISOString() : prev?.contactChannels?.checkedAt,
           },
-        }),
-      ];
+      } as Partial<LeadRecord>;
+      if (prev) {
+        // update in place, so finding an email later never creates a second copy of the lead
+        const all = LeadMemoryEngine.getLeads();
+        const i = all.findIndex((l) => l.id === prev.id);
+        all[i] = { ...all[i]!, ...data, updatedAt: new Date().toISOString() } as LeadRecord;
+        LeadMemoryEngine.saveLeads(all);
+        return [all[i]!];
+      }
+      return [LeadMemoryEngine.upsertLead(data)];
     });
     return NextResponse.json({ ok: true, saved: leads.length });
   }

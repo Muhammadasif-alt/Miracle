@@ -1,14 +1,38 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { getMe } from "@/lib/session";
 
+const CITY_CACHE = new Map<string, string[]>();
+
 /**
- * GET ?type=city|area&q=…&country=PK[&lat=&lon=]
- * Place suggestions for the Lead Finder from Photon (OpenStreetMap data, free, no key).
+ * GET ?type=cities&countryName=Pakistan        → every city of the country (for the city dropdown)
+ * GET ?type=city|area&q=…&country=PK[&lat=&lon=] → place suggestions from Photon (OpenStreetMap, free, no key)
  * Cities are limited to the chosen country; areas to ~40 km around the chosen city.
  */
 export async function GET(req: NextRequest) {
   if (!(await getMe())) return NextResponse.json({ ok: false, places: [] }, { status: 401 });
   const p = req.nextUrl.searchParams;
+
+  // Every city of a country (countriesnow.space, free, no key) — cached in memory per country.
+  if (p.get("type") === "cities") {
+    const name = (p.get("countryName") ?? "").trim().slice(0, 80);
+    if (!name) return NextResponse.json({ ok: true, cities: [] });
+    const hit = CITY_CACHE.get(name);
+    if (hit) return NextResponse.json({ ok: true, cities: hit });
+    try {
+      const res = await fetch(`https://countriesnow.space/api/v0.1/countries/cities/q?country=${encodeURIComponent(name)}`, {
+        signal: AbortSignal.timeout(10000),
+        redirect: "follow",
+      });
+      const data = (await res.json()) as { error?: boolean; data?: string[] };
+      const cities = data.error || !Array.isArray(data.data) ? [] : [...new Set(data.data.filter((c) => typeof c === "string" && c.trim()))];
+      if (cities.length) CITY_CACHE.set(name, cities);
+      return NextResponse.json({ ok: true, cities });
+    } catch (err) {
+      console.warn("[lead-finder] city list failed:", (err as { cause?: { code?: string } }).cause?.code ?? String(err));
+      return NextResponse.json({ ok: false, cities: [] });
+    }
+  }
+
   const type = p.get("type") === "area" ? "area" : "city";
   const q = (p.get("q") ?? "").trim().slice(0, 80);
   const country = (p.get("country") ?? "").toUpperCase().slice(0, 2);

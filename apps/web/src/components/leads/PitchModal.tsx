@@ -20,6 +20,7 @@ import {
   Zap,
 } from "lucide-react";
 import { BrandEmailWriter, DEFAULT_PORTFOLIO_VAULT, type PortfolioVaultData } from "@/lib/brand-email-writer";
+import { realEmail } from "@/lib/lead-email";
 
 export interface PitchLead {
   id?: string;
@@ -135,7 +136,7 @@ export function PitchModal({ lead, onClose, onSendSuccess }: PitchModalProps) {
     const generated = BrandEmailWriter.generateEmail(
       {
         businessName: company,
-        email: lead.email || "client@company.com",
+        email: realEmail(lead.email) ?? "",
         websiteUrl: website,
         niche: niche,
         city: lead.city,
@@ -160,7 +161,7 @@ export function PitchModal({ lead, onClose, onSendSuccess }: PitchModalProps) {
     const generated = BrandEmailWriter.generateEmail(
       {
         businessName: company,
-        email: lead.email || "client@company.com",
+        email: realEmail(lead.email) ?? "",
         websiteUrl: website,
         niche: niche,
         city: lead.city,

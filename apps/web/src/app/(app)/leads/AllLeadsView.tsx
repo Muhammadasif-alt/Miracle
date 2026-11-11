@@ -33,6 +33,7 @@ import {
   DollarSign,
 } from "lucide-react";
 import { PitchModal, type PitchLead } from "@/components/leads/PitchModal";
+import { realEmail } from "@/lib/lead-email";
 
 export type LeadTab =
   | "ALL"
@@ -301,7 +302,7 @@ export function AllLeadsView() {
           action: "create",
           leadId: lead.id,
           clientName: lead.contactName || lead.companyName,
-          clientEmail: lead.contactEmail || lead.email || "client@prospect.com",
+          clientEmail: realEmail(lead.contactEmail, lead.email) ?? "",
           businessName: lead.companyName || lead.businessName,
           topic: `Strategy & Creative Review — ${lead.companyName}`,
           startTime: tomorrow.toISOString(),
@@ -444,11 +445,11 @@ export function AllLeadsView() {
               ) : (
                 leads.map((lead) => {
                   const company = lead.companyName || lead.businessName || "Unnamed Business";
-                  const contact = lead.contactName || "Decision Maker";
-                  const email = lead.contactEmail || lead.email;
+                  const contact = lead.contactName || "Owner not verified";
+                  const email = realEmail(lead.contactEmail, lead.email);
                   const industry = lead.industry || lead.niche || "Creative";
                   const loc = [lead.city, lead.country].filter(Boolean).join(", ") || "Global";
-                  const score = lead.fitScore || lead.leadScore || 85;
+                  const score = lead.fitScore || lead.leadScore || null;
 
                   return (
                     <tr
@@ -485,11 +486,11 @@ export function AllLeadsView() {
 
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-2">
-                          <span className="font-bold text-white text-xs">{score}</span>
+                          <span className="font-bold text-white text-xs">{score ?? "—"}</span>
                           <div className="w-12 h-1.5 rounded-full bg-(--n-1e1e2d) overflow-hidden">
                             <div
                               className="h-full rounded-full bg-(--accent)"
-                              style={{ width: `${Math.min(100, score)}%` }}
+                              style={{ width: `${Math.min(100, score ?? 0)}%` }}
                             />
                           </div>
                         </div>
@@ -593,7 +594,7 @@ export function AllLeadsView() {
                                     niche: industry,
                                     city: lead.city,
                                     country: lead.country,
-                                    leadScore: score,
+                                    leadScore: score ?? undefined,
                                     auditFinding: lead.auditFindings,
                                     recommendedService: lead.recommendedService,
                                   });
@@ -710,7 +711,7 @@ export function AllLeadsView() {
                     setPitchingLead({
                       id: selectedLead.id,
                       businessName: selectedLead.companyName || selectedLead.businessName,
-                      email: selectedLead.contactEmail || selectedLead.email,
+                      email: realEmail(selectedLead.contactEmail, selectedLead.email),
                       website: selectedLead.website,
                       niche: selectedLead.industry || selectedLead.niche,
                       city: selectedLead.city,
@@ -884,8 +885,8 @@ export function AllLeadsView() {
                   "Verified online presence; lacks high-converting short-form creative and clear visual branding proof."}
               </p>
               <div className="text-[11px] text-(--n-71717a) flex items-center justify-between pt-2 border-t border-(--n-1f1f2e)">
-                <span>Contact: {selectedLead.contactName || "Decision Maker"}</span>
-                <span className="font-mono text-white">{selectedLead.contactEmail || selectedLead.email || "No email"}</span>
+                <span>Contact: {selectedLead.contactName || "Owner not verified"}</span>
+                <span className="font-mono text-white">{realEmail(selectedLead.contactEmail, selectedLead.email) ?? "No verified email"}</span>
               </div>
             </div>
 

@@ -1,10 +1,11 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
-import { BriefcaseBusiness, Building2, CheckCircle2, Clock, ExternalLink, Loader2, MapPin, Plus, Search, Wallet } from "lucide-react";
+import { BriefcaseBusiness, Building2, CheckCircle2, Clock, ExternalLink, Loader2, Mail, MapPin, Phone, Plus, Search, Wallet } from "lucide-react";
 import { useMe } from "@/lib/session-context";
 import { memberForEmail } from "@/lib/team";
 import type { JobLead, SourceStatus } from "@/lib/job-leads";
+import type { JobContact } from "@/lib/job-contact";
 
 type Country = { code: string; name: string };
 
@@ -65,12 +66,30 @@ export function JobLeadsView({ countries }: { countries: Country[] }) {
     }
   }
 
+  const [contacts, setContacts] = useState<Record<string, JobContact | "loading" | "error">>({});
+
+  async function findContact(j: JobLead) {
+    setContacts((c) => ({ ...c, [j.id]: "loading" }));
+    try {
+      const res = await fetch("/api/job-leads", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: "contact", company: j.company, website: j.companyWebsite }) });
+      const data = await res.json();
+      setContacts((c) => ({ ...c, [j.id]: data.ok ? data.contact : "error" }));
+    } catch {
+      setContacts((c) => ({ ...c, [j.id]: "error" }));
+    }
+  }
+
+  async function findSelected() {
+    const list = (jobs ?? []).filter((j) => picked.has(j.id) && !contacts[j.id]);
+    for (let i = 0; i < list.length; i += 3) await Promise.all(list.slice(i, i + 3).map(findContact));
+  }
+
   async function save(list: JobLead[]) {
     if (!list.length) return;
     setBusy("save");
     setError(null);
     try {
-      const res = await fetch("/api/job-leads", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: "save", jobs: list }) });
+      const res = await fetch("/api/job-leads", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: "save", jobs: list.map((j) => ({ ...j, contact: typeof contacts[j.id] === "object" ? contacts[j.id] : undefined })) }) });
       const data = await res.json();
       if (!data.ok) throw new Error(data.error);
       setSavedIds((s) => new Set([...s, ...list.map((j) => j.id)]));
@@ -187,6 +206,9 @@ export function JobLeadsView({ countries }: { countries: Country[] }) {
               <button type="button" className="btn btn-ghost h-9 text-xs" disabled={busy !== null || !jobs.length} onClick={() => setPicked(picked.size === jobs.length ? new Set() : new Set(jobs.map((j) => j.id)))}>
                 {picked.size === jobs.length && jobs.length ? "Clear" : "Select all"}
               </button>
+              <button type="button" className="btn btn-ghost h-9 text-xs" disabled={busy !== null || !picked.size} onClick={findSelected}>
+                <Mail className="size-4" />Find emails
+              </button>
               <button type="button" className="btn btn-primary h-9 text-xs" disabled={busy !== null || !picked.size} onClick={() => save(jobs.filter((j) => picked.has(j.id)))}>
                 {busy === "save" ? <Loader2 className="size-4 animate-spin" /> : <Plus className="size-4" />}
                 Add {picked.size || ""} to leads
@@ -237,6 +259,11 @@ export function JobLeadsView({ countries }: { countries: Country[] }) {
                         </a>
                         <a href={j.linkedinCompanyUrl} target="_blank" rel="noopener noreferrer" className={pill(false)}>Company on LinkedIn</a>
                         <a href={j.linkedinJobsUrl} target="_blank" rel="noopener noreferrer" className={pill(false)}>Role on LinkedIn</a>
+                        {!contacts[j.id] ? (
+                          <button type="button" className={pill(false)} onClick={() => findContact(j)}>
+                            <Mail className="mr-1 inline size-3.5" />Find email
+                          </button>
+                        ) : null}
                         {saved ? (
                           <span className="inline-flex items-center gap-1 rounded-full px-2 py-1.5 text-xs text-(--good-text)"><CheckCircle2 className="size-3.5" />In leads</span>
                         ) : (
@@ -245,6 +272,7 @@ export function JobLeadsView({ countries }: { countries: Country[] }) {
                           </button>
                         )}
                       </div>
+                      <ContactLine c={contacts[j.id]} />
                     </div>
                   </li>
                 );
@@ -261,6 +289,30 @@ export function JobLeadsView({ countries }: { countries: Country[] }) {
           </p>
         </>
       ) : null}
+    </div>
+  );
+}
+
+function ContactLine({ c }: { c?: JobContact | "loading" | "error" }) {
+  if (!c) return null;
+  if (c === "loading") return <p className="mt-2 inline-flex items-center gap-1.5 text-xs text-muted"><Loader2 className="size-3.5 animate-spin" />Checking the company website…</p>;
+  if (c === "error") return <p className="mt-2 text-xs text-rose-300">Couldn't check right now — try again.</p>;
+  return (
+    <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs">
+      <span className="inline-flex items-center gap-1" title={c.email?.source}>
+        <Mail className="size-3.5 text-faint" />
+        {c.email ? <span className="text-(--good-text)">{c.email.value}</span> : <span className="text-faint">Email not verified</span>}
+      </span>
+      <span className="inline-flex items-center gap-1" title={c.phone?.source}>
+        <Phone className="size-3.5 text-faint" />
+        {c.phone ? c.phone.value : <span className="text-faint">Phone not verified</span>}
+      </span>
+      {c.website ? (
+        <a className="text-faint underline" href={c.website} target="_blank" rel="noopener noreferrer" title={c.websiteNote}>Company website</a>
+      ) : (
+        <span className="text-faint">{c.websiteNote}</span>
+      )}
+      {c.linkedin ? <a className="text-faint underline" href={c.linkedin.value} target="_blank" rel="noopener noreferrer">LinkedIn page</a> : null}
     </div>
   );
 }

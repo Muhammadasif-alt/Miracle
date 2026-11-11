@@ -57,7 +57,7 @@ export const DEFAULT_SETTINGS = {
     stopOnReply: true,
     stopOnMeeting: true,
     requireManualApproval: true,
-    doNotContactList: ["badfit@domain.com", "competitor.com"],
+    doNotContactList: [],
   },
   scrapegraph: {
     apiKey: process.env.SCRAPEGRAPH_API_KEY || "",

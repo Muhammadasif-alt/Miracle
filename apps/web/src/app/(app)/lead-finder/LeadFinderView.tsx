@@ -147,8 +147,9 @@ export function LeadFinderView({ countries }: { countries: { code: string; name:
             <PlaceInput
               type="city"
               label="City"
-              placeholder="Start typing a city…"
+              placeholder="Choose a city"
               country={form.country}
+              countryName={countryName}
               value={form.city}
               onChange={(v) => (setForm({ ...form, city: v, area: "" }), setCityPlace(null), setAreaPlace(null))}
               onPick={(p) => (setForm({ ...form, city: p.name, area: "" }), setCityPlace(p), setAreaPlace(null))}

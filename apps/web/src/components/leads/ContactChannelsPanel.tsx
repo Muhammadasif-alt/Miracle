@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { AtSign, Briefcase, Camera, ExternalLink, Loader2, Phone, ScanSearch, ThumbsUp } from "lucide-react";
+import { isRealEmail } from "@/lib/lead-email";
 
 type Channel = { value: string; source: string } | undefined;
 type LeadLike = {
@@ -26,12 +27,12 @@ export function ContactChannelsPanel({ lead, onLeadUpdate }: { lead: LeadLike; o
 
   const rawEmail = lead.email || lead.contactEmail;
   const emailVerified = lead.emailStatus === "VERIFIED" || lead.verificationStatus === "VERIFIED";
-  const realEmail = rawEmail && !rawEmail.startsWith("unknown-") ? rawEmail : undefined;
+  const verifiedEmail = isRealEmail(rawEmail) ? rawEmail : undefined;
   const rows: { key: keyof typeof ICONS; ch: Channel; unverifiedValue?: string }[] = [
     {
       key: "email",
-      ch: ch.email ?? (realEmail && emailVerified ? { value: realEmail, source: "Verified email" } : undefined),
-      unverifiedValue: !ch.email && realEmail && !emailVerified ? realEmail : undefined,
+      ch: ch.email ?? (verifiedEmail && emailVerified ? { value: verifiedEmail, source: "Verified email" } : undefined),
+      unverifiedValue: !ch.email && verifiedEmail && !emailVerified ? verifiedEmail : undefined,
     },
     { key: "phone", ch: ch.phone ?? (lead.phone ? { value: lead.phone, source: "Saved" } : undefined) },
     { key: "facebook", ch: ch.facebook },

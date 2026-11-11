@@ -1,11 +1,6 @@
-import type { Metadata } from "next";
-import { LinkedInScraper } from "./LinkedInScraper";
+import { redirect } from "next/navigation";
 
-export const metadata: Metadata = {
-  title: "LinkedIn Scraper — Miracle",
-  description: "Find high-ticket clients and founders needing ongoing video editing, thumbnails, and graphic carousels.",
-};
-
-export default function Page() {
-  return <LinkedInScraper />;
+/** The old mock LinkedIn page is gone — real hiring companies live in Job Leads. */
+export default function LinkedInScraperRedirect() {
+  redirect("/job-leads");
 }

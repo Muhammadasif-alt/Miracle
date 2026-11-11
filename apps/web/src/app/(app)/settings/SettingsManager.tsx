@@ -121,7 +121,7 @@ export function SettingsManager() {
   const [followUpDelay2, setFollowUpDelay2] = useState(6);
   const [stopOnReply, setStopOnReply] = useState(true);
   const [stopOnMeeting, setStopOnMeeting] = useState(true);
-  const [dncList, setDncList] = useState("badfit@domain.com\ncompetitor.com");
+  const [dncList, setDncList] = useState("");
 
   // 7. Safety & Operating Mode State (Section 1 & 2 Mandates)
   const [operatingMode, setOperatingMode] = useState<"TESTING" | "LIVE_PAUSED" | "LIVE_ACTIVE">("TESTING");
